@@ -1,0 +1,22 @@
+#' I am not really sure what this does.
+#'
+#' @param C_hat a matrix
+#' @param y response vector of dimension ???
+#' @param lbd \eqn{\lambda}, a positive constant
+#' @return ???
+
+Dantzig <- function(C_hat, y, lbd) {
+  K <- length(y)
+  cvec <- rep(1, 2 * K)
+  bvec <- c(lbd + y, lbd - y, rep(0, 2 * K))
+  new_C_hat <- matrix(0, K, 2 * K)
+  for (i in 1:K) {
+    new_C_hat[i, ] <- c(C_hat[i,], -C_hat[i,])
+  }
+  Amat <- rbind(new_C_hat, -new_C_hat, diag(-1, nrow = 2 * K))
+  LPsol <- linprog::solveLP(cvec, bvec, Amat, lpSolve = T)$solution
+  beta <- LPsol[1:K] - LPsol[(K + 1):(2 * K)]
+  return(beta)
+}
+
+
