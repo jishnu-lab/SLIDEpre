@@ -5,34 +5,26 @@
 \title{Construct the expert knowledge matrix used as the target for the sample correlation matrix
 reweighting. This is the first step of including prior knowledge in Essential Regression.}
 \usage{
-makeDelta(
-  y,
-  x,
-  imp,
-  delta_range,
-  lbd_range,
-  beta_est = "LS",
-  diagonal = F,
-  merge = F,
-  equal_var = F,
-  alpha_level = 0.05,
-  support = F,
-  correction = "Bonferroni"
-)
+makeDelta(y, x, imp, er_res, type = "med", as_names = T)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{imp}{a vector of the indices of the features determined to be important by expert knowledge}
+\item{imp}{a vector of the features determined to be important by expert knowledge}
 
-\item{delta_range}{a vector of values to search over when picking the optimal \eqn{\delta} by cross-validation}
+\item{er_res}{the output of a run of \code{\link{ER}}}
 
-\item{lbd_range}{a vector of values to search over when picking the optimal \eqn{\lambda} by cross-validation}
+\item{type}{string indicating what type of replacement calculation to do}
+
+\item{as_names}{boolean indicating whether the important features are reported as a vector of
+indices (integers) or a vector of feature names (strings)}
 }
 \value{
-
+a matrix resulting from replacing the low correlations with the median or minimal value
+in the given row/column. returns NULL if all important features in \code{imp} are already present
+in the ER results
 }
 \description{
 Construct the expert knowledge matrix used as the target for the sample correlation matrix

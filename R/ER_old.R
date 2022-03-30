@@ -23,7 +23,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
+ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 0.1,
                rep_CV = 50, diagonal = F, merge = F, equal_var = F,
                alpha_level = 0.05, support = NULL, correction = "Bonferroni",
                verbose = F) {
@@ -35,6 +35,13 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
     se_est <- apply(X, 2, sd) #### get sd of columns for feature matrix
   }
   deltaGrids <- delta * sqrt(log(max(p, n)) / n)
+
+  # if (length(deltaGrids) > 1) {
+  #   selected_deltas <- replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal, se_est, merge))
+  #   cat(table(selected_deltas))
+  #   optDelta <- median(selected_deltas)
+  # } else
+  #   optDelta <- deltaGrids
 
   #### if deltaGrids has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
@@ -108,10 +115,19 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
         A_hat[-resultAI$pureVec, ] <- AJ
       }
 
-      Gamma_hat[-I_hat] <- diag(Sigma[-I_hat, -I_hat]) - diag(A_hat[-I_hat,] %*% C_hat %*% t(A_hat[-I_hat,]))
+      ## HAD TO ADD THESE FEW LINES
+      ##   If only 1 mixed variable, replacement length becomes 0 and code fails
+      ##   Cast to matrix so that diag() can handle single mixed variable in replacement
+      sigma_negI <- as.matrix(Sigma[-I_hat, -I_hat])
+      A_negI <- as.matrix(A_hat[-I_hat,])
+      if (nrow(A_hat) - length(I_hat) == 1) {
+        A_negI <- t(A_negI) ## if there is only one mixed variable, need to transpose to conform with C_hat
+        replacement <- diag(sigma_negI) - diag(A_negI %*% C_hat %*% t(A_negI))
+        Gamma_hat[-I_hat] <- replacement
+      } else {
+        Gamma_hat[-I_hat] <- diag(Sigma[-I_hat, -I_hat]) - diag(A_hat[-I_hat,] %*% C_hat %*% t(A_hat[-I_hat,]))
+      }
       Gamma_hat[Gamma_hat < 0] <- 1e2
-
-
     }
     res_beta <- Est_beta(Y, X, Sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_ind, CI = CI,
                          alpha_level = alpha_level, correction = correction)

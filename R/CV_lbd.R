@@ -10,7 +10,7 @@
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
 #' @return the selected optimal \eqn{\lambda}
 
-CV_lbd <- function(x, lbdGrids, AI, pureVec, diagonal) {
+CV_lbd <- function(x, lbdGrids, AI, pureVec, diagonal, k) {
   sampInd <- sample(nrow(x), floor(nrow(x) / 2))
   X1 <- x[sampInd, ]
   X2 <- x[-sampInd, ]

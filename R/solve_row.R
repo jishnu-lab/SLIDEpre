@@ -16,12 +16,12 @@ solve_row <- function(col_ind, C, lbd) {
   tmp_vec[col_ind] <- 1
   bvec <- c(0, 0, tmp_vec, -tmp_vec)
 
-  lpResult <- solveLP(cvec, bvec, Amat, lpSolve = T)$solution
+  lpResult <- linprog::solveLP(cvec, bvec, Amat, lpSolve = T)$solution
   while (length(lpResult) == 0) {
     cat("The penalty lambda =", lbd, "is too small and increased by 0.01...\n")
     lbd <- lbd + 0.01
     Amat[-(1:2), 1] <- lbd
-    lpResult <- solveLP(cvec, bvec, Amat, lpSolve = T)$solution[-1]
+    lpResult <- linprog::solveLP(cvec, bvec, Amat, lpSolve = T)$solution[-1]
   }
   ind <- seq(2, 2*K, 2)
   return(lpResult[ind] - lpResult[ind + 1])
