@@ -7,7 +7,7 @@ Split the data into two parts and estimate \eqn{C} on both data sets. Then, for 
 \eqn{lambda}, calculate \eqn{\Omega} on the first dataset and calculate the loss on the second dataset.
 Find the lambda which minimizes \eqn{C \cdot \Omega - log(|\Omega|)}}
 \usage{
-CV_lbd(x, lbdGrids, AI, pureVec, diagonal)
+CV_lbd(x, lbdGrids, AI, pureVec, diagonal, k)
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}

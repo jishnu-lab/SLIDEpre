@@ -2,7 +2,8 @@
 % Please edit documentation in R/FindPureNode.R
 \name{FindPureNode}
 \alias{FindPureNode}
-\title{Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.}
+\title{Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
+This code is an implementation of Algorithm 1 from Bing et al. (2020).}
 \usage{
 FindPureNode(off_Sigma, delta, Ms, arg_Ms, se_est, merge)
 }
@@ -13,9 +14,9 @@ FindPureNode(off_Sigma, delta, Ms, arg_Ms, se_est, merge)
 
 \item{Ms}{the largest absolute values of each row of \code{off_Sigma}}
 
-\item{arg_Ms}{??}
+\item{arg_Ms}{vector of column indices at which the values in \code{Ms} are achieved in \code{off_Sigma}}
 
-\item{se_est}{??}
+\item{se_est}{standard deviations of features (columns of \code{X})}
 
 \item{merge}{boolean indicating merge style}
 }
@@ -25,4 +26,5 @@ of the estimated pure node indices
 }
 \description{
 Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
+This code is an implementation of Algorithm 1 from Bing et al. (2020).
 }

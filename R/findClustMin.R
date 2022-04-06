@@ -3,18 +3,19 @@
 #'
 #' @param sigma a correlation matrix of dimensions \eqn{p \times p}
 #' @param cluster a cluster found by Essential Regression (list format)
-#' @param clust_pure a vector of the pure nodes in the cluster
+#' @param clust_targ a vector of the mixed variables of interest in the cluster
 #' @return the maximum absolute minimum correlation found out of all of the rows provided
 
 
-findClustMin <- function(sigma, cluster, clust_pure) {
+findClustMin <- function(sigma, cluster, clust_targ) {
   clust <- unlist(cluster)
   sub_sigma <- sigma
   ## set diagonal to infinity because we never want to select a value on the diagonal
   ## this should never happen anyway, but it is good to be extra cautious
   diag(sub_sigma) <- Inf
   ## subset the correlation matrix to just the nodes in the provided cluster
-  sub_sigma <- sub_sigma[clust, clust_pure]
+  sub_sigma <- sub_sigma[clust, clust_targ] %>% as.data.frame()
+  colnames(sub_sigma) <- clust_targ
   ## correlation can be negative, so find minimum of the absolute value
   sub_sig_abs <- abs(sub_sigma)
   colmin <- apply(sub_sig_abs, 2, min)

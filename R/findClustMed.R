@@ -7,13 +7,13 @@
 #' @return the median correlation found out of all of the rows provided
 
 
-findClustMed <- function(sigma, cluster, clust_pure) {
+findClustMed <- function(sigma, cluster, clust_targ) {
   clust <- unlist(cluster)
   sub_sigma <- sigma
   ## set diagonal NA so we can remove them for median calculation
   diag(sub_sigma) <- NA
   ## subset the correlation matrix to just the nodes in the provided cluster
-  sub_sigma <- sub_sigma[clust, clust_pure]
+  sub_sigma <- sub_sigma[clust, clust_targ]
   sub_sigma <- as.vector(sub_sigma) %>% na.omit()
   med_corr <- median(sub_sigma)
   return (med_corr)

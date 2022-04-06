@@ -14,22 +14,27 @@
 EstAI <- function(Sigma, optDelta, se_est, merge) {
   #### get absolute value of covariance matrix
   off_Sigma <- abs(Sigma)
+
   #### set entries on main diagonal to 0
   diag(off_Sigma) <- 0
+
   #### calculate the maximal absolute value for each row of the given matrix
   result_Ms <- FindRowMax(off_Sigma)
-  Ms <- result_Ms$M #### maximal abs value
-  arg_Ms <- result_Ms$arg_M #### index where max abs value is achieved
+  Ms <- result_Ms$M #### maximal abs values
+  arg_Ms <- result_Ms$arg_M #### first index where max abs values are achieved
+
   #### estimate list of pure node indices for given Sigma and delta
   #### a node is pure if
   resultPure <- FindPureNode(off_Sigma, optDelta, Ms, arg_Ms, se_est, merge)
   estPureIndices <- resultPure$pureInd
   print(estPureIndices)
   estPureVec <- resultPure$pureVec
+
   #### Estimate the sign subpartition of pure node sets. If there is an element
   #### of a list is empty, then a empty list will be put in that position
   estSignPureIndices <- FindSignPureNode(estPureIndices, Sigma)
-  #### Recover the estimated submatrix A_I by given the pure node group.
+
+  #### Recover the estimated submatrix A_I given the pure node group.
   AI <- RecoverAI(estSignPureIndices, nrow(off_Sigma))
 
   return(list(AI = AI, pureVec = estPureVec, pureSignInd = estSignPureIndices))

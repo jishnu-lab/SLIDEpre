@@ -5,14 +5,14 @@
 \title{Find the maximum absolute minimum correlation of a cluster by using the nodes in cluster as a list of
 rows and searching over these rows for the maximum minimum value in the sample correlation matrix.}
 \usage{
-findClustMin(sigma, cluster, clust_pure)
+findClustMin(sigma, cluster, clust_targ)
 }
 \arguments{
 \item{sigma}{a correlation matrix of dimensions \eqn{p \times p}}
 
 \item{cluster}{a cluster found by Essential Regression (list format)}
 
-\item{clust_pure}{a vector of the pure nodes in the cluster}
+\item{clust_targ}{a vector of the mixed variables of interest in the cluster}
 }
 \value{
 the maximum absolute minimum correlation found out of all of the rows provided

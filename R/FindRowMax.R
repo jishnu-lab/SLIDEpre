@@ -1,7 +1,7 @@
 #' Calculate the maximal absolute value for each row of the given matrix.
 #'
 #' @param Sigma a matrix of dimensions \eqn{p \times p}
-#' @return a list including the indices of the maximal absolute values of the rows of
+#' @return a list including the index of the (first) maximal absolute values of the rows of
 #' \eqn{\Sigma} as well as the values
 
 FindRowMax <- function(Sigma) {

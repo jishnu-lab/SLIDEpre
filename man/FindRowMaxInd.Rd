@@ -3,22 +3,23 @@
 \name{FindRowMaxInd}
 \alias{FindRowMaxInd}
 \title{Calculate indices of each row such that the absolute values of these indices
-are within \eqn{2\delta} of the maximal absolute value \eqn{M} of this row.}
+are within \eqn{2\delta} of the maximal absolute value \eqn{M} of this row.
+This is an implementation of step 4 of Algorithm 1 in Bing et al. (2020).}
 \usage{
 FindRowMaxInd(i, M, arg_M, vector, delta, se_est)
 }
 \arguments{
 \item{i}{the row index}
 
-\item{M}{the maximal absolute value of row \eqn{i}}
+\item{M}{the maximal absolute value of each row of the covariance/correlation matrix}
 
-\item{arg_M}{the indices at which \eqn{M} is achieved in the row}
+\item{arg_M}{the first index at which each entry in \eqn{M} is achieved}
 
-\item{vector}{the row}
+\item{vector}{a row of \code{off_Sigma}}
 
 \item{delta}{\eqn{\delta}, a numeric constant}
 
-\item{se_est}{???}
+\item{se_est}{vector of standard deviations of features (columns of \code{X})}
 }
 \value{
 a vector of indices
@@ -26,4 +27,5 @@ a vector of indices
 \description{
 Calculate indices of each row such that the absolute values of these indices
 are within \eqn{2\delta} of the maximal absolute value \eqn{M} of this row.
+This is an implementation of step 4 of Algorithm 1 in Bing et al. (2020).
 }

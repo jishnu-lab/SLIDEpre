@@ -10,7 +10,7 @@ FindRowMax(Sigma)
 \item{Sigma}{a matrix of dimensions \eqn{p \times p}}
 }
 \value{
-a list including the indices of the maximal absolute values of the rows of
+a list including the index of the (first) maximal absolute values of the rows of
 \eqn{\Sigma} as well as the values
 }
 \description{

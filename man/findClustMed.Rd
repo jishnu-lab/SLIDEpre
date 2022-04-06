@@ -5,7 +5,7 @@
 \title{Find the median correlation of a cluster by using the nodes in cluster as a list of
 rows and searching over these rows for the median value in the sample correlation matrix.}
 \usage{
-findClustMed(sigma, cluster, clust_pure)
+findClustMed(sigma, cluster, clust_targ)
 }
 \arguments{
 \item{sigma}{a correlation matrix of dimensions \eqn{p \times p}}

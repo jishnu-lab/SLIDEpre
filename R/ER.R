@@ -34,6 +34,8 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
   } else {
     se_est <- apply(X, 2, sd) #### get sd of columns for feature matrix
   }
+  #### scale delta by this value to satisfy some requirements so that the
+  #### statistical guarantees in the paper hold
   deltaGrids <- delta * sqrt(log(max(p, n)) / n)
 
   #### if deltaGrids has more than 1 element, then do rep_CV # of replicates
@@ -41,8 +43,9 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
   optDelta <- ifelse(length(deltaGrids) > 1,
                      median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal, se_est, merge))),
                      deltaGrids)
-  if (verbose) #### select first delta in deltaGrids that is >= optDelta
+  if (verbose) { #### select first delta in deltaGrids that is >= optDelta
     cat("Selecting the delta =", delta[min(which(deltaGrids >= optDelta))], "\n")
+  }
 
   #### estimate membership matrix Ai
   #### also returns a vector of the indices of estimated pure variables
@@ -77,8 +80,9 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
     # the matrix to predict Z
     Theta_hat <- pred_result$Theta
     Q <- try(Theta_hat %*% solve(crossprod(X %*% Theta_hat) / n, crossprod(Theta_hat)), silent = T)
-    if (class(Q)[1] == "try-error")
+    if (class(Q)[1] == "try-error") {
       Q <- Theta_hat %*% ginv(crossprod(X %*% Theta_hat) / n) %*% crossprod(Theta_hat)
+    }
   } else {
     pred_result <- Q <- NULL
   }
@@ -99,7 +103,7 @@ ER <- function(Y, X, sigma, delta, beta_est = "NULL", CI = F, pred = T, lbd = 1,
                          lbd)
         lbd <- optLbd
         if (lbd > 0) {
-          AI_hat <- abs(A_hat[I_hat, ])
+          AI_hat <- abs(A_hat[I_hat, ]) ## just rows of pure variables
           sigma_bar_sup <- max(solve(crossprod(AI_hat), t(AI_hat)) %*% se_est[I_hat])
           AJ <- EstAJDant(C_hat, Y_hat, lbd * optDelta * sigma_bar_sup, sigma_bar_sup + se_est[-I_hat])
         } else {

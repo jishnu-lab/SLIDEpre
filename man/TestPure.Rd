@@ -3,20 +3,23 @@
 \name{TestPure}
 \alias{TestPure}
 \title{For given row, check if it is a pure node by iteratively checking the nodes
-in \code{Si}. Return TRUE if the given row corresponds to a pure variable.}
+in \code{Si}. Return TRUE if the given row corresponds to a pure variable.
+This is an implementation of steps 6-9 of Algorithm 1 in Bing et al. (2020).}
 \usage{
 TestPure(Sigma_row, rowInd, Si, Ms, arg_Ms, delta, se_est)
 }
 \arguments{
+\item{Sigma_row}{a vector of dimension \eqn{p}}
+
 \item{rowInd}{the index of the row}
 
-\item{Si}{a vector of indices}
+\item{Si}{a vector of indices that are within \eqn{2\delta} of the maximum value of \code{Sigma_row}}
 
 \item{Ms}{a vector of the largest absolute values of each of the rows in \code{Sigma}}
 
-\item{delta}{\eqn{\delta}, a numerical constant}
+\item{arg_Ms}{a vector of the first index at which each value in Ms is achieved}
 
-\item{Sigma}{a matrix of dimensions \eqn{p \times p}}
+\item{delta}{\eqn{\delta}, a numerical constant}
 }
 \value{
 TRUE or FALSE
@@ -24,4 +27,5 @@ TRUE or FALSE
 \description{
 For given row, check if it is a pure node by iteratively checking the nodes
 in \code{Si}. Return TRUE if the given row corresponds to a pure variable.
+This is an implementation of steps 6-9 of Algorithm 1 in Bing et al. (2020).
 }

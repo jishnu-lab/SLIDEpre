@@ -8,7 +8,7 @@
 
 EstAJDant <- function(C_hat, Y_hat, lbd, se_est_J) {
   AJ <- matrix(0, ncol(Y_hat), nrow(Y_hat))
-  for (i in 1:ncol(Y_hat)) {
+  for (i in 1:ncol(Y_hat)) { ## loop through cols of Y_hat (correspond to rows of AJ)
     AJ[i, ] <- Dantzig(C_hat, Y_hat[,i], lbd * se_est_J[i])
     if (sum(abs(AJ[i, ])) > 1)
       AJ[i,] <- AJ[i,] / sum(abs(AJ[i, ]))

@@ -16,6 +16,7 @@ solve_row <- function(col_ind, C, lbd) {
   tmp_vec[col_ind] <- 1
   bvec <- c(0, 0, tmp_vec, -tmp_vec)
 
+  ## solving (cvec)'(x) subject to Amat %*% x =  bvec and x >= 0
   lpResult <- linprog::solveLP(cvec, bvec, Amat, lpSolve = T)$solution
   while (length(lpResult) == 0) {
     cat("The penalty lambda =", lbd, "is too small and increased by 0.01...\n")

@@ -25,6 +25,6 @@ getFreq <- function(er_res) {
   freq_tab$freq <- row_sums
   freq_tab <- freq_tab %>% as.data.frame() %>%
     dplyr::select(var, freq, everything())
-  freq_tab <- freq_tab[order(freq_tab$freq, decreasing = T), ]
+  freq_tab <- freq_tab[order(freq_tab$freq), ]
   return (freq_tab)
 }

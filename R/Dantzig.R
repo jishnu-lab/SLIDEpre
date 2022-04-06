@@ -6,7 +6,7 @@
 #' @return ???
 
 Dantzig <- function(C_hat, y, lbd) {
-  K <- length(y)
+  K <- length(y) ## number of clusters (columns in Y_hat)
   cvec <- rep(1, 2 * K)
   bvec <- c(lbd + y, lbd - y, rep(0, 2 * K))
   new_C_hat <- matrix(0, K, 2 * K)
@@ -14,6 +14,7 @@ Dantzig <- function(C_hat, y, lbd) {
     new_C_hat[i, ] <- c(C_hat[i,], -C_hat[i,])
   }
   Amat <- rbind(new_C_hat, -new_C_hat, diag(-1, nrow = 2 * K))
+  ## minimize cvec'x subject to Amatx ≤ bvec and x ≥ 0
   LPsol <- linprog::solveLP(cvec, bvec, Amat, lpSolve = T)$solution
   beta <- LPsol[1:K] - LPsol[(K + 1):(2 * K)]
   return(beta)
