@@ -13,13 +13,14 @@
 #' in the ER results
 #' @export
 
-makeDelta2 <- function(y, x, imp, er_res, delta, equal_var = F) {
+makeDelta2 <- function(y, x, imp, er_res, equal_var = F) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)
   p <- ncol(x)
   feat_names <- colnames(x)
   samp_corr <- crossprod(x) / n
+  delta <- er_res$optDelta
 
   ## get row maxes without last col/row
   abs_sc <- abs(samp_corr)
