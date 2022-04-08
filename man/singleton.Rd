@@ -4,10 +4,10 @@
 \alias{singleton}
 \title{Check if there exists an element of the given list has length equal to 1}
 \usage{
-singleton(estPureIndices)
+singleton(pure_list)
 }
 \arguments{
-\item{estPureIndices}{estimated indices of pure nodes}
+\item{pure_list}{estimated indices of pure nodes}
 }
 \value{
 true or false depending upon existence of singleton element

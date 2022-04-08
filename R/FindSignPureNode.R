@@ -1,30 +1,33 @@
-#' Estimate the sign subpartition of pure node sets. If there is an element
+#' Estimate the signed subpartition of pure node sets. If there is an element
 #' of a list is empty, then a empty list will be put in that position.
 #'
-#' @param pureList a list of pure node indices
-#' @param Sigma a sample correlation matrix of dimensions \eqn{p \times p}
-#' @return a list of sign subpartitions of pure node indices
+#' @param pure_list a list of pure node indices
+#' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
+#' @return a list of signed subpartitions of pure node indices
 
-FindSignPureNode <- function(pureList, Sigma) {
-  signPureList <- list()
-  for (i in 1:length(pureList)) {
-    purei <- sort(pureList[[i]])   ### For simulation purpose only.
-    if (length(purei) != 1) {
-      firstPure <- purei[1]
-      pos <- firstPure
+findSignPureNode <- function(pure_list, sigma) {
+  signed_pure_list <- list()
+  for (i in 1:length(pure_list)) {
+    pure_i <- sort(pure_list[[i]])   ### For simulation purpose only.
+    if (length(pure_i) != 1) {
+      first_pure <- pure_i[1]
+      pos <- first_pure
       neg <- c()
-      for (j in 2:length(purei)) {
-        purej <- purei[j]
-        if (Sigma[firstPure, purej] < 0)
-          neg <- c(neg, purej)
-        else
-          pos <- c(pos, purej)
+      for (j in 2:length(pure_i)) {
+        pure_j <- pure_i[j]
+        if (sigma[first_pure, pure_j] < 0) {
+          neg <- c(neg, pure_j)
+        } else {
+          pos <- c(pos, pure_j)
+        }
       }
-      if (length(neg) == 0)
+      if (length(neg) == 0) {
         neg <- list()
-      signPureList[[i]] <- list(pos = pos, neg = neg)
-    } else
-      signPureList[[i]] <- list(pos = purei, neg = list())
+      }
+      signed_pure_list[[i]] <- list(pos = pos, neg = neg)
+    } else {
+      sigend_pure_list[[i]] <- list(pos = pure_i, neg = list())
+    }
   }
-  return(signPureList)
+  return(signed_pure_list)
 }

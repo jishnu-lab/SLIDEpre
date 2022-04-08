@@ -1,33 +1,36 @@
 #' Calculate the fitted value of \eqn{A_I \cdot C \cdot A_I^\top} for given
 #' \eqn{\Sigma} and \eqn{\delta}.
 #'
-#' @param Sigma a correlation matrix of dimensions \eqn{p \times p}
+#' @param sigma a correlation matrix of dimensions \eqn{p \times p}
 #' @param delta a threshold parameter
-#' @param Ms the calculated maximal values of \eqn{\Sigma} by row
+#' @param max_vals the calculated maximal values of \eqn{\Sigma} by row
+#' @param max_inds vector of column indices at which the values in \code{max_vals} are achieved in \code{| sigma |}
 #' @param se_est the estimated standard errors
 #' @param diagonal a boolean indicating the diagonal structure
 #' @param merge a boolean indicating the merge style
 #' @return a list containing a vector of the indices of the estimated pure variables and
-#' the fitted value of \eqn{A_I \cdot C \cdot A_I^\top}
+#' the fitted value of \eqn{A_I \cdot C \cdot A_I^\top}. returns -1 if only one pure node is identified
 
-CalFittedSigma <- function(Sigma, delta, Ms, arg_Ms, se_est, diagonal, merge) {
-  resultPureNode <- FindPureNode(abs(Sigma), delta, Ms, arg_Ms, se_est, merge)
+calFittedSigma <- function(sigma, delta, max_vals, max_inds, se_est, diagonal, merge) {
+  #### find pure nodes
+  pure_nodes <- findPureNode(abs_sigma = abs(sigma), delta = delta,
+                             max_vals = max_vals, max_inds = max_inds,
+                             se_est = se_est, merge = merge)
+  pure_list <- pure_nodes$pure_list
 
-  estPureIndices <- resultPureNode$pureInd
-  # lapply(estPureIndices, function(x) cat(x, "\n"))
-
-  if (singleton(estPureIndices))
-    return(list(pureVec = NULL, fitted = -1))
-
-  estSignPureIndices <- FindSignPureNode(estPureIndices, Sigma)
-  AI <- RecoverAI(estSignPureIndices, length(se_est))
-  C <- EstC(Sigma, AI, diagonal)
-
-  if (length(estPureIndices) == 1)
-    fitted <- -1
-  else {
-    subAI <- AI[resultPureNode$pureVec, ]
-    fitted <- subAI %*% C %*% t(subAI)
+  if (singleton(pure_list = pure_list)) {
+    return(list(pure_vec = NULL, fit_sigma = -1))
   }
-  return(list(pureVec = resultPureNode$pureVec, fitted = fitted))
+
+  signed_pure_list <- findSignPureNode(pure_list = pure_list, sigma = sigma)
+  AI <- recoverAI(pure_list = signed_pure_list, p = length(se_est))
+  C <- estC(sigma = sigma, AI = AI, diagonal = diagonal)
+
+  if (length(pure_list) == 1) {
+    fit_sigma <- -1
+  } else {
+    sub_AI <- AI[pure_nodes$pure_vec, ]
+    fit_sigma <- sub_AI %*% C %*% t(sub_AI)
+  }
+  return(list(pure_vec = pure_nodes$pure_vec, fit_sigma = fit_sigma))
 }

@@ -84,9 +84,10 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   for (i in 1:length(clust_unlist)) {
     plot(network,
          edge.arrow.size = 0.2,
-         vertex.label.cex = 0.3,
+         vertex.label.cex = 0.05,
          vertex.label.font = 2,
          vertex.label.color = "black",
+         vertex.size = p * 0.2,
          layout = igraph::layout.circle(network),
          mark.groups = clust_unlist[[i]],
          mark.border = NA,

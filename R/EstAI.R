@@ -2,40 +2,40 @@
 #' indices in list form and vector form. Also return estimated \eqn{Y} and \eqn{C} for
 #' the following Dantzig estimation.
 #'
-#' @param Sigma a correlation matrix of dimensions \eqn{p \times p}
-#' @param optDelta \eqn{\delta}, a numerical constant
-#' @param se_est ???
+#' @param sigma a correlation matrix of dimensions \eqn{p \times p}
+#' @param delta \eqn{\delta}, a numerical constant
+#' @param se_est standard deviations of the columns of the data matrix, \code{x}
 #' @param merge a boolean indicating merge style
 #' @return a list including: \eqn{A_I}, a matrix of dimensions \eqn{p \times K},
 #' a vector of the indices of estimated pure variables, and a list of the indices of
 #' the estimated pure variables
 
 
-EstAI <- function(Sigma, optDelta, se_est, merge) {
+estAI <- function(sigma, delta, se_est, merge) {
   #### get absolute value of covariance matrix
-  off_Sigma <- abs(Sigma)
+  abs_sigma <- abs(sigma)
 
   #### set entries on main diagonal to 0
-  diag(off_Sigma) <- 0
+  diag(abs_sigma) <- 0
 
-  #### calculate the maximal absolute value for each row of the given matrix
-  result_Ms <- FindRowMax(off_Sigma)
-  Ms <- result_Ms$M #### maximal abs values
-  arg_Ms <- result_Ms$arg_M #### first index where max abs values are achieved
+  #### calculate the maximal absolute value for each row of sigma
+  result_max <- findRowMax(abs_sigma = abs_sigma)
+  max_vals <- result_max$max_vals #### maximal abs values
+  max_inds <- result_max$max_inds #### first index where max abs values are achieved
 
-  #### estimate list of pure node indices for given Sigma and delta
-  #### a node is pure if
-  resultPure <- FindPureNode(off_Sigma, optDelta, Ms, arg_Ms, se_est, merge)
-  estPureIndices <- resultPure$pureInd
-  print(estPureIndices)
-  estPureVec <- resultPure$pureVec
+  #### estimate list of pure node indices for given sigma and delta
+  result_pure <- findPureNode(abs_sigma = abs_sigma, delta = delta,
+                              max_vals = max_vals, max_inds = max_inds,
+                              se_est = se_est, merge = merge)
+  pure_list <- result_pure$pure_list
+  pure_vec <- result_pure$pure_vec
 
   #### Estimate the sign subpartition of pure node sets. If there is an element
   #### of a list is empty, then a empty list will be put in that position
-  estSignPureIndices <- FindSignPureNode(estPureIndices, Sigma)
+  signed_pure_list <- findSignPureNode(pure_list = pure_list, sigma = sigma)
 
   #### Recover the estimated submatrix A_I given the pure node group.
-  AI <- RecoverAI(estSignPureIndices, nrow(off_Sigma))
+  AI <- recoverAI(pure_list = signed_pure_list, p = nrow(abs_sigma))
 
-  return(list(AI = AI, pureVec = estPureVec, pureSignInd = estSignPureIndices))
+  return(list(AI = AI, pure_vec = pure_vec, pure_list = signed_pure_list))
 }

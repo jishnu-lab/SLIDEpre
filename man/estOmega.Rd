@@ -4,12 +4,12 @@
 \alias{estOmega}
 \title{For a given \eqn{\lambda} and \eqn{C}, find \eqn{C^{-1}}.}
 \usage{
-estOmega(lbd, C)
+estOmega(lambda, C)
 }
 \arguments{
-\item{lbd}{\eqn{\lambda}}
-
 \item{C}{a square, symmetric matrix}
+
+\item{lbd}{\eqn{\lambda}}
 }
 \value{
 \eqn{\Omega = C^{-1}}

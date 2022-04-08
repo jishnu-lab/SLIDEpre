@@ -20,7 +20,7 @@
 #' @return the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 #' @export
 
-makeDelta2 <- function(y, x, imp, er_res, equal_var = F) {
+makeDelta2 <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)
@@ -52,18 +52,32 @@ makeDelta2 <- function(y, x, imp, er_res, equal_var = F) {
     row_i <- abs_sc[i,]
     arg_M <- arg_Ms[i]
     cutoff <- (delta * se_est[i] * se_est[arg_M] + delta * se_est[i] * se_est)[imp]
-    replacement <- sign(samp_corr[i, arg_M]) * (Ms[i] - cutoff)
-    new_imp <- c(new_imp, ifelse(abs(replacement) > abs(samp_corr[i, imp]), replacement, samp_corr[i, imp]))
+    replacement <- sign(samp_corr[i, arg_M]) * (Ms[i] - cutoff - 1e-10)
+    if (change_all) {
+      new_imp <- c(new_imp, replacement)
+    } else {
+      new_imp <- c(new_imp, ifelse(abs(replacement) > abs(samp_corr[i, imp]), replacement, samp_corr[i, imp]))
+    }
+  }
+
+  if (change_all) {
+    min_new_imp <- min(new_imp)
+    new_imp <- rep(min_new_imp, length(new_imp))
   }
 
   Delta <- samp_corr
   Delta[imp, ] <- new_imp
   Delta[, imp] <- new_imp
+  Delta[imp, imp] <- samp_corr[1, 1]
 
   if (!matrixcalc::is.positive.definite(Delta)) {
     ## use Matrix::nearPD so that diagonal is 1
-    Delta <- Matrix::nearPD(Delta, corr = T)$mat %>% as.matrix()
+    #Delta <- Matrix::nearPD(Delta, corr = T)$mat %>% as.matrix()
+    Delta <- makePosDef(Delta) %>% as.matrix()
   }
+
+  colnames(Delta) <- feat_names
+  rownames(Delta) <- feat_names
 
   return (Delta)
 }

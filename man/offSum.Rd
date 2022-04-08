@@ -4,12 +4,12 @@
 \alias{offSum}
 \title{Calculate the sum of squares of the upper off-diagonal elements of two matrices}
 \usage{
-offSum(M, N, weights)
+offSum(mat1, mat2, weights)
 }
 \arguments{
-\item{M}{a matrix}
+\item{mat1}{a matrix}
 
-\item{N}{a matrix of same dimensions as \code{M}}
+\item{mat2}{a matrix of same dimensions as \code{mat1}}
 
 \item{weights}{the weights to use in calculating the sum}
 }

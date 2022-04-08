@@ -1,20 +1,20 @@
 #' Merge a group with other groups containing common nodes.
 #'
-#' @param groupList a list of groups of node indices
-#' @param groupVec a vector of node indices
+#' @param clusters a list of groups of node indices
+#' @param group a vector of node indices
 #' @return a list of the merged results
 
-Merge <- function(groupList, groupVec) {
+merge <- function(clusters, group) {
   # merge the new group with the previous ones which have common nodes
-  if (length(groupList) != 0) {
-    for (i in 1:length(groupList)) {
-      common_nodes <- intersect(groupList[[i]], groupVec)
+  if (length(clusters) != 0) {
+    for (i in 1:length(clusters)) {
+      common_nodes <- intersect(clusters[[i]], group)
       if (length(common_nodes) != 0) {
-        groupList[[i]] <- common_nodes
-        return(groupList)
+        clusters[[i]] <- common_nodes
+        return(clusters)
       }
     }
   }
-  groupList <- append(groupList, list(groupVec))
-  return(groupList)
+  clusters <- append(clusters, list(group))
+  return(clusters)
 }

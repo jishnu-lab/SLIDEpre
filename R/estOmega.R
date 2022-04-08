@@ -5,11 +5,11 @@
 #' @return \eqn{\Omega = C^{-1}}
 #' @export
 
-estOmega <- function(lbd, C) {
+estOmega <- function(lambda, C) {
   K <- nrow(C)
   omega <- matrix(0, K, K)
   for (i in 1:K) {
-    omega[,i] <- solve_row(i, C, lbd)
+    omega[, i] <- solveRow(col_ind = i, C = C, lambda = lambda)
   }
   return(omega)
 }
