@@ -6,7 +6,7 @@
 #' @param Theta_hat estimated matrix:
 #' \eqn{(\hat{\Sigma}_{\cdot \hat{I}}-\hat{\Gamma}_{\cdot \hat{I}})BI}
 #' @param Gamma_hat estimated matrix
-#' @param beta_hat matrix of the estimated values of \est{\beta}
+#' @param beta_hat matrix of the estimated values of \eqn{\beta}
 #' @param Omega_hat estimated matrix
 #' @param I_hat vector of pure node indices
 #' @param I_hat_list list of pure node indices by cluster

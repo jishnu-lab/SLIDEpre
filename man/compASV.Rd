@@ -26,7 +26,7 @@ compASV(
 
 \item{Gamma_hat}{estimated matrix}
 
-\item{beta_hat}{matrix of the estimated values of \est{\beta}}
+\item{beta_hat}{matrix of the estimated values of \eqn{\beta}}
 
 \item{Omega_hat}{estimated matrix}
 
