@@ -99,7 +99,7 @@ ER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
     if (beta_est == "Dantzig") {
       beta_hat <- estBetaDant(y = y, x = x, A_hat = A_hat, C_hat = C_hat,
                               I_hat = I_hat, delta = opt_delta, mu = 0.5,
-                              lbd = 0.5)
+                              lambda = 0.5)
     }
   } else {
     if (conf_int) {
