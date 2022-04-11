@@ -3,30 +3,33 @@
 \name{makeDelta}
 \alias{makeDelta}
 \title{Construct the expert knowledge matrix used as the target for the sample correlation matrix
-reweighting. This is the first step of including prior knowledge in Essential Regression.}
+reweighting. This is the first step of including prior knowledge in Essential Regression.
+The column and row in the sample correlation matrix corresponding to the important feature
+are adjusted in the following way:}
 \usage{
-makeDelta(y, x, imp, er_res, type = "med", as_names = T)
+makeDelta(y, x, imp, er_res, change_all = F, equal_var = F)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{imp}{a vector of the features determined to be important by expert knowledge}
+\item{imp}{the index of the important feature}
 
 \item{er_res}{the output of a run of \code{\link{ER}}}
 
-\item{type}{string indicating what type of replacement calculation to do}
-
-\item{as_names}{boolean indicating whether the important features are reported as a vector of
-indices (integers) or a vector of feature names (strings)}
+\item{equal_var}{a boolean indicating whether the columns of \code{x} are assumed to have equal variance}
 }
 \value{
-a matrix resulting from replacing the low correlations with the median or minimal value
-in the given row/column. returns NULL if all important features in \code{imp} are already present
-in the ER results
+the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 }
 \description{
-Construct the expert knowledge matrix used as the target for the sample correlation matrix
-reweighting. This is the first step of including prior knowledge in Essential Regression.
+First, find the absolute maximum entry in the sample correlation matrix (excluding diagonal elements)
+Then calculate the cutoff/threshold value used in determining node purity by \code{\link{FindRowMaxInd()}}
+Next, calculate the values used in the replacement vector by subtracting the cutoff/threshold value from the
+absolute maximum entry for each row. We then get a vector of values used to replace each of \eqn{\hat{\Sigma}_{imp, i}}
+and \eqn{\hat{\Sigma}_{i, imp}}. If the \eqn{i}th replacement value in the replacement vector is greater in absolute
+value than the value already found at \eqn{\hat{\Sigma}_{i, imp}} and \eqn{\hat{\Sigma}_{imp, i}}, then replace
+that entry in \eqn{\hat{\Sigma}} with the replacement value. Otherwise, leave the entry alone.
+Finally, we find the nearest positive definite matrix to our new \eqn{\hat{\Sigma}} with a diagonal of 1s.
 }

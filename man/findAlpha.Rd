@@ -4,18 +4,14 @@
 \alias{findAlpha}
 \title{Calculate the optimal value of \eqn{\alpha} that maximizes the marginal log-likelihood of the data, \eqn{x}, for a fixed \eqn{\Delta}.}
 \usage{
-findAlpha(x, Delta = NULL, alpha_range, rho_range = c(), imp = c())
+findAlpha(x, Delta = NULL, alpha_range)
 }
 \arguments{
 \item{x}{data matrix of dimensions \eqn{n \times p}}
 
-\item{Delta}{optional if \code{rho_range} is provided; the expert knowledge matrix of dimensions \eqn{p \times p}, positive definite}
+\item{Delta}{the expert knowledge matrix of dimensions \eqn{p \times p}, positive definite}
 
 \item{alpha_range}{range of values of \eqn{\alpha} to conduct search for MLE over (should be some subset of \eqn{(0, 1)})}
-
-\item{rho_range}{optional if \code{Delta} is provided; range of values of \eqn{\rho} to conduct search for MLE over (should be some subset of \eqn{\[-1, 1\]})}
-
-\item{imp}{optional if \code{Delta} is provided; vector of indices of important features}
 }
 \value{
 a list containing the marginal log-likelihoods, the optimal value of \eqn{\alpha}, the optimal value of \eqn{\rho} (if requested),

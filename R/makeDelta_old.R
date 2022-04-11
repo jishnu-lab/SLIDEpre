@@ -13,7 +13,7 @@
 #' in the ER results
 #' @export
 
-makeDelta <- function(y, x, imp, er_res, type = "med", as_names = T) {
+makeDelta_old <- function(y, x, imp, er_res, type = "med", as_names = T) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)

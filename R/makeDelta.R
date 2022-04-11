@@ -20,7 +20,7 @@
 #' @return the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 #' @export
 
-makeDelta2 <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
+makeDelta <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)
