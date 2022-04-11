@@ -4,7 +4,7 @@
 \alias{estBetaDant}
 \title{Estimate the values of the coefficients \eqn{\beta} with a Dantzig-type estimator.}
 \usage{
-estBetaDant(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lbd = 0.5)
+estBetaDant(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lambda = 0.5)
 }
 \arguments{
 \item{y}{response vector of dimension \eqn{p}}
@@ -21,7 +21,7 @@ estBetaDant(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lbd = 0.5)
 
 \item{mu}{???? \eqn{\mu}}
 
-\item{lbd}{numeric value for \eqn{\lambda} used in soft thresholding}
+\item{lambda}{numeric value for \eqn{\lambda} used in soft thresholding}
 }
 \value{
 Dantzig-type estimator results for \eqn{\beta}

@@ -6,12 +6,12 @@
 \deqn{\beta^{+} - \beta^{-} \leq \lambda + y - \beta^{+} + \beta^{-} \leq \lambda - y}
 for semipositive \eqn{\beta^{+}, \beta^{-}}}
 \usage{
-LP(y, lbd)
+LP(y, lambda)
 }
 \arguments{
 \item{y}{response vector of dimension \eqn{K}}
 
-\item{lbd}{\eqn{\lambda}, a positive constant}
+\item{lambda}{\eqn{\lambda}, a positive constant}
 }
 \value{
 a vector of dimension \eqn{K}

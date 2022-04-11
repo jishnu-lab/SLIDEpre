@@ -5,7 +5,7 @@
 \title{I am not sure what this does}
 \usage{
 compASV(
-  sigma2_hat,
+  sigma_alt,
   BI,
   Theta_hat,
   Gamma_hat,
@@ -16,6 +16,8 @@ compASV(
 )
 }
 \arguments{
+\item{sigma_alt}{a matrix computed by \code{\link{estSigmaAlt}}}
+
 \item{BI}{estimated matrix:
 \eqn{\hat{A}_{\hat{I}\cdot}(\hat{A}_{\hat{I}\cdot}^\top \hat{A}_{\hat{I}\cdot}^\top)^{-1}}}
 
@@ -28,11 +30,9 @@ compASV(
 
 \item{Omega_hat}{estimated matrix}
 
-\item{I_hat}{estimated matrix}
+\item{I_hat}{vector of pure node indices}
 
-\item{sigma_alt}{a matrix computed by \code{\link{estSigmaAlt}}}
-
-\item{I_hat_ind}{estimated matrix}
+\item{I_hat_list}{list of pure node indices by cluster}
 }
 \value{
 ???

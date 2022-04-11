@@ -18,7 +18,7 @@ estBetaDant <- function(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lambda = 0.5
 
   C <- C_hat
   mu <- mu * delta
-  lbd <- lbd * delta
+  lambda <- lambda * delta
 
   #### setting up linear program
   K <- nrow(C)
