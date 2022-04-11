@@ -1,0 +1,29 @@
+#' Use cross-validation to select \eqn{\lambda} for estimating \eqn{\Omega}.
+#' Split the data into two parts and estimate \eqn{C} on both data sets. Then, for each
+#' \eqn{lambda}, calculate \eqn{\Omega} on the first dataset and calculate the loss on the second dataset.
+#' Find the lambda which minimizes \eqn{C \cdot \Omega - log(|\Omega|)}
+#'
+#' @param x a data matrix of dimensions \eqn{n \times p}
+#' @param lambdas a vector of numerical constants over which to search for the optimal \eqn{\lambda}
+#' @param AI the estimated matrix \eqn{A_I} of dimensions \eqn{p \times K}
+#' @param pureVec a vector of indices of pure variables
+#' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
+#' @param k number of folds for \eqn{k}-fold cross-validation
+#' @return the selected optimal \eqn{\lambda}
+
+cvLambda <- function(x, lambdas, AI, pure_vec, diagonal, k) {
+  samp_ind <- sample(nrow(x), floor(nrow(x) / 2))
+  x_train <- x[samp_ind, ]
+  x_val <- x[-samp_ind, ]
+  sigma_train <- crossprod(x_train) / nrow(x_train)
+  sigma_val <- crossprod(x_val) / nrow(x_val)
+  C_train <- estC(sigma = sigma_train, AI = AI, diagonal = diagonal)
+  C_val <- estC(sigma = sigma_val, AI = AI, diagonal = diagonal)
+  loss <- c()
+  for (i in 1:length(lambdas)) {
+    Omega <- estOmega(lambdas[i], C_train)
+    det_Omega <- det(Omega)
+    loss[i] <- ifelse(det_Omega <= 0, Inf, sum(Omega * C_val) - log(det_Omega))
+  }
+  return(lambdas[which.min(loss)])
+}
