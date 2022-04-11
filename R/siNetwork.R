@@ -27,6 +27,7 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
     colnames(sigma) <- nodes
     rownames(sigma) <- nodes
   }
+  node_names <- data.frame("name" = nodes, "position" = seq(1, p))
 
   #### get feature lists from er_res
   feats <- readER(er_res)
@@ -35,11 +36,13 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   for (i in 1:length(clusters)) {
     clust <- clusters[[i]]
     clust_nodes <- unlist(clust)
-    clust_nodes <- indName(clust_nodes, colnames(sigma), to_ind = F)
+    clust_nodes <- node_names[node_names$position %in% clust_nodes, 1]
     clust_unlist[[length(clust_unlist) + 1]] <- clust_nodes
   }
   pures <- feats$pure_vars
+  pures <- node_names[node_names$position %in% pures, 1]
   mixeds <- feats$mix_vars
+  mixeds <- node_names[node_names$position %in% mixeds, 1]
 
   #### get absolute value of covariance matrix
   abs_sigma <- abs(sigma)
@@ -56,8 +59,8 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   edges <- c()
   for (i in 1:nrow(abs_sigma)) { #### loop through rows
     from_node <- i
-    from_node_name <- nodes[i]
-    row_i <- abs_sigma[i,]
+    from_node_name <- node_names[node_names$position == i, 1]
+    row_i <- abs_sigma[from_node_name, ]
     si <- findRowMaxInd(i = i,
                         max_val = max_vals[i],
                         max_ind = max_inds[i],
@@ -67,9 +70,9 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
     if (length(si) > 0) {
       for (j in 1:length(si)) {
         to_node <- si[j]
-        to_node_name <- nodes[to_node]
-        weight <- round(sigma[from_node, to_node], 2)
-        color <- ifelse(abs(sigma[from_node, to_node]) < max_vals[i], "#893FC9", "#3AAA30")
+        to_node_name <- node_names[node_names$position == to_node, 1]
+        weight <- round(sigma[from_node_name, to_node_name], 2)
+        color <- ifelse(abs(sigma[from_node_name, to_node_name]) < max_vals[i], "#893FC9", "#3AAA30")
         edges <- rbind(edges, c(from_node_name, to_node_name, weight, color))
       }
     }
@@ -77,12 +80,11 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   colnames(edges) <- c("from", "to", "weight", "color")
   edges <- as.data.frame(edges)
 
-  #### get pure nodes
-  node_nums <- seq(1, p)
-  is_pure <- ifelse(node_nums %in% pures, "pure", ifelse(node_nums %in% mixeds, "mixed", "absent"))
-  nodes <- data.frame("node" = nodes, "type" = is_pure)
-
   #### redo node labels
+  nodes <- data.frame("node" = node_names$name)
+  is_pure <- ifelse(nodes$node %in% pures, "pure", ifelse(nodes$node %in% mixeds, "mixed", "absent"))
+  nodes$type <- is_pure
+
   node_labs <- c()
   alt_sigma <- sigma
   diag(alt_sigma) <- 0

@@ -5,12 +5,12 @@
 #' @param sigma_row a vector of dimension \eqn{p}
 #' @param row_ind the index of the row
 #' @param s_i a vector of indices that are within \eqn{2\delta} of the maximum value of \code{sigma_row}
-#' @param maxes a vector of the largest absolute values of each of the rows in \code{sigma}
+#' @param max_vals a vector of the largest absolute values of each of the rows in \code{sigma}
 #' @param max_inds a vector of the first index at which each value in Ms is achieved
 #' @param delta \eqn{\delta}, a numerical constant
 #' @return TRUE or FALSE
 
-testPure <- function(sigma_row, row_ind, s_i, maxes, max_inds, delta, se_est) {
+testPure <- function(sigma_row, row_ind, s_i, max_vals, max_inds, delta, se_est) {
   for (i in 1:length(s_i)) {
     #### go row by row through list of indices where abs val is within 2*delta of max
     j <- s_i[i] #### j is some index of a row in sigma that has large enough abs cov/corr
@@ -19,7 +19,7 @@ testPure <- function(sigma_row, row_ind, s_i, maxes, max_inds, delta, se_est) {
     #### check if abs diff between jth entry in row i and max value in row j is greater than cutoff
     #### sigma_row[j] = sigma_{ij} (ith by jth entry)
     #### maxes[j] = max(sigma_{j.}) (max of jth row)
-    if (abs(sigma_row[j] - maxes[j]) > delta_j) {
+    if (abs(sigma_row[j] - max_vals[j]) > delta_j) {
       return(FALSE)
     }
   }

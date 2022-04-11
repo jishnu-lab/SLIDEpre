@@ -27,14 +27,14 @@ makeDelta2 <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
   p <- ncol(x)
   feat_names <- colnames(x)
   samp_corr <- crossprod(x) / n
-  delta <- er_res$optDelta
+  delta <- er_res$opt_delta
 
   ## get row maxes without last col/row
   abs_sc <- abs(samp_corr)
   diag(abs_sc) <- 0
-  sc_ms <- FindRowMax(abs_sc)
-  arg_Ms <- sc_ms$arg_M
-  Ms <- sc_ms$M
+  sc_ms <- findRowMax(abs_sc)
+  max_inds <- sc_ms$max_inds
+  max_vals <- sc_ms$max_vals
 
   if (equal_var) {
     se_est <- rep(1, p)
@@ -50,9 +50,9 @@ makeDelta2 <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
   new_imp <- c()
   for (i in 1:nrow(abs_sc)) {
     row_i <- abs_sc[i,]
-    arg_M <- arg_Ms[i]
-    cutoff <- (delta * se_est[i] * se_est[arg_M] + delta * se_est[i] * se_est)[imp]
-    replacement <- sign(samp_corr[i, arg_M]) * (Ms[i] - cutoff - 1e-10)
+    max_ind <- max_inds[i]
+    cutoff <- (delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imp]
+    replacement <- sign(samp_corr[i, max_ind]) * (max_vals[i] - cutoff - 1e-10)
     if (change_all) {
       new_imp <- c(new_imp, replacement)
     } else {

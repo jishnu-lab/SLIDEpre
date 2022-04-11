@@ -15,7 +15,7 @@ findPureNode <- function(abs_sigma, delta, max_vals, max_inds, se_est, merge) {
   G <- list() #### groups
 
   for (i in 1:nrow(abs_sigma)) { #### loop through rows
-    row_i <- abs_sigma[i,]
+    row_i <- abs_sigma[i, ]
     #### Calculate indices of ith row such that the absolute values of these indices
     #### are within 2 * delta from the maximal absolute value of this row.
     #### these values correspond to columns of abs_sigma
@@ -24,7 +24,9 @@ findPureNode <- function(abs_sigma, delta, max_vals, max_inds, se_est, merge) {
     if (length(s_i) != 0) {
       #### For given row, check if it is a pure node by iteratively checking the other
       #### indices in s_i. Return TRUE if the given row corresponds to a pure variable.
-      pure_flag <- testPure(row_i, i, s_i, max_vals, max_inds, delta, se_est) ## ALG 1.7
+      pure_flag <- testPure(sigma_row = row_i, row_ind = i, s_i = s_i,
+                            max_vals = max_vals, max_inds = max_inds,
+                            delta = delta, se_est = se_est) ## ALG 1.7
 
       if (pure_flag) { #### if pure
         if (merge) {
