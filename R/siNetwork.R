@@ -18,7 +18,7 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
     se_est <- apply(x, 2, sd) #### get sd of columns for feature matrix
   }
 
-  delta <- er_res$optDelta * sqrt(log(max(p, n)) / n)
+  delta <- er_res$opt_delta * sqrt(log(max(p, n)) / n)
 
   #### get node list
   nodes <- colnames(sigma)
@@ -42,33 +42,39 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   mixeds <- feats$mix_vars
 
   #### get absolute value of covariance matrix
-  off_Sigma <- abs(sigma)
+  abs_sigma <- abs(sigma)
 
   #### set entries on main diagonal to 0
-  diag(off_Sigma) <- 0
+  diag(abs_sigma) <- 0
 
   #### calculate the maximal absolute value for each row of the given matrix
-  result_Ms <- FindRowMax(off_Sigma)
-  Ms <- result_Ms$M #### maximal abs values
-  arg_Ms <- result_Ms$arg_M #### first index where max abs values are achieved
+  maxes <- findRowMax(abs_sigma)
+  max_vals <- maxes$max_vals #### maximal abs values
+  max_inds <- maxes$max_inds #### first index where max abs values are achieved
 
   #### get edges list
   edges <- c()
-  for (i in 1:nrow(off_Sigma)) { #### loop through rows
+  for (i in 1:nrow(abs_sigma)) { #### loop through rows
     from_node <- i
     from_node_name <- nodes[i]
-    row_i <- off_Sigma[i,]
-    Si <- FindRowMaxInd(i, Ms[i], arg_Ms[i], row_i, delta, se_est)
-    if (length(Si) > 0) {
-      for (j in 1:length(Si)) {
-        to_node <- Si[j]
+    row_i <- abs_sigma[i,]
+    si <- findRowMaxInd(i = i,
+                        max_val = max_vals[i],
+                        max_ind = max_inds[i],
+                        row_i = row_i,
+                        delta = delta,
+                        se_est = se_est)
+    if (length(si) > 0) {
+      for (j in 1:length(si)) {
+        to_node <- si[j]
         to_node_name <- nodes[to_node]
         weight <- round(sigma[from_node, to_node], 2)
-        edges <- rbind(edges, c(from_node_name, to_node_name, weight))
+        color <- ifelse(abs(sigma[from_node, to_node]) < max_vals[i], "#893FC9", "#3AAA30")
+        edges <- rbind(edges, c(from_node_name, to_node_name, weight, color))
       }
     }
   }
-  colnames(edges) <- c("from", "to", "weight")
+  colnames(edges) <- c("from", "to", "weight", "color")
   edges <- as.data.frame(edges)
 
   #### get pure nodes
@@ -76,22 +82,66 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   is_pure <- ifelse(node_nums %in% pures, "pure", ifelse(node_nums %in% mixeds, "mixed", "absent"))
   nodes <- data.frame("node" = nodes, "type" = is_pure)
 
+  #### redo node labels
+  node_labs <- c()
+  alt_sigma <- sigma
+  diag(alt_sigma) <- 0
+  for (i in 1:length(nodes$node)) {
+    node_labs <- c(node_labs, paste0(nodes$node[i], "\n", round(max(abs(alt_sigma[nodes$node[i], ])), 2)))
+  }
+  nodes$labs <- node_labs
+
   #### make network graph
   network <- igraph::graph.data.frame(edges, nodes, directed = T)
-  V(network)$color <- ifelse(V(network)$type == "pure", "salmon", ifelse(V(network)$type == "mixed", "skyblue", "grey"))
-  E(network)$color <- "black"
+  igraph::V(network)$color <- ifelse(igraph::V(network)$type == "pure", "salmon",
+                                     ifelse(igraph::V(network)$type == "mixed", "skyblue", "grey"))
+  igraph::E(network)$color <- "magenta"
+
+  #### position edge labels
+  layt <- igraph::layout.circle(network)
+  ELx <- rep(0, igraph::ecount(network))
+  ELy <- rep(0, igraph::ecount(network))
+  for(i in 1:igraph::ecount(network)) {
+    ends <- igraph::ends(network, i)
+    end1 <- which(nodes$node == ends[1])
+    end2 <- which(nodes$node == ends[2])
+    from <- layt[end1, ]
+    to <- layt[end2, ]
+    dir_vec <- to - from
+    ELx[i] = from[1] + dir_vec[1] * 0.1
+    ELy[i] = from[2] + dir_vec[2] * 0.1
+  }
+
   pdf(file = filename)
   for (i in 1:length(clust_unlist)) {
     plot(network,
          edge.arrow.size = 0.2,
+         edge.label.font = 2,
+         edge.label.color = "black",
+         edge.label.cex = 0.1,
+         edge.label = edges$weight,
+         edge.label.x = ELx,
+         edge.label.y = ELy,
+         vertex.label = nodes$labs,
          vertex.label.cex = 0.05,
          vertex.label.font = 2,
          vertex.label.color = "black",
          vertex.size = p * 0.2,
-         layout = igraph::layout.circle(network),
+         xlim = range(layt[, 1]),
+         ylim = range(layt[, 2]),
+         layout = layt,
          mark.groups = clust_unlist[[i]],
          mark.border = NA,
          main = paste0("Cluster ", i))
+    legend(
+      "bottomleft",
+      legend = c("pure", "mixed", "absent"),
+      pt.bg  = c("salmon", "skyblue", "grey"),
+      pch    = c(21, 21, 21, 23, 23),
+      cex    = 0.5,
+      bty    = "n",
+      title  = "Node/Edge Legend"
+    )
   }
   dev.off()
   return("Finished!")

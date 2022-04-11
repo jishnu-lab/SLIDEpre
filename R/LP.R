@@ -3,13 +3,13 @@
 #' for semipositive \eqn{\beta^{+}, \beta^{-}}
 #'
 #' @param y response vector of dimension \eqn{K}
-#' @param lbd \eqn{\lambda}, a positive constant
+#' @param lambda \eqn{\lambda}, a positive constant
 #' @return a vector of dimension \eqn{K}
 
-LP <- function(y, lbd) {
+LP <- function(y, lambda) {
   K <- length(y)
   cvec <- rep(1, 2 * K)
-  bvec <- c(lbd + y, lbd - y, rep(0, 2 * K))
+  bvec <- c(lambda + y, lambda - y, rep(0, 2 * K))
   C <- matrix(0, K, 2 * K)
   for (i in 1:K) {
     indices <- c(i,i + K)

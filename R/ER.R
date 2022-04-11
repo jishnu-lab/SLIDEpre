@@ -111,7 +111,7 @@ ER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
                                                            pure_vec = result_AI$pure_ec,
                                                            diagonal = diagonal))),
                          lambda)
-        if (lambda > 0) {
+        if (opt_lambda > 0) {
           AI_hat <- abs(A_hat[I_hat, ]) ## just rows of pure variables
           sigma_bar_sup <- max(solve(crossprod(AI_hat), t(AI_hat)) %*% se_est[I_hat]) ## not sure what this does
           AJ <- estAJDant(C_hat = C_hat, sigma_TJ = sigma_TJ,
@@ -138,10 +138,10 @@ ER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
                 beta_conf_int = beta_conf_int,
                 beta_var = beta_var,
                 pred = pred_result,
-                opt_lambda = lambda, opt_delta = opt_delta, Q = Q))
+                opt_lambda = opt_lambda, opt_delta = opt_delta, Q = Q))
   }
   return(list(K = ncol(A_hat), A = A_hat, C = C_hat, I = I_hat,
               I_clust = I_hat_list, Gamma = Gamma_hat, beta = beta_hat,
               pred = pred_result,
-              opt_lambda = lambda, opt_delta = opt_delta, Q = Q))
+              opt_lambda = opt_lambda, opt_delta = opt_delta, Q = Q))
 }
