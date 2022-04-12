@@ -7,7 +7,7 @@
 readER(er_res)
 }
 \arguments{
-\item{er_res}{a list output by the function \code{\link{ER}}}
+\item{er_res}{a list output by the function \code{\link{plainER}} or \code{\link{priorER}}}
 }
 \value{
 a list including the clusters, pure variables, and mixed varlues

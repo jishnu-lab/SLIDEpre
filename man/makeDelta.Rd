@@ -7,14 +7,14 @@ reweighting. This is the first step of including prior knowledge in Essential Re
 The column and row in the sample correlation matrix corresponding to the important feature
 are adjusted in the following way:}
 \usage{
-makeDelta(y, x, imp, er_res, change_all = F, equal_var = F)
+makeDelta(y, x, imps, er_res, change_all = F, equal_var = F)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{imp}{the index of the important feature}
+\item{imps}{a vector of indices of the important feature}
 
 \item{er_res}{the output of a run of \code{\link{ER}}}
 

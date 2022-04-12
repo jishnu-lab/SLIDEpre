@@ -14,13 +14,13 @@
 #'
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
-#' @param imp the index of the important feature
+#' @param imps a vector of indices of the important feature
 #' @param er_res the output of a run of \code{\link{ER}}
 #' @param equal_var a boolean indicating whether the columns of \code{x} are assumed to have equal variance
 #' @return the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 #' @export
 
-makeDelta <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
+makeDelta <- function(y, x, imps, er_res, change_all = F, equal_var = F) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)
@@ -47,32 +47,35 @@ makeDelta <- function(y, x, imp, er_res, change_all = F, equal_var = F) {
   pure_vars <- er_results$pure_vars
   mix_vars <- er_results$mix_vars
 
-  new_imp <- c()
+  new_imps <- matrix(0, nrow = length(imps), ncol = p)
   for (i in 1:nrow(abs_sc)) {
     row_i <- abs_sc[i,]
     max_ind <- max_inds[i]
-    cutoff <- (delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imp]
-    replacement <- sign(samp_corr[i, max_ind]) * (max_vals[i] - cutoff - 1e-10)
+    cutoffs <- (delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imps]
+    replacements <- sign(samp_corr[i, max_ind]) * (max_vals[i] - cutoffs - 1e-10)
     if (change_all) {
-      new_imp <- c(new_imp, replacement)
+      new_imps[, i] <- replacements
     } else {
-      new_imp <- c(new_imp, ifelse(abs(replacement) > abs(samp_corr[i, imp]), replacement, samp_corr[i, imp]))
+      replacements <- ifelse(abs(replacements) > abs(samp_corr[i, imps]), replacements, samp_corr[i, imps])
+      new_imps[, i] <- replacements
     }
   }
 
   if (change_all) {
-    min_new_imp <- min(new_imp)
-    new_imp <- rep(min_new_imp, length(new_imp))
+    min_new_imps <- apply(new_imps, 1, min)
+    new_imps <- matrix(min_new_imps, nrow = length(min_new_imps), ncol = p, byrow = FALSE)
   }
 
   Delta <- samp_corr
-  Delta[imp, ] <- new_imp
-  Delta[, imp] <- new_imp
-  Delta[imp, imp] <- samp_corr[1, 1]
+  for (i in 1:nrow(new_imps)) {
+    replace_row <- new_imps[i, ]
+    imp <- imps[i]
+    Delta[imp, ] <- replace_row
+    Delta[, imp] <- replace_row
+    Delta[imp, imp] <- samp_corr[1, 1]
+  }
 
   if (!matrixcalc::is.positive.definite(Delta)) {
-    ## use Matrix::nearPD so that diagonal is 1
-    #Delta <- Matrix::nearPD(Delta, corr = T)$mat %>% as.matrix()
     Delta <- makePosDef(Delta) %>% as.matrix()
   }
 

@@ -23,7 +23,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-ER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
+plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
                lambda = 0.1, rep_cv = 50, diagonal = F, merge = F, equal_var = F,
                alpha_level = 0.05, support = NULL, correction = "Bonferroni",
                verbose = F) {

@@ -1,6 +1,6 @@
 #' Function to read all, pure, and mixed variables from ER results.
 #'
-#' @param er_res a list output by the function \code{\link{ER}}
+#' @param er_res a list output by the function \code{\link{plainER}} or \code{\link{priorER}}
 #' @return a list including the clusters, pure variables, and mixed varlues
 #' found by ER
 
