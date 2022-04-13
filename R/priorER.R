@@ -5,6 +5,8 @@
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param imps a vector of important feature indices/names
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
+#' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
+#' control the false discovery rate, default is 0.2
 #' @param beta_est a string indicating the type of estimation to use for \eqn{\beta}
 #' @param conf_int a boolean indicating whether to calculate confidence intervals for the \eqn{\beta} estimates
 #' @param pred a boolean indicating whether to do prediction
@@ -26,10 +28,10 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-priorER <- function(y, x, sigma, imps, delta, beta_est = "NULL", conf_int = F, pred = T,
-                    lambda = 0.1, rep_cv = 50, diagonal = F, merge = F, equal_var = F,
-                    alpha_level = 0.05, support = NULL, correction = "Bonferroni",
-                    change_all = F, verbose = F) {
+priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL",
+                    conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
+                    merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
+                    correction = "Bonferroni", change_all = F, verbose = F) {
   #### run plainER() first
   plain_er <- plainER(y = y,
                       x = x,

@@ -7,10 +7,13 @@ Split the data into two parts and estimate \eqn{C} on both data sets. Then, for 
 \eqn{lambda}, calculate \eqn{\Omega} on the first dataset and calculate the loss on the second dataset.
 Find the lambda which minimizes \eqn{C \cdot \Omega - log(|\Omega|)}}
 \usage{
-cvLambda(x, lambdas, AI, pure_vec, diagonal, k)
+cvLambda(x, fdr_entries, lambdas, AI, pure_vec, diagonal, k)
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
+
+\item{fdr_entries}{a matrix of dimensions \eqn{p \times p} that contains a 1 in positions where the
+entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 
 \item{lambdas}{a vector of numerical constants over which to search for the optimal \eqn{\lambda}}
 

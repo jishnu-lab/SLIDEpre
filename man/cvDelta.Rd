@@ -7,10 +7,13 @@ first split the data into two data sets. Obtain \eqn{I}, \eqn{A_I} and \eqn{C} f
 Then calculate \eqn{A_I \cdot C \cdot A_I^\top} and choose \eqn{\delta} which minimizes the criterion
 \eqn{A_I \cdot C \cdot A_I^\top - \Sigma(\text{data set 2})}}
 \usage{
-cvDelta(x, deltas_scaled, diagonal, se_est, merge)
+cvDelta(x, fdr_entries, deltas_scaled, diagonal, se_est, merge)
 }
 \arguments{
 \item{x}{data matrix of dimensions \eqn{n \times p}}
+
+\item{fdr_entries}{a matrix of dimensions \eqn{p \times p} that contains a 1 in positions where the
+entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 
 \item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
 

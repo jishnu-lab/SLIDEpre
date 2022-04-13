@@ -4,13 +4,18 @@
 \alias{readER}
 \title{Function to read all, pure, and mixed variables from ER results.}
 \usage{
-readER(er_res)
+readER(er_res, y, alpha = 0.05)
 }
 \arguments{
 \item{er_res}{a list output by the function \code{\link{plainER}} or \code{\link{priorER}}}
+
+\item{y}{a vector of responses}
+
+\item{alpha}{a numeric constant for the p-value threshold}
 }
 \value{
-a list including the clusters, pure variables, and mixed varlues
+a list including the clusters, pure variables, mixed variables, the significant
+cluster indices, and the features found in the significant clusters
 found by ER
 }
 \description{

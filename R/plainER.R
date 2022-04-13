@@ -4,6 +4,8 @@
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
+#' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
+#' control the false discovery rate, default is 0.2
 #' @param beta_est a string indicating the type of estimation to use for \eqn{\beta}
 #' @param conf_int a boolean indicating whether to calculate confidence intervals for the \eqn{\beta} estimates
 #' @param pred a boolean indicating whether to do prediction
@@ -23,10 +25,10 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = T,
-               lambda = 0.1, rep_cv = 50, diagonal = F, merge = F, equal_var = F,
-               alpha_level = 0.05, support = NULL, correction = "Bonferroni",
-               verbose = F) {
+plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
+                    conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
+                    merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
+                    correction = "Bonferroni", verbose = F) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
@@ -37,10 +39,18 @@ plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = 
   #### statistical guarantees in the paper hold
   delta_scaled <- delta * sqrt(log(max(p, n)) / n)
 
+  #### threshold sigma to control for FDR
+  control_fdr <- threshSigma(x = x,
+                             sigma = sigma,
+                             thresh = thresh_fdr)
+  sigma <- control_fdr$thresh_sigma
+  kept_entries <- control_fdr$kept_entries
+
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
   opt_delta <- ifelse(length(delta_scaled) > 1,
-                      median(replicate(rep_cv, cvDelta(x = x, deltas_scaled = delta_scaled,
+                      median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
+                                                       deltas_scaled = delta_scaled,
                                                        diagonal = diagonal, se_est = se_est,
                                                        merge = merge))),
                       delta_scaled)
@@ -53,7 +63,8 @@ plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = 
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
     opt_delta <- ifelse(length(delta_scaled) > 1,
-                        median(replicate(rep_cv, cvDelta(x = x, deltas_scaled = delta_scaled,
+                        median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
+                                                         deltas_scaled = delta_scaled,
                                                          diagonal = diagonal, se_est = se_est,
                                                          merge = F))),
                         delta_scaled)
@@ -106,7 +117,9 @@ plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = 
       if (length(result_AI$pure_vec) != nrow(sigma)) {
         sigma_TJ <- estSigmaTJ(sigma = sigma, AI = A_hat, pure_vec = result_AI$pure_vec)
         opt_lambda <- ifelse(length(lambda) > 1,
-                         median(replicate(rep_cv, cvLambda(x = x, lambdas = lambda,
+                         median(replicate(rep_cv, cvLambda(x = x,
+                                                           fdr_entries = kept_entries,
+                                                           lambdas = lambda,
                                                            AI = result_AI$AI,
                                                            pure_vec = result_AI$pure_ec,
                                                            diagonal = diagonal))),
@@ -127,21 +140,37 @@ plainER <- function(y, x, sigma, delta, beta_est = "NULL", conf_int = F, pred = 
       Gamma_hat[Gamma_hat < 0] <- 1e2 #### replace negative values with 100
     }
     res_beta <- estBeta(y = y, x = x, sigma = sigma, A_hat = A_hat,
-                         C_hat = C_hat, Gamma_hat = Gamma_hat, I_hat = I_hat,
-                         I_hat_list = I_hat_list, conf_int = conf_int,
-                         alpha_level = alpha_level, correction = correction)
+                        C_hat = C_hat, Gamma_hat = Gamma_hat, I_hat = I_hat,
+                        I_hat_list = I_hat_list, conf_int = conf_int,
+                        alpha_level = alpha_level, correction = correction)
     beta_hat <- res_beta$beta_hat
     beta_conf_int <- res_beta$conf_int
     beta_var <- res_beta$beta_var
-    return(list(K = ncol(A_hat), A = A_hat, C = C_hat, I = I_hat, I_clust = I_hat_list,
-                Gamma = Gamma_hat, beta = beta_hat,
+    return(list(K = ncol(A_hat),
+                A = A_hat,
+                C = C_hat,
+                I = I_hat,
+                I_clust = I_hat_list,
+                Gamma = Gamma_hat,
+                beta = beta_hat,
                 beta_conf_int = beta_conf_int,
                 beta_var = beta_var,
                 pred = pred_result,
-                opt_lambda = opt_lambda, opt_delta = opt_delta, Q = Q))
+                opt_lambda = opt_lambda,
+                opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
+                thresh_sigma = sigma,
+                Q = Q))
   }
-  return(list(K = ncol(A_hat), A = A_hat, C = C_hat, I = I_hat,
-              I_clust = I_hat_list, Gamma = Gamma_hat, beta = beta_hat,
+  return(list(K = ncol(A_hat),
+              A = A_hat,
+              C = C_hat,
+              I = I_hat,
+              I_clust = I_hat_list,
+              Gamma = Gamma_hat,
+              beta = beta_hat,
               pred = pred_result,
-              opt_lambda = opt_lambda, opt_delta = opt_delta, Q = Q))
+              opt_lambda = opt_lambda,
+              opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
+              thresh_sigma = sigma,
+              Q = Q))
 }

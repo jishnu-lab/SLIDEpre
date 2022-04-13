@@ -10,6 +10,7 @@ priorER(
   sigma,
   imps,
   delta,
+  thresh_fdr = 0.2,
   beta_est = "NULL",
   conf_int = F,
   pred = T,
@@ -35,6 +36,9 @@ priorER(
 \item{imps}{a vector of important feature indices/names}
 
 \item{delta}{\eqn{\delta}, a numerical constant used for thresholding}
+
+\item{thresh_fdr}{a numerical constant used for thresholding the correlation matrix to
+control the false discovery rate, default is 0.2}
 
 \item{beta_est}{a string indicating the type of estimation to use for \eqn{\beta}}
 
