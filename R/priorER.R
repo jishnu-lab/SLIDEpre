@@ -36,6 +36,7 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
   plain_er <- plainER(y = y,
                       x = x,
                       sigma = sigma,
+                      thresh_fdr = thresh_fdr,
                       delta = delta,
                       beta_est = beta_est,
                       conf_int = conf_int,
@@ -55,9 +56,18 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
   #### at this point, we have fully run LOVE/done cross-validation and can now
   #### begin to incorporate the prior information
   #### adjust sigma matrix to reflect prior information found in imps
+  feats <- readER(plain_er)
+  incl_feats <- unlist(feats$clusters) %>% unique()
+  excl_feats <- setdiff(seq(1, ncol(sigma)), incl_feats)
+  imp_inds <- imps
+  if (typeof(imps) == "character") {
+    imp_inds <- indName(imps, colnames(x), to_ind = T)
+  }
+  excl_imp <- intersect(imp_inds, excl_feats)
+
   prior_sigma <- makeDelta(y = y,
                            x = x,
-                           imps = imps,
+                           imps = excl_imp,
                            er_res = plain_er,
                            change_all = change_all,
                            equal_var = equal_var)
@@ -70,6 +80,7 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
                       x = x,
                       sigma = bal_sigma$adj_mat,
                       delta = opt_delta,
+                      thresh_fdr = -1,
                       beta_est = beta_est,
                       conf_int = conf_int,
                       pred = pred,

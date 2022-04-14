@@ -27,7 +27,7 @@ makeDelta <- function(y, x, imps, er_res, change_all = F, equal_var = F) {
   p <- ncol(x)
   feat_names <- colnames(x)
   samp_corr <- crossprod(x) / n
-  delta <- er_res$opt_delta
+  delta <- er_res$opt_delta * sqrt(log(max(p, n)) / n)
 
   ## get row maxes without last col/row
   abs_sc <- abs(samp_corr)

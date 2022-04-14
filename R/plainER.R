@@ -3,6 +3,8 @@
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
+#' @param kept_sigma a matrix of dimensions \eqn{p \times p} with values 1/0 indicating
+#' whether a given entry was removed via thresholding (1) or not (0) with function \link{threshSigma}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
@@ -25,7 +27,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
+plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
                     correction = "Bonferroni", verbose = F) {
@@ -40,11 +42,15 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
   delta_scaled <- delta * sqrt(log(max(p, n)) / n)
 
   #### threshold sigma to control for FDR
-  control_fdr <- threshSigma(x = x,
-                             sigma = sigma,
-                             thresh = thresh_fdr)
-  sigma <- control_fdr$thresh_sigma
-  kept_entries <- control_fdr$kept_entries
+  if (is.null(kept_sigma)) {
+    control_fdr <- threshSigma(x = x,
+                               sigma = sigma,
+                               thresh = thresh_fdr)
+    sigma <- control_fdr$thresh_sigma
+    kept_entries <- control_fdr$kept_entries
+  } else {
+    sigma <- sigma * kept_sigma
+  }
 
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
@@ -159,6 +165,7 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                 opt_lambda = opt_lambda,
                 opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
                 thresh_sigma = sigma,
+                kept_sigma = kept_entries,
                 Q = Q))
   }
   return(list(K = ncol(A_hat),
@@ -172,5 +179,6 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
               opt_lambda = opt_lambda,
               opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
               thresh_sigma = sigma,
+              kept_sigma = kept_entries,
               Q = Q))
 }

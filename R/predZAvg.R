@@ -6,8 +6,8 @@
 #' @param S_beta ???
 #' @return ????
 
-Pred_Z_BLP_avg <- function(X, A_hat, C_hat, S_beta) {
+predZAvg <- function(x, A_hat, C_hat, S_beta) {
   G_hat <- crossprod(A_hat) + solve(C_hat)
-  Z_hat <- X %*% A_hat %*% MASS::ginv(G_hat)
+  Z_hat <- x %*% A_hat %*% MASS::ginv(G_hat)
   return (Z_hat[,S_beta,drop = F])
 }
