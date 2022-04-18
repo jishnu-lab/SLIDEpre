@@ -4,18 +4,18 @@
 \alias{bayesVarSel}
 \title{Variational Bayes Variable Selection}
 \usage{
-bayesVarSel(x, y, imps, er_res, thresh = 0.01)
+bayesVarSel(z, y, imps, er_res, thresh = 0.01)
 }
 \arguments{
-\item{x}{a data matrix of dimensions \eqn{n \times p}}
-
 \item{y}{a response vector of dimension \eqn{n}}
 
-\item{imps}{a vector of important feature names/indices}
+\item{imps}{a vector of cluster indices to keep}
 
 \item{er_res}{a list output by the function link[EssReg]{plainER} or \link[EssReg]{priorER}}
 
 \item{thresh}{a numeric constant used in determining convergence}
+
+\item{x}{a data matrix of dimensions \eqn{n \times p}}
 }
 \value{
 a list including the clusters, pure variables, mixed variables, the significant

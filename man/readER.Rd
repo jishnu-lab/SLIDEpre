@@ -4,7 +4,7 @@
 \alias{readER}
 \title{Read Essential Regression Results}
 \usage{
-readER(er_res, y, alpha = 0.05)
+readER(er_res)
 }
 \arguments{
 \item{er_res}{a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}}

@@ -6,11 +6,12 @@
 #' @param delta \eqn{\delta}, a numeric constant or vector of constants used in
 #' thresholding during node purity testing
 #' @return none
+#' @export
 
 parseRun <- function(yaml_path, delta) {
   er_input <- yaml::yaml.load_file(yaml_path)
-  x <- as.matrix(readr::read.csv(er_input$x_path, row.names = 1))
-  y <- as.matrix(readr::read.csv(er_input$y_path, row.names = 1))
+  x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1))
+  y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1))
 
   if (er_input$process_input) {
     x <- scale(x, center = T, scale = T)
