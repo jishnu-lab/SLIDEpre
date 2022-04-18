@@ -2,7 +2,7 @@
 % Please edit documentation in R/pureRowInd.R
 \name{pureRowInd}
 \alias{pureRowInd}
-\title{For given matrix \eqn{A}, find the row indices which correspond to pure nodes.}
+\title{Find Indices Of Pure Nodes}
 \usage{
 pureRowInd(A)
 }

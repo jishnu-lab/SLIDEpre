@@ -2,10 +2,7 @@
 % Please edit documentation in R/makeDelta.R
 \name{makeDelta}
 \alias{makeDelta}
-\title{Construct the expert knowledge matrix used as the target for the sample correlation matrix
-reweighting. This is the first step of including prior knowledge in Essential Regression.
-The column and row in the sample correlation matrix corresponding to the important feature
-are adjusted in the following way:}
+\title{Construct \eqn{\Delta}}
 \usage{
 makeDelta(y, x, imps, er_res, change_all = F, equal_var = F)
 }
@@ -16,7 +13,10 @@ makeDelta(y, x, imps, er_res, change_all = F, equal_var = F)
 
 \item{imps}{a vector of indices of the important feature}
 
-\item{er_res}{the output of a run of \code{\link{ER}}}
+\item{er_res}{the output of a run of \link[EssReg]{plainER}}
+
+\item{change_all}{a boolean flag indicating whether to adjust all correlations or just those that are smaller
+in absolute value than the value to change to}
 
 \item{equal_var}{a boolean indicating whether the columns of \code{x} are assumed to have equal variance}
 }
@@ -24,8 +24,14 @@ makeDelta(y, x, imps, er_res, change_all = F, equal_var = F)
 the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 }
 \description{
+Construct the expert knowledge matrix used as the target for the sample correlation matrix
+reweighting. This is the first step of including prior knowledge in Essential Regression.
+The column and row in the sample correlation matrix corresponding to the important feature
+are adjusted in the following way:
+}
+\details{
 First, find the absolute maximum entry in the sample correlation matrix (excluding diagonal elements)
-Then calculate the cutoff/threshold value used in determining node purity by \code{\link{FindRowMaxInd()}}
+Then calculate the cutoff/threshold value used in determining node purity by \link[EssReg]{findRowMaxInd}
 Next, calculate the values used in the replacement vector by subtracting the cutoff/threshold value from the
 absolute maximum entry for each row. We then get a vector of values used to replace each of \eqn{\hat{\Sigma}_{imp, i}}
 and \eqn{\hat{\Sigma}_{i, imp}}. If the \eqn{i}th replacement value in the replacement vector is greater in absolute

@@ -2,8 +2,7 @@
 % Please edit documentation in R/findSignPureNode.R
 \name{findSignPureNode}
 \alias{findSignPureNode}
-\title{Estimate the signed subpartition of pure node sets. If there is an element
-of a list is empty, then a empty list will be put in that position.}
+\title{Estimate Signed Subpartitions Of Pure Nodes}
 \usage{
 findSignPureNode(pure_list, sigma)
 }

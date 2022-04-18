@@ -2,7 +2,7 @@
 % Please edit documentation in R/findRowMax.R
 \name{findRowMax}
 \alias{findRowMax}
-\title{Calculate the maximal absolute value for each row of the given matrix.}
+\title{Find \eqn{\Sigma} Maximums}
 \usage{
 findRowMax(abs_sigma)
 }

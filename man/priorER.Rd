@@ -2,7 +2,7 @@
 % Please edit documentation in R/priorER.R
 \name{priorER}
 \alias{priorER}
-\title{Run Essential Regression with prior information.}
+\title{Prior Information Essential Regression}
 \usage{
 priorER(
   y,

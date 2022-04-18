@@ -2,7 +2,7 @@
 % Please edit documentation in R/plainER.R
 \name{plainER}
 \alias{plainER}
-\title{Run Essential Regression.}
+\title{Vanilla Essential Regression}
 \usage{
 plainER(
   y,
@@ -21,7 +21,8 @@ plainER(
   alpha_level = 0.05,
   support = NULL,
   correction = "Bonferroni",
-  verbose = F
+  verbose = F,
+  out_path = NULL
 )
 }
 \arguments{
@@ -59,14 +60,19 @@ control the false discovery rate, default is 0.2}
 \item{correction}{a string indicating the type of multi-testing correction to perform}
 
 \item{verbose}{a boolean indicating whether to include printing}
+
+\item{out_path}{a string path to where to save output}
+
+\item{kept_sigma}{a matrix of dimensions \eqn{p \times p} with values 1/0 indicating
+whether a given entry was removed via thresholding (1) or not (0) with function \link[EssReg]{threshSigma}}
 }
 \value{
-a list of results from the Essential Regression framework including: \eqn{K = } number of clusters,
+a list of results from the Essential Regression framework including: \eqn{K} = number of clusters,
 \eqn{\hat{A}}, \eqn{\hat{C}}, \eqn{\hat{I}}, the indices of the pure variables, \eqn{\hat{\Gamma}},
 \eqn{\hat{\beta}}, \eqn{\alpha}-level confidence intervals (if requested), prediction results (if requested),
 the optimal value of \eqn{\lambda} determined by cross-validation, the optimal value of \eqn{\delta}
 determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 }
 \description{
-Run Essential Regression.
+Perform Essential Regression without prior knowledge.
 }

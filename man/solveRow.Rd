@@ -11,7 +11,7 @@ solveRow(col_ind, C, lambda)
 
 \item{C}{matrix?}
 
-\item{lbd}{\eqn{\labmda}}
+\item{lambda}{\eqn{\labmda}}
 }
 \value{
 value

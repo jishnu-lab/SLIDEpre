@@ -2,8 +2,7 @@
 % Please edit documentation in R/findClustMed.R
 \name{findClustMed}
 \alias{findClustMed}
-\title{Find the median correlation of a cluster by using the nodes in cluster as a list of
-rows and searching over these rows for the median value in the sample correlation matrix.}
+\title{Find Cluster Medians}
 \usage{
 findClustMed(sigma, cluster, clust_targ)
 }
@@ -12,7 +11,7 @@ findClustMed(sigma, cluster, clust_targ)
 
 \item{cluster}{a cluster found by Essential Regression (list format)}
 
-\item{clust_pure}{a vector of the pure nodes in the cluster}
+\item{clust_targ}{a vector of the pure nodes in the cluster}
 }
 \value{
 the median correlation found out of all of the rows provided

@@ -2,9 +2,7 @@
 % Please edit documentation in R/estAI.R
 \name{estAI}
 \alias{estAI}
-\title{Use the given \eqn{\delta} to calculate the fitted \eqn{A_I}, pure variable
-indices in list form and vector form. Also return estimated \eqn{Y} and \eqn{C} for
-the following Dantzig estimation.}
+\title{Estimate \eqn{A_I}}
 \usage{
 estAI(sigma, delta, se_est, merge)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/prediction.R
 \name{prediction}
 \alias{prediction}
-\title{Perform prediction on the data using the ER predictor.}
+\title{Essential Regression Prediction}
 \usage{
 prediction(y, x, sigma, A_hat, Gamma_hat, I_hat)
 }

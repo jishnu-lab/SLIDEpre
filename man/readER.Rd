@@ -2,12 +2,12 @@
 % Please edit documentation in R/readER.R
 \name{readER}
 \alias{readER}
-\title{Function to read all, pure, and mixed variables from ER results.}
+\title{Read Essential Regression Results}
 \usage{
 readER(er_res, y, alpha = 0.05)
 }
 \arguments{
-\item{er_res}{a list output by the function \code{\link{plainER}} or \code{\link{priorER}}}
+\item{er_res}{a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}}
 
 \item{y}{a vector of responses}
 

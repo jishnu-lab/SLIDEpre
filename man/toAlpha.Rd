@@ -2,7 +2,7 @@
 % Please edit documentation in R/toAlpha.R
 \name{toAlpha}
 \alias{toAlpha}
-\title{Transform \eqn{\Phi} to \eqn{\alpha} for log-likelihood calculation}
+\title{\eqn{\Phi} To \eqn{\alpha}}
 \usage{
 toAlpha(phi, n, p)
 }

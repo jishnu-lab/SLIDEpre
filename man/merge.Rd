@@ -2,7 +2,7 @@
 % Please edit documentation in R/merge.R
 \name{merge}
 \alias{merge}
-\title{Merge a group with other groups containing common nodes.}
+\title{Merge Nodes (Intersection)}
 \usage{
 merge(clusters, group)
 }

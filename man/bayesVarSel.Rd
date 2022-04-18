@@ -2,17 +2,20 @@
 % Please edit documentation in R/bayesVarSel.R
 \name{bayesVarSel}
 \alias{bayesVarSel}
-\title{An implementation of the variational algorithm for Bayesian
-variable selection paper by Huang, Wang, Liang (2016) \link{https://arxiv.org/pdf/1602.07640.pdf}.}
+\title{Variational Bayes Variable Selection}
 \usage{
-bayesVarSel(y, x, imps, er_res)
+bayesVarSel(x, y, imps, er_res, thresh = 0.01)
 }
 \arguments{
-\item{y}{a vector of responses}
+\item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{er_res}{a list output by the function \code{\link{plainER}} or \code{\link{priorER}}}
+\item{y}{a response vector of dimension \eqn{n}}
 
-\item{alpha}{a numeric constant for the p-value threshold}
+\item{imps}{a vector of important feature names/indices}
+
+\item{er_res}{a list output by the function link[EssReg]{plainER} or \link[EssReg]{priorER}}
+
+\item{thresh}{a numeric constant used in determining convergence}
 }
 \value{
 a list including the clusters, pure variables, mixed variables, the significant
@@ -21,5 +24,5 @@ found by ER
 }
 \description{
 An implementation of the variational algorithm for Bayesian
-variable selection paper by Huang, Wang, Liang (2016) \link{https://arxiv.org/pdf/1602.07640.pdf}.
+variable selection paper by Huang, Wang, Liang (2016).
 }

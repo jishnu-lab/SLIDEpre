@@ -2,10 +2,7 @@
 % Please edit documentation in R/cvDelta.R
 \name{cvDelta}
 \alias{cvDelta}
-\title{Cross validation for choosing \eqn{\delta}. For each delta from the given grids,
-first split the data into two data sets. Obtain \eqn{I}, \eqn{A_I} and \eqn{C} from data set 1.
-Then calculate \eqn{A_I \cdot C \cdot A_I^\top} and choose \eqn{\delta} which minimizes the criterion
-\eqn{A_I \cdot C \cdot A_I^\top - \Sigma(\text{data set 2})}}
+\title{\eqn{\delta} Cross-Validation}
 \usage{
 cvDelta(x, fdr_entries, deltas_scaled, diagonal, se_est, merge)
 }
@@ -15,13 +12,13 @@ cvDelta(x, fdr_entries, deltas_scaled, diagonal, se_est, merge)
 \item{fdr_entries}{a matrix of dimensions \eqn{p \times p} that contains a 1 in positions where the
 entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 
+\item{deltas_scaled}{a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}}
+
 \item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
 
 \item{se_est}{estimated standard errors}
 
 \item{merge}{a boolean indicating merge style}
-
-\item{delta_scaled}{a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}}
 }
 \value{
 the selected optimal \eqn{\delta}

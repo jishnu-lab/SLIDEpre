@@ -2,7 +2,7 @@
 % Please edit documentation in R/signPerm.R
 \name{signPerm}
 \alias{signPerm}
-\title{For a given integer \eqn{n}, generate its sign permutation.}
+\title{Sign Permutation}
 \usage{
 signPerm(n)
 }

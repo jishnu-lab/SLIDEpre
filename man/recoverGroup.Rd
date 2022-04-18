@@ -2,14 +2,12 @@
 % Please edit documentation in R/recoverGroup.R
 \name{recoverGroup}
 \alias{recoverGroup}
-\title{Recover group structure given \eqn{p \times K} matrix, \eqn{A} and perform thresholding.}
+\title{Find Group Structure}
 \usage{
 recoverGroup(A)
 }
 \arguments{
 \item{A}{a matrix estimated by Essential Regression}
-
-\item{thresh}{the threshold to use, a positive constant}
 }
 \value{
 a list of group indices with sign subpartitions indicating the features included in a given cluster

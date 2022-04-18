@@ -2,11 +2,7 @@
 % Please edit documentation in R/estC.R
 \name{estC}
 \alias{estC}
-\title{Estimate \eqn{C}. If diagonal = True, estimate only diagonal elements.
-The estimate for \eqn{C}, \eqn{\hat{C}}, is given by the following:
-\deqn{\hat{C}_{aa} = \frac{1}{|\hat{I}_a|(|\hat{I}_a| - 1)} \sum_{i,j \in \hat{I}_a, i \neq j} |\hat{\Sigma}_{ij}|}
-\deqn{\hat{C}_{ab} = \frac{1}{|\hat{I}_a||\hat{I}_b|} \sum_{i \in \hat{I}_a, j \in \hat{I}_b} \hat{A}_{ia}\hat{A}_{ib}\hat{Sigma}_{ij}}
-for each \eqn{a \in [ \hat{K} ]} and \eqn{b \in [ \hat{K} ], b \neq a}}
+\title{Estimate \eqn{C}}
 \usage{
 estC(sigma, AI, diagonal = F)
 }
@@ -21,7 +17,7 @@ estC(sigma, AI, diagonal = F)
 an estimate of \eqn{C} of dimensions \eqn{K \times K}
 }
 \description{
-Estimate \eqn{C}. If diagonal = True, estimate only diagonal elements.
+If diagonal = True, estimate only diagonal elements.
 The estimate for \eqn{C}, \eqn{\hat{C}}, is given by the following:
 \deqn{\hat{C}_{aa} = \frac{1}{|\hat{I}_a|(|\hat{I}_a| - 1)} \sum_{i,j \in \hat{I}_a, i \neq j} |\hat{\Sigma}_{ij}|}
 \deqn{\hat{C}_{ab} = \frac{1}{|\hat{I}_a||\hat{I}_b|} \sum_{i \in \hat{I}_a, j \in \hat{I}_b} \hat{A}_{ia}\hat{A}_{ib}\hat{Sigma}_{ij}}

@@ -1,0 +1,18 @@
+--- 
+x_path: REPLACE_ME!       # path to .csv file for data matrix
+y_path: REPLACE_ME!       # path to .csv file for response vector
+out_path: REPLACE_ME!     # path to directory for saving results
+process_input: TRUE       # z-score data?
+beta_est: LS              # type of beta estimation - can be LS or NULL 
+conf_int: TRUE            # find confidence intervals for betas?
+pred: TRUE                # estimate responses (do prediction)?
+lambda: 2                    # value for lambda
+rep_cv: 500               # number of replicates for cross-validation
+diagonal: FALSE           # diagonal structure of data matrix?
+merge: FALSE              # use intersection (FALSE) or union (TRUE) for merging
+equal_var: FALSE          # do columns of data matrix have equal variance?
+alpha_level: 0.05         # alpha level for confidence intervals
+support: NULL             # literally no idea what this is
+Ccrrection: Bonferroni    # type of multiple testing correction (Bonferroni)
+verbose: TRUE             # include print statements?
+thresh_fdr: 0.2           # false discovery rate thresholding p-value cutoff

@@ -2,8 +2,7 @@
 % Please edit documentation in R/getOptPerm.R
 \name{getOptPerm}
 \alias{getOptPerm}
-\title{For the given pure node set, find the best column permutation matrix
-\eqn{A_{perm}} of \eqn{A} such that \eqn{|A_{perm} - B|_F} is minimal for the target \eqn{B}.}
+\title{Find Best Column Permutation Matrices}
 \usage{
 getOptPerm(A, B)
 }

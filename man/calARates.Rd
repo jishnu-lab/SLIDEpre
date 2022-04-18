@@ -2,7 +2,7 @@
 % Please edit documentation in R/calARates.R
 \name{calARates}
 \alias{calARates}
-\title{Calculate the scaled matrix \eqn{L_1} and Frobenius norms.}
+\title{Calculate Norms}
 \usage{
 calARates(A)
 }

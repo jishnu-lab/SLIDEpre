@@ -2,7 +2,7 @@
 % Please edit documentation in R/devA.R
 \name{devA}
 \alias{devA}
-\title{Calculate the mean element-wise absolute deviation between two matrices.}
+\title{Find Matrix Deviation}
 \usage{
 devA(mat_A, mat_B)
 }

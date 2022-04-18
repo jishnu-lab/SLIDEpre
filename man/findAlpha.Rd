@@ -2,7 +2,7 @@
 % Please edit documentation in R/findAlpha.R
 \name{findAlpha}
 \alias{findAlpha}
-\title{Calculate the optimal value of \eqn{\alpha} that maximizes the marginal log-likelihood of the data, \eqn{x}, for a fixed \eqn{\Delta}.}
+\title{Find \eqn{\alpha} For \link[EssReg]{adjMat}}
 \usage{
 findAlpha(x, Delta = NULL, alpha_range)
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/findPureNode.R
 \name{findPureNode}
 \alias{findPureNode}
-\title{Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
-This code is an implementation of Algorithm 1 from Bing et al. (2020).}
+\title{Estimate Pure Nodes}
 \usage{
 findPureNode(abs_sigma, delta, max_vals, max_inds, se_est, merge)
 }

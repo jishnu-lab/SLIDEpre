@@ -2,9 +2,7 @@
 % Please edit documentation in R/findRowMaxInd.R
 \name{findRowMaxInd}
 \alias{findRowMaxInd}
-\title{Calculate indices of each row such that the absolute values of these indices
-are within \eqn{2\delta} of the maximal absolute value \code{max_val} of this row.
-This is an implementation of step 4 of Algorithm 1 in Bing et al. (2020).}
+\title{Find \eqn{\Sigma} Maximum Indices}
 \usage{
 findRowMaxInd(i, max_val, max_ind, row_i, delta, se_est)
 }

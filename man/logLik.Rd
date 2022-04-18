@@ -2,8 +2,7 @@
 % Please edit documentation in R/logLik.R
 \name{logLik}
 \alias{logLik}
-\title{Evaluate the marginal log-likelihood of the data, \eqn{x}, given weight \eqn{\alpha} and expert matrix \eqn{\Delta}:
-ADD EQUATION}
+\title{Log-Likelihood of Data}
 \usage{
 logLik(alpha, Delta, x)
 }

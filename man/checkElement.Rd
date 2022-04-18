@@ -2,8 +2,7 @@
 % Please edit documentation in R/checkElement.R
 \name{checkElement}
 \alias{checkElement}
-\title{Check if an element is in a list. If it does exist in some group, return the group
-index in that list and its sublist index. Otherwise, return \code{(0,0)}.}
+\title{Check Element In List}
 \usage{
 checkElement(element, groupList)
 }

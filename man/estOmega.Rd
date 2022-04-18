@@ -2,14 +2,14 @@
 % Please edit documentation in R/estOmega.R
 \name{estOmega}
 \alias{estOmega}
-\title{For a given \eqn{\lambda} and \eqn{C}, find \eqn{C^{-1}}.}
+\title{Estimate \eqn{\Omega}}
 \usage{
 estOmega(lambda, C)
 }
 \arguments{
-\item{C}{a square, symmetric matrix}
+\item{lambda}{\eqn{\lambda}}
 
-\item{lbd}{\eqn{\lambda}}
+\item{C}{a square, symmetric matrix}
 }
 \value{
 \eqn{\Omega = C^{-1}}

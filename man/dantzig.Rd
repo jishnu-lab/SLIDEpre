@@ -2,7 +2,7 @@
 % Please edit documentation in R/dantzig.R
 \name{dantzig}
 \alias{dantzig}
-\title{Estimate a vector using a Dantzig-type estimator.}
+\title{Dantzig Estimation}
 \usage{
 dantzig(C_hat, target_vec, lambda)
 }

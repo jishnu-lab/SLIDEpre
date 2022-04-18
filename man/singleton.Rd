@@ -2,7 +2,7 @@
 % Please edit documentation in R/singleton.R
 \name{singleton}
 \alias{singleton}
-\title{Check if there exists an element of the given list has length equal to 1}
+\title{Check Singletone Node}
 \usage{
 singleton(pure_list)
 }

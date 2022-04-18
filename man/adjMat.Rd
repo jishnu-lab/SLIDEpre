@@ -2,8 +2,7 @@
 % Please edit documentation in R/adjMat.R
 \name{adjMat}
 \alias{adjMat}
-\title{Find posterior mean of \eqn{\Sigma} given data matrix, \eqn{x}, prior correlation matrix,
-\eqn{\Delta}, and weight, \eqn{\alpha}.}
+\title{Adjust Matrix}
 \usage{
 adjMat(x, Delta, alpha)
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/threshA.R
 \name{threshA}
 \alias{threshA}
-\title{Threshold the given matrix \code{A} based on the given \eqn{\mu}. If \code{scale} is true,
-then normalize each row of \code{A} such that the \eqn{L_1} norm of each row is not larger than 1.}
+\title{Threshold \eqn{A}}
 \usage{
 threshA(A, mu, scale = FALSE)
 }

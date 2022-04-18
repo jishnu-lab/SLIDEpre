@@ -2,8 +2,7 @@
 % Please edit documentation in R/mergeUnion.R
 \name{mergeUnion}
 \alias{mergeUnion}
-\title{Merge the provided vector of nodes into the list of vectors of nodes but use
-union rather than the intersection.}
+\title{Merge Nodes (Union)}
 \usage{
 mergeUnion(clusters, group)
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/permA.R
 \name{permA}
 \alias{permA}
-\title{Find \eqn{A_{perm}}, the optimal permutated matrix of \eqn{A}, such that
-\eqn{|A_{perm} - B|_F} is minimized.}
+\title{Find Optimal Permuted Matrix}
 \usage{
 permA(A, B)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/findRho.R
 \name{findRho}
 \alias{findRho}
-\title{Calculate the optimal value of \eqn{\rho} to use in \eqn{\Delta} that maximizes the marginal log-likelihood of the data, \eqn{x}, for fixed \eqn{\alpha}.}
+\title{Find \eqn{\rho}, NOT USED ANYMORE}
 \usage{
 findRho(x, imp, alpha, rho_range)
 }

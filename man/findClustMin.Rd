@@ -2,8 +2,7 @@
 % Please edit documentation in R/findClustMin.R
 \name{findClustMin}
 \alias{findClustMin}
-\title{Find the maximum absolute minimum correlation of a cluster by using the nodes in cluster as a list of
-rows and searching over these rows for the maximum minimum value in the sample correlation matrix.}
+\title{Find Cluster Minimums}
 \usage{
 findClustMin(sigma, cluster, clust_targ)
 }

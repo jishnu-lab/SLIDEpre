@@ -2,7 +2,7 @@
 % Please edit documentation in R/estSigmaAlt.R
 \name{estSigmaAlt}
 \alias{estSigmaAlt}
-\title{I am not sure what this does.}
+\title{estSigmaAlt}
 \usage{
 estSigmaAlt(y, h_hat, beta_hat, C_hat)
 }

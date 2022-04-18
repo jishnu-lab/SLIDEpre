@@ -2,7 +2,7 @@
 % Please edit documentation in R/makePosDef.R
 \name{makePosDef}
 \alias{makePosDef}
-\title{Transform the given matrix so that it is positive definite.}
+\title{Make Matrix Positive Definite}
 \usage{
 makePosDef(samp_corr)
 }

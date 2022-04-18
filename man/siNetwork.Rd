@@ -2,29 +2,24 @@
 % Please edit documentation in R/siNetwork.R
 \name{siNetwork}
 \alias{siNetwork}
-\title{Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
-This code is an implementation of Algorithm 1 from Bing et al. (2020).}
+\title{Generate Node Network}
 \usage{
 siNetwork(x, sigma, er_res, filename, equal_var = F, merge = F)
 }
 \arguments{
-\item{merge}{boolean indicating merge style}
+\item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{off_Sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
+\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
-\item{delta}{\eqn{\delta}, a numerical constant}
+\item{er_res}{the results from running Essential Regression with either
+\link[priorER]{priorER()} or \link[plainER]{plainer()}}
 
-\item{Ms}{the largest absolute values of each row of \code{off_Sigma}}
+\item{filename}{the output file name}
 
-\item{arg_Ms}{vector of column indices at which the values in \code{Ms} are achieved in \code{off_Sigma}}
+\item{equal_var}{a boolean flag indicating whether the columns of \code{x} have equal variance}
 
-\item{se_est}{standard deviations of features (columns of \code{X})}
-}
-\value{
-a list including the list of estimated pure node indices and a vector
-of the estimated pure node indices
+\item{merge}{a boolean flag indicating merge type}
 }
 \description{
-Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
-This code is an implementation of Algorithm 1 from Bing et al. (2020).
+Create a pdf of the node network by cluster. EXPAND THIS.
 }

@@ -2,10 +2,7 @@
 % Please edit documentation in R/cvLambda.R
 \name{cvLambda}
 \alias{cvLambda}
-\title{Use cross-validation to select \eqn{\lambda} for estimating \eqn{\Omega}.
-Split the data into two parts and estimate \eqn{C} on both data sets. Then, for each
-\eqn{lambda}, calculate \eqn{\Omega} on the first dataset and calculate the loss on the second dataset.
-Find the lambda which minimizes \eqn{C \cdot \Omega - log(|\Omega|)}}
+\title{\eqn{\lambda} Cross-Validation}
 \usage{
 cvLambda(x, fdr_entries, lambdas, AI, pure_vec, diagonal, k)
 }
@@ -19,11 +16,11 @@ entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 
 \item{AI}{the estimated matrix \eqn{A_I} of dimensions \eqn{p \times K}}
 
+\item{pure_vec}{a vector of indices of pure variables}
+
 \item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
 
 \item{k}{number of folds for \eqn{k}-fold cross-validation}
-
-\item{pureVec}{a vector of indices of pure variables}
 }
 \value{
 the selected optimal \eqn{\lambda}

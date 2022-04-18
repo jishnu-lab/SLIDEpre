@@ -2,8 +2,7 @@
 % Please edit documentation in R/findClustMax.R
 \name{findClustMax}
 \alias{findClustMax}
-\title{Find the absolute minimum of the maximum correlations of each of the target nodes in the
-given cluster.}
+\title{Find Clusters Maximums}
 \usage{
 findClustMax(sigma, cluster, clust_targ)
 }
@@ -12,7 +11,7 @@ findClustMax(sigma, cluster, clust_targ)
 
 \item{cluster}{a cluster found by Essential Regression (list format)}
 
-\item{clust_pure}{a vector of the target nodes in the cluster}
+\item{clust_targ}{a vector of the target nodes in the cluster}
 }
 \value{
 the absolute maximum correlation found out of all of the rows provided

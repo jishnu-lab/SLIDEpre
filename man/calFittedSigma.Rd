@@ -2,8 +2,7 @@
 % Please edit documentation in R/calFittedSigma.R
 \name{calFittedSigma}
 \alias{calFittedSigma}
-\title{Calculate the fitted value of \eqn{A_I \cdot C \cdot A_I^\top} for given
-\eqn{\Sigma} and \eqn{\delta}.}
+\title{Calculate Fitted Sigma}
 \usage{
 calFittedSigma(sigma, delta, max_vals, max_inds, se_est, diagonal, merge)
 }

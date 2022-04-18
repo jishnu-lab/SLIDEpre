@@ -2,7 +2,7 @@
 % Please edit documentation in R/corrToP.R
 \name{corrToP}
 \alias{corrToP}
-\title{Compute the corresponding p-value for a given correlation, \eqn{r}, and sample size, \eqn{n}.}
+\title{Correlation p-values}
 \usage{
 corrToP(r, n)
 }

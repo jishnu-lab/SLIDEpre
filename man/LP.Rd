@@ -2,9 +2,7 @@
 % Please edit documentation in R/LP.R
 \name{LP}
 \alias{LP}
-\title{Solve the following using linear programming:
-\deqn{\beta^{+} - \beta^{-} \leq \lambda + y - \beta^{+} + \beta^{-} \leq \lambda - y}
-for semipositive \eqn{\beta^{+}, \beta^{-}}}
+\title{Linear Program Function}
 \usage{
 LP(y, lambda)
 }

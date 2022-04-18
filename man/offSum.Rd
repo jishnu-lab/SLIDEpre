@@ -2,7 +2,7 @@
 % Please edit documentation in R/offSum.R
 \name{offSum}
 \alias{offSum}
-\title{Calculate the sum of squares of the upper off-diagonal elements of two matrices}
+\title{Off-Diagonal Sum Of Squares}
 \usage{
 offSum(mat1, mat2, weights)
 }

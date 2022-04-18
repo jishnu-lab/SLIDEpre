@@ -2,8 +2,7 @@
 % Please edit documentation in R/estBeta.R
 \name{estBeta}
 \alias{estBeta}
-\title{Estimate the values of the coefficients \eqn{\beta} as well as confidence intervals for the estimates
-if requested.}
+\title{Estimate \eqn{\beta}}
 \usage{
 estBeta(
   y,

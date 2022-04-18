@@ -2,13 +2,12 @@
 % Please edit documentation in R/getFreq.R
 \name{getFreq}
 \alias{getFreq}
-\title{Find the frequency with which each mixed variable appears in the results of Essential Regression and
-return a table of the frequencies as well as the clusters in which each variable appears.}
+\title{Fin Mixed Variable Frequencies}
 \usage{
 getFreq(er_res)
 }
 \arguments{
-\item{er_res}{an object return by \code{\link{ER()}}}
+\item{er_res}{an object return by \link[ER]{ER()}}
 }
 \value{
 a matrix with the same number of rows as there are mixed variables in \code{er_res} and with

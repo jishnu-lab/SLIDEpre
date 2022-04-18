@@ -2,7 +2,7 @@
 % Please edit documentation in R/estBetaDant.R
 \name{estBetaDant}
 \alias{estBetaDant}
-\title{Estimate the values of the coefficients \eqn{\beta} with a Dantzig-type estimator.}
+\title{Estimate \eqn{\beta} (Dantzig)}
 \usage{
 estBetaDant(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lambda = 0.5)
 }

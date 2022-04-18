@@ -2,7 +2,7 @@
 % Please edit documentation in R/recoverAI.R
 \name{recoverAI}
 \alias{recoverAI}
-\title{Recover the estimated submatrix \eqn{A_I} by given the pure node group.}
+\title{Find \eqn{A_I} From Pure Nodes}
 \usage{
 recoverAI(pure_list, p)
 }
