@@ -1,6 +1,6 @@
 Package: EssReg
 Type: Package
-Title: What the Package Does (Title Case)
+Title: R Implementation of Essential Regression
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -23,7 +23,13 @@ Imports:
     grDevices,
     MASS,
     igraph,
-    shiny
+    shiny,
+    stats,
+    methods,
+    graphics,
+    magrittr,
+    yaml,
+    utils
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2

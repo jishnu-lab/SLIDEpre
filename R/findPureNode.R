@@ -1,3 +1,5 @@
+#' Estimate Pure Nodes
+#'
 #' Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
 #' This code is an implementation of Algorithm 1 from Bing et al. (2020).
 #'

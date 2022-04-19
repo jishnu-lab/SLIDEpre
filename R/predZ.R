@@ -1,3 +1,5 @@
+#' Estimate \eqn{Z}
+#'
 #' Additional prediction function using the support of \eqn{\beta}.
 #'
 #' @param x data matrix of dimensions \eqn{n \times p}

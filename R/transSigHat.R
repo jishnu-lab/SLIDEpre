@@ -1,3 +1,5 @@
+#' Transform \eqn{\hat{\Sigma}} NOT USED ANYMORE
+#'
 #' Create the transformed version of \eqn{\hat{\Sigma}} by replaced rows/columns of \eqn{\hat{\Sigma}}, the
 #' sample correlation matrix of the data, \eqn{x}, with a specified value, \eqn{r}
 #'

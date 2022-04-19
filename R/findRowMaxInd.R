@@ -1,3 +1,5 @@
+#' Find \eqn{\Sigma} Maximum Indices
+#'
 #' Calculate indices of each row such that the absolute values of these indices
 #' are within \eqn{2\delta} of the maximal absolute value \code{max_val} of this row.
 #' This is an implementation of step 4 of Algorithm 1 in Bing et al. (2020).

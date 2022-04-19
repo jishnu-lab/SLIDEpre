@@ -1,3 +1,5 @@
+#' Make Matrix Positive Definite
+#'
 #' Transform the given matrix so that it is positive definite.
 #'
 #' @param samp_corr a sample correlation matrix of dimension \eqn{p \times p}

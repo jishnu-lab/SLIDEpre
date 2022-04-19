@@ -1,7 +1,8 @@
+#' Find Group Structure
+#'
 #' Recover group structure given \eqn{p \times K} matrix, \eqn{A} and perform thresholding.
 #'
 #' @param A a matrix estimated by Essential Regression
-#' @param thresh the threshold to use, a positive constant
 #' @return a list of group indices with sign subpartitions indicating the features included in a given cluster
 #' @export
 

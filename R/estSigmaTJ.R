@@ -1,3 +1,5 @@
+#' Estimate \eqn{\Sigma_{\hat{TJ}}}
+#'
 #' Estimate the matrix, \eqn{\Sigma_{\hat{TJ}}}.
 #'
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}

@@ -1,3 +1,5 @@
+#' compASV
+#'
 #' I am not sure what this does
 #'
 #' @param sigma_alt a matrix computed by \code{\link{estSigmaAlt}}

@@ -1,3 +1,5 @@
+#' Find Indices Of Pure Nodes
+#'
 #' For given matrix \eqn{A}, find the row indices which correspond to pure nodes.
 #'
 #' @param A a matrix of dimensions \eqn{p \times K}

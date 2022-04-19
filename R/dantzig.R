@@ -1,3 +1,5 @@
+#' Dantzig Estimation
+#'
 #' Estimate a vector using a Dantzig-type estimator.
 #'
 #' @param C_hat a matrix

@@ -1,3 +1,5 @@
+#' Find Cluster Minimums
+#'
 #' Find the maximum absolute minimum correlation of a cluster by using the nodes in cluster as a list of
 #' rows and searching over these rows for the maximum minimum value in the sample correlation matrix.
 #'
@@ -14,7 +16,7 @@ findClustMin <- function(sigma, cluster, clust_targ) {
   ## this should never happen anyway, but it is good to be extra cautious
   diag(sub_sigma) <- Inf
   ## subset the correlation matrix to just the nodes in the provided cluster
-  sub_sigma <- sub_sigma[clust, clust_targ] %>% as.data.frame()
+  sub_sigma <- as.data.frame(sub_sigma[clust, clust_targ])
   colnames(sub_sigma) <- clust_targ
   ## correlation can be negative, so find minimum of the absolute value
   sub_sig_abs <- abs(sub_sigma)

@@ -1,3 +1,5 @@
+#' Calculate Fitted Sigma
+#'
 #' Calculate the fitted value of \eqn{A_I \cdot C \cdot A_I^\top} for given
 #' \eqn{\Sigma} and \eqn{\delta}.
 #'

@@ -1,3 +1,5 @@
+#' Estimate \eqn{A_I}
+#'
 #' Use the given \eqn{\delta} to calculate the fitted \eqn{A_I}, pure variable
 #' indices in list form and vector form. Also return estimated \eqn{Y} and \eqn{C} for
 #' the following Dantzig estimation.
@@ -28,7 +30,7 @@ estAI <- function(sigma, delta, se_est, merge) {
                               max_vals = max_vals, max_inds = max_inds,
                               se_est = se_est, merge = merge)
   pure_list <- result_pure$pure_list
-  pure_vec <- result_pure$pure_vec
+  pure_vec <- as.vector(unlist(result_pure$pure_vec))
 
   #### Estimate the sign subpartition of pure node sets. If there is an element
   #### of a list is empty, then a empty list will be put in that position

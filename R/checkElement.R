@@ -1,3 +1,5 @@
+#' Check Element In List
+#'
 #' Check if an element is in a list. If it does exist in some group, return the group
 #' index in that list and its sublist index. Otherwise, return \code{(0,0)}.
 #'

@@ -1,3 +1,5 @@
+#' \eqn{\alpha} To \eqn{\Phi}
+#'
 #' Transform \eqn{\alpha} to \eqn{\Phi} for log-likelihood calculation
 #'
 #' @param alpha numeric value

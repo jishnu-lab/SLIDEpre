@@ -1,3 +1,5 @@
+#' Indices To Names
+#'
 #' Translate feature indices to feature names and vice versa.
 #'
 #' @param feats a vector of feature indices or names

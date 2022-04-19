@@ -1,6 +1,8 @@
+#' Estimate \eqn{\Omega}
+#'
 #' For a given \eqn{\lambda} and \eqn{C}, find \eqn{C^{-1}}.
 #'
-#' @param lbd \eqn{\lambda}
+#' @param lambda \eqn{\lambda}
 #' @param C a square, symmetric matrix
 #' @return \eqn{\Omega = C^{-1}}
 #' @export

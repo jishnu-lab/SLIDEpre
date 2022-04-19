@@ -1,10 +1,12 @@
-#' Run Essential Regression.
+#' Vanilla Essential Regression
+#'
+#' Perform Essential Regression without prior knowledge.
 #'
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param kept_sigma a matrix of dimensions \eqn{p \times p} with values 1/0 indicating
-#' whether a given entry was removed via thresholding (1) or not (0) with function \link{threshSigma}
+#' whether a given entry was removed via thresholding (1) or not (0) with function \link[EssReg]{threshSigma}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
@@ -20,45 +22,57 @@
 #' @param support a boolean ???
 #' @param correction a string indicating the type of multi-testing correction to perform
 #' @param verbose a boolean indicating whether to include printing
-#' @return a list of results from the Essential Regression framework including: \eqn{K = } number of clusters,
+#' @param out_path a string path to where to save output
+#' @return a list of results from the Essential Regression framework including: \eqn{K} = number of clusters,
 #' \eqn{\hat{A}}, \eqn{\hat{C}}, \eqn{\hat{I}}, the indices of the pure variables, \eqn{\hat{\Gamma}},
 #' \eqn{\hat{\beta}}, \eqn{\alpha}-level confidence intervals (if requested), prediction results (if requested),
 #' the optimal value of \eqn{\lambda} determined by cross-validation, the optimal value of \eqn{\delta}
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
+plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
-                    correction = "Bonferroni", verbose = F) {
+                    correction = "Bonferroni", verbose = F, out_path = NULL) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
   } else {
-    se_est <- apply(x, 2, sd) #### get sd of columns for feature matrix
+    se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
   }
   #### scale delta by this value to satisfy some requirements so that the
   #### statistical guarantees in the paper hold
   delta_scaled <- delta * sqrt(log(max(p, n)) / n)
 
+  #### save correlation matrix heatmap
+  if (!is.null(out_path)) {
+    grDevices::pdf(file = paste0(out_path, "/corr_mat_heatmap.pdf"))
+    makeHeatmap(sigma, "Correlation Matrix Heatmap", T, T)
+    grDevices::dev.off()
+  }
+
   #### threshold sigma to control for FDR
-  if (is.null(kept_sigma)) {
+  if (!is.null(thresh_fdr)) {
     control_fdr <- threshSigma(x = x,
                                sigma = sigma,
                                thresh = thresh_fdr)
     sigma <- control_fdr$thresh_sigma
-    kept_entries <- control_fdr$kept_entries
-  } else {
-    sigma <- sigma * kept_sigma
+  }
+
+  #### save thresholding correlation matrix heatmap
+  if (!is.null(out_path)) {
+    grDevices::pdf(file = paste0(out_path, "/thresh_corr_mat_heatmap.pdf"))
+    makeHeatmap(sigma, "FDR Thresholded Correlation Matrix Heatmap", T, T)
+    grDevices::dev.off()
   }
 
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
   opt_delta <- ifelse(length(delta_scaled) > 1,
-                      median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
-                                                       deltas_scaled = delta_scaled,
-                                                       diagonal = diagonal, se_est = se_est,
-                                                       merge = merge))),
+                      stats::median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
+                                                              deltas_scaled = delta_scaled,
+                                                              diagonal = diagonal, se_est = se_est,
+                                                              merge = merge))),
                       delta_scaled)
 
   #### estimate membership matrix Ai
@@ -69,10 +83,10 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
     opt_delta <- ifelse(length(delta_scaled) > 1,
-                        median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
-                                                         deltas_scaled = delta_scaled,
-                                                         diagonal = diagonal, se_est = se_est,
-                                                         merge = F))),
+                        stats::median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
+                                                                deltas_scaled = delta_scaled,
+                                                                diagonal = diagonal, se_est = se_est,
+                                                                merge = F))),
                         delta_scaled)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)
   }
@@ -102,9 +116,11 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
 
     #### theta_hat (supplement 2.2)
     theta_hat <- pred_result$theta_hat
+    #### Inference In Latent Factor Regression With Clusterable Features
+    #### Z_tilde = Q*X
     Q <- try(theta_hat %*% solve(crossprod(x %*% theta_hat) / n, crossprod(theta_hat)), silent = T)
     if (class(Q)[1] == "try-error") {
-      Q <- theta_hat %*% ginv(crossprod(x %*% theta_hat) / n) %*% crossprod(theta_hat)
+      Q <- theta_hat %*% MASS::ginv(crossprod(x %*% theta_hat) / n) %*% crossprod(theta_hat)
     }
   } else {
     pred_result <- Q <- NULL
@@ -122,14 +138,15 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
     if (conf_int) {
       if (length(result_AI$pure_vec) != nrow(sigma)) {
         sigma_TJ <- estSigmaTJ(sigma = sigma, AI = A_hat, pure_vec = result_AI$pure_vec)
-        opt_lambda <- ifelse(length(lambda) > 1,
-                         median(replicate(rep_cv, cvLambda(x = x,
-                                                           fdr_entries = kept_entries,
-                                                           lambdas = lambda,
-                                                           AI = result_AI$AI,
-                                                           pure_vec = result_AI$pure_ec,
-                                                           diagonal = diagonal))),
-                         lambda)
+        # opt_lambda <- ifelse(length(lambda) > 1,
+        #                  stats::median(replicate(rep_cv, cvLambda(x = x,
+        #                                                           fdr_entries = kept_entries,
+        #                                                           lambdas = lambda,
+        #                                                           AI = result_AI$AI,
+        #                                                           pure_vec = result_AI$pure_ec,
+        #                                                           diagonal = diagonal))),
+        #                  lambda)
+        opt_lambda <- lambda
         if (opt_lambda > 0) {
           AI_hat <- abs(A_hat[I_hat, ]) ## just rows of pure variables
           sigma_bar_sup <- max(solve(crossprod(AI_hat), t(AI_hat)) %*% se_est[I_hat]) ## not sure what this does
@@ -137,7 +154,7 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
                           lambda = opt_lambda * opt_delta * sigma_bar_sup,
                           se_est_J = sigma_bar_sup + se_est[-I_hat])
         } else {
-          AJ <- t(solve(C_hat, Y_hat))
+          AJ <- t(solve(C_hat, sigma_TJ))
         }
         A_hat[-result_AI$pure_vec, ] <- AJ
       }
@@ -156,16 +173,16 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
                 A = A_hat,
                 C = C_hat,
                 I = I_hat,
-                I_clust = I_hat_list,
+                I_clust = I_hat_list, ## original is I_ind
                 Gamma = Gamma_hat,
                 beta = beta_hat,
-                beta_conf_int = beta_conf_int,
+                beta_conf_int = beta_conf_int, ## original is beta_CIs
                 beta_var = beta_var,
                 pred = pred_result,
                 opt_lambda = opt_lambda,
                 opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
-                thresh_sigma = sigma,
-                kept_sigma = kept_entries,
+                #thresh_sigma = sigma,
+                #kept_sigma = kept_entries,
                 Q = Q))
   }
   return(list(K = ncol(A_hat),
@@ -178,7 +195,7 @@ plainER <- function(y, x, sigma, kept_sigma = NULL, delta, thresh_fdr = 0.2, bet
               pred = pred_result,
               opt_lambda = opt_lambda,
               opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
-              thresh_sigma = sigma,
-              kept_sigma = kept_entries,
+              #thresh_sigma = sigma,
+              #kept_sigma = kept_entries,
               Q = Q))
 }

@@ -1,3 +1,5 @@
+#' \eqn{\lambda} Cross-Validation
+#'
 #' Use cross-validation to select \eqn{\lambda} for estimating \eqn{\Omega}.
 #' Split the data into two parts and estimate \eqn{C} on both data sets. Then, for each
 #' \eqn{lambda}, calculate \eqn{\Omega} on the first dataset and calculate the loss on the second dataset.
@@ -8,7 +10,7 @@
 #' entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not
 #' @param lambdas a vector of numerical constants over which to search for the optimal \eqn{\lambda}
 #' @param AI the estimated matrix \eqn{A_I} of dimensions \eqn{p \times K}
-#' @param pureVec a vector of indices of pure variables
+#' @param pure_vec a vector of indices of pure variables
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
 #' @param k number of folds for \eqn{k}-fold cross-validation
 #' @return the selected optimal \eqn{\lambda}

@@ -1,3 +1,5 @@
+#' Estimation \eqn{A_J} (Dantzig)
+#'
 #' Estimate the matrix \eqn{A_J} with a Dantzig-type estimator.
 #'
 #' @param C_hat a matrix

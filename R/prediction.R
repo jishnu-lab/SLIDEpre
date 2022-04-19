@@ -1,3 +1,5 @@
+#' Essential Regression Prediction
+#'
 #' Perform prediction on the data using the ER predictor.
 #'
 #' @param y a response vector of dimension \eqn{n}

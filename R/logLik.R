@@ -1,3 +1,5 @@
+#' Log-Likelihood of Data
+#'
 #' Evaluate the marginal log-likelihood of the data, \eqn{x}, given weight \eqn{\alpha} and expert matrix \eqn{\Delta}:
 #' ADD EQUATION
 #'

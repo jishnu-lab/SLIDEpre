@@ -1,3 +1,5 @@
+#' Natural Logarithm Of Multivariate Gamma Function
+#'
 #' Calculate natural logarithm of multivariate Gamma function for evaluating the
 #' marginal log-likelihood of \eqn{x}. This function both adds and subtracts values
 #' as in the log-likelihood of \eqn{x}. See \code{\link{logLik}} for more details.

@@ -1,5 +1,8 @@
+#' Prior Information Essential Regression
+#'
 #' Run Essential Regression with prior information.
 #'
+#' @importFrom magrittr '%>%'
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
@@ -65,6 +68,11 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
   }
   excl_imp <- intersect(imp_inds, excl_feats)
 
+  if (length(excl_imp) == 0) {
+    print("All Important Features Already In ER")
+    return (plain_ER)
+  }
+
   prior_sigma <- makeDelta(y = y,
                            x = x,
                            imps = excl_imp,
@@ -80,7 +88,7 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
                       x = x,
                       sigma = bal_sigma$adj_mat,
                       delta = opt_delta,
-                      thresh_fdr = -1,
+                      thresh_fdr = NULL,
                       beta_est = beta_est,
                       conf_int = conf_int,
                       pred = pred,

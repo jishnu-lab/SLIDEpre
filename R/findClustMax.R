@@ -1,9 +1,11 @@
+#' Find Clusters Maximums
+#'
 #' Find the absolute minimum of the maximum correlations of each of the target nodes in the
 #' given cluster.
 #'
 #' @param sigma a correlation matrix of dimensions \eqn{p \times p}
 #' @param cluster a cluster found by Essential Regression (list format)
-#' @param clust_pure a vector of the target nodes in the cluster
+#' @param clust_targ a vector of the target nodes in the cluster
 #' @return the absolute maximum correlation found out of all of the rows provided
 
 
@@ -14,7 +16,7 @@ findClustMax <- function(sigma, cluster, clust_targ) {
   ## this should never happen anyway, but it is good to be extra cautious
   diag(sub_sigma) <- 0
   ## subset the correlation matrix to just the nodes in the provided cluster
-  sub_sigma <- sub_sigma[clust, clust_targ] %>% as.data.frame()
+  sub_sigma <- as.data.frame(sub_sigma[clust, clust_targ])
   colnames(sub_sigma) <- clust_targ
   ## correlation can be negative, so find minimum of the absolute value
   sub_sig_abs <- abs(sub_sigma)

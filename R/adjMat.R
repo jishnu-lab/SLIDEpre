@@ -1,3 +1,5 @@
+#' Adjust Matrix
+#'
 #' Find posterior mean of \eqn{\Sigma} given data matrix, \eqn{x}, prior correlation matrix,
 #' \eqn{\Delta}, and weight, \eqn{\alpha}.
 #'
@@ -9,6 +11,6 @@
 
 adjMat <- function(x, Delta, alpha) {
   n <- nrow(x)
-  adj_mat <- (alpha * Delta) + ((1 - alpha) * (crossprod(x) / n))
+  adj_mat <- (alpha * Delta) + ((1 - alpha) * (stats::cor(x)))
   return (adj_mat)
 }

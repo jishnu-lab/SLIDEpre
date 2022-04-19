@@ -1,3 +1,5 @@
+#' Create Matrix Heatmap
+#'
 #' Create a heatmap for the provided matrix. This is essentially just a wrapper for
 #' \code{pheatmap}.
 #'

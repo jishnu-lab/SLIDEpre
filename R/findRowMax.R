@@ -1,3 +1,5 @@
+#' Find \eqn{\Sigma} Maximums
+#'
 #' Calculate the maximal absolute value for each row of the given matrix.
 #'
 #' @param abs_sigma a matrix of dimensions \eqn{p \times p} with entries in absolute value and

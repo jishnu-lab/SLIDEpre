@@ -1,3 +1,5 @@
+#' estSigmaAlt
+#'
 #' I am not sure what this does.
 #'
 #' @param y a response vector of dimension \eqn{p}

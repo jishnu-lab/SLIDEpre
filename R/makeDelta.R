@@ -1,10 +1,12 @@
+#' Construct \eqn{\Delta}
+#'
 #' Construct the expert knowledge matrix used as the target for the sample correlation matrix
 #' reweighting. This is the first step of including prior knowledge in Essential Regression.
 #' The column and row in the sample correlation matrix corresponding to the important feature
 #' are adjusted in the following way:
 #'
 #' First, find the absolute maximum entry in the sample correlation matrix (excluding diagonal elements)
-#' Then calculate the cutoff/threshold value used in determining node purity by \code{\link{FindRowMaxInd()}}
+#' Then calculate the cutoff/threshold value used in determining node purity by \link[EssReg]{findRowMaxInd}
 #' Next, calculate the values used in the replacement vector by subtracting the cutoff/threshold value from the
 #' absolute maximum entry for each row. We then get a vector of values used to replace each of \eqn{\hat{\Sigma}_{imp, i}}
 #' and \eqn{\hat{\Sigma}_{i, imp}}. If the \eqn{i}th replacement value in the replacement vector is greater in absolute
@@ -15,7 +17,9 @@
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param imps a vector of indices of the important feature
-#' @param er_res the output of a run of \code{\link{ER}}
+#' @param er_res the output of a run of \link[EssReg]{plainER}
+#' @param change_all a boolean flag indicating whether to adjust all correlations or just those that are smaller
+#' in absolute value than the value to change to
 #' @param equal_var a boolean indicating whether the columns of \code{x} are assumed to have equal variance
 #' @return the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 #' @export
@@ -39,7 +43,7 @@ makeDelta <- function(y, x, imps, er_res, change_all = F, equal_var = F) {
   if (equal_var) {
     se_est <- rep(1, p)
   } else {
-    se_est <- apply(x, 2, sd) #### get sd of columns for feature matrix
+    se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
   }
 
   ## read er_res
@@ -76,7 +80,8 @@ makeDelta <- function(y, x, imps, er_res, change_all = F, equal_var = F) {
   }
 
   if (!matrixcalc::is.positive.definite(Delta)) {
-    Delta <- makePosDef(Delta) %>% as.matrix()
+    Delta <- makePosDef(Delta)
+    Delta <- as.matrix(Delta)
   }
 
   colnames(Delta) <- feat_names

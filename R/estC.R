@@ -1,4 +1,6 @@
-#' Estimate \eqn{C}. If diagonal = True, estimate only diagonal elements.
+#' Estimate \eqn{C}
+#'
+#' If diagonal = True, estimate only diagonal elements.
 #' The estimate for \eqn{C}, \eqn{\hat{C}}, is given by the following:
 #' \deqn{\hat{C}_{aa} = \frac{1}{|\hat{I}_a|(|\hat{I}_a| - 1)} \sum_{i,j \in \hat{I}_a, i \neq j} |\hat{\Sigma}_{ij}|}
 #' \deqn{\hat{C}_{ab} = \frac{1}{|\hat{I}_a||\hat{I}_b|} \sum_{i \in \hat{I}_a, j \in \hat{I}_b} \hat{A}_{ia}\hat{A}_{ib}\hat{Sigma}_{ij}}

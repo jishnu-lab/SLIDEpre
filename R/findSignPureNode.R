@@ -1,3 +1,5 @@
+#' Estimate Signed Subpartitions Of Pure Nodes
+#'
 #' Estimate the signed subpartition of pure node sets. If there is an element
 #' of a list is empty, then a empty list will be put in that position.
 #'

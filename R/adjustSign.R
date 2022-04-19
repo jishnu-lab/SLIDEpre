@@ -1,3 +1,5 @@
+#' Adjust Matrix Signs
+#'
 #' Perform a sign operation on matrix \eqn{\Sigma} according to the sign of \eqn{A_I}.
 #' Rows corresponding to nodes not in \eqn{A_I} are set to 0.
 #'

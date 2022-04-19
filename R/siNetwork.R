@@ -1,21 +1,21 @@
-#' Estimate list of pure node indices for given \eqn{\Sigma} and \eqn{\delta}.
-#' This code is an implementation of Algorithm 1 from Bing et al. (2020).
+#' Generate Node Network
 #'
-#' @param off_Sigma a sample correlation matrix of dimensions \eqn{p \times p}
-#' @param delta \eqn{\delta}, a numerical constant
-#' @param Ms the largest absolute values of each row of \code{off_Sigma}
-#' @param arg_Ms vector of column indices at which the values in \code{Ms} are achieved in \code{off_Sigma}
-#' @param se_est standard deviations of features (columns of \code{X})
-#' @param merge boolean indicating merge style
-#' @return a list including the list of estimated pure node indices and a vector
-#' of the estimated pure node indices
+#' Create a pdf of the node network by cluster. EXPAND THIS.
+#'
+#' @param x a data matrix of dimensions \eqn{n \times p}
+#' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
+#' @param er_res the results from running Essential Regression with either
+#' \link[priorER]{priorER()} or \link[plainER]{plainer()}
+#' @param filename the output file name
+#' @param equal_var a boolean flag indicating whether the columns of \code{x} have equal variance
+#' @param merge a boolean flag indicating merge type
 
 siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
   } else {
-    se_est <- apply(x, 2, sd) #### get sd of columns for feature matrix
+    se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
   }
 
   delta <- er_res$opt_delta * sqrt(log(max(p, n)) / n)
@@ -114,37 +114,35 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
     ELy[i] = from[2] + dir_vec[2] * 0.1
   }
 
-  pdf(file = filename)
+  grDevices::pdf(file = filename)
   for (i in 1:length(clust_unlist)) {
-    plot(network,
-         edge.arrow.size = 0.2,
-         edge.label.font = 2,
-         edge.label.color = "black",
-         edge.label.cex = 0.1,
-         edge.label = edges$weight,
-         edge.label.x = ELx,
-         edge.label.y = ELy,
-         vertex.label = nodes$labs,
-         vertex.label.cex = 0.05,
-         vertex.label.font = 2,
-         vertex.label.color = "black",
-         vertex.size = p * 0.2,
-         xlim = range(layt[, 1]),
-         ylim = range(layt[, 2]),
-         layout = layt,
-         mark.groups = clust_unlist[[i]],
-         mark.border = NA,
-         main = paste0("Cluster ", i))
-    legend(
-      "bottomleft",
-      legend = c("pure", "mixed", "absent"),
-      pt.bg  = c("salmon", "skyblue", "grey"),
-      pch    = c(21, 21, 21, 23, 23),
-      cex    = 0.5,
-      bty    = "n",
-      title  = "Node/Edge Legend"
-    )
+    graphics::plot(network,
+                   edge.arrow.size = 0.2,
+                   edge.label.font = 2,
+                   edge.label.color = "black",
+                   edge.label.cex = 0.1,
+                   edge.label = edges$weight,
+                   edge.label.x = ELx,
+                   edge.label.y = ELy,
+                   vertex.label = nodes$labs,
+                   vertex.label.cex = 0.05,
+                   vertex.label.font = 2,
+                   vertex.label.color = "black",
+                   vertex.size = p * 0.2,
+                   xlim = range(layt[, 1]),
+                   ylim = range(layt[, 2]),
+                   layout = layt,
+                   mark.groups = clust_unlist[[i]],
+                   mark.border = NA,
+                   main = paste0("Cluster ", i))
+    graphics::legend("bottomleft",
+                     legend = c("pure", "mixed", "absent"),
+                     pt.bg  = c("salmon", "skyblue", "grey"),
+                     pch    = c(21, 21, 21, 23, 23),
+                     cex    = 0.5,
+                     bty    = "n",
+                     title  = "Node/Edge Legend")
   }
-  dev.off()
+  grDevices::dev.off()
   return("Finished!")
 }

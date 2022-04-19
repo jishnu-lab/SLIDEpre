@@ -1,3 +1,5 @@
+#' Merge Nodes (Intersection)
+#'
 #' Merge a group with other groups containing common nodes.
 #'
 #' @param clusters a list of groups of node indices

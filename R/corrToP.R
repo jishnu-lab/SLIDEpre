@@ -1,3 +1,5 @@
+#' Correlation p-values
+#'
 #' Compute the corresponding p-value for a given correlation, \eqn{r}, and sample size, \eqn{n}.
 #'
 #' @param r numeric, correlation
@@ -10,7 +12,7 @@ corrToP <- function(r, n) {
   #### t-test statistic
   t <- ifelse(is.na((r * sqrt(n - 2)) / sqrt(1 - r^2)), Inf, (r * sqrt(n - 2)) / sqrt(1 - r^2))
   #### df = n - 2; 2 tailed p-value
-  p <- 2 * (1 - pt(abs(t), (n - 2)))
+  p <- 2 * (1 - stats::pt(abs(t), (n - 2)))
   #### standard error
   se <- ifelse(is.na(sqrt((1 - r^2) / (n - 2))), NA, sqrt((1 - r^2) / (n - 2)))
   out <- list(r, n, t, p, se)

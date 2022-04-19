@@ -1,3 +1,5 @@
+#' Estimate \eqn{\beta}
+#'
 #' Estimate the values of the coefficients \eqn{\beta} as well as confidence intervals for the estimates
 #' if requested.
 #'
@@ -29,9 +31,11 @@ estBeta <- function(y, x, sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_list,
   #### (supplement 2.3)
   if (is.null(support)) {
     beta_est <- solve(crossprod(R), t(R) %*% crossprod(x, y) / n)
-  } else {
+  } else if (support) {
     beta_est <- rep(0, ncol(A_hat))
     beta_est[support] <- solve(crossprod(R[, support]), t(R[, support]) %*% crossprod(x, y) / n)
+  } else {
+    beta_est <- solve(crossprod(R), t(R) %*% crossprod(x, y) / n)
   }
 
   sigma_alt <- estSigmaAlt(y = y, h_hat = t(BI) %*% crossprod(x[, I_hat], y) / n,
@@ -50,8 +54,8 @@ estBeta <- function(y, x, sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_list,
         alpha_level <- alpha_level / ncol(A_hat)
       }
     }
-    CIs_beta <- cbind(lower = beta_est - qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n),
-                      upper = beta_est + qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n))
+    CIs_beta <- cbind(lower = beta_est - stats::qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n),
+                      upper = beta_est + stats::qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n))
   } else {
     CIs_beta <- beta_var <- NULL
   }

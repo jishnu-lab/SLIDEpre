@@ -1,3 +1,5 @@
+#' Merge Nodes (Union)
+#'
 #' Merge the provided vector of nodes into the list of vectors of nodes but use
 #' union rather than the intersection.
 #'

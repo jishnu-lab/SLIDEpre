@@ -1,8 +1,10 @@
 #' ???
 #'
+#' ???
+#'
 #' @param col_ind indices of columns
 #' @param C matrix?
-#' @param lbd \eqn{\labmda}
+#' @param lambda \eqn{\labmda}
 #' @return value
 
 solveRow <- function(col_ind, C, lambda) {

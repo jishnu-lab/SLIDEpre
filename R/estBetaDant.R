@@ -1,3 +1,5 @@
+#' Estimate \eqn{\beta} (Dantzig)
+#'
 #' Estimate the values of the coefficients \eqn{\beta} with a Dantzig-type estimator.
 #'
 #' @param y response vector of dimension \eqn{p}

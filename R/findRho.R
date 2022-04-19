@@ -1,3 +1,5 @@
+#' Find \eqn{\rho}, NOT USED ANYMORE
+#'
 #' Calculate the optimal value of \eqn{\rho} to use in \eqn{\Delta} that maximizes the marginal log-likelihood of the data, \eqn{x}, for fixed \eqn{\alpha}.
 #'
 #' @param x data matrix of dimensions \eqn{n \times p}
@@ -10,6 +12,7 @@
 #' @export
 
 findRho <- function(x, imp, alpha, rho_range) {
+  i <- NULL
   temp <- foreach::foreach (i = 1:length(rho_range), .combine = rbind) %dopar% {
     rho <- rho_range[i]
     Delta <- transSigHat(x, imp, rho)

@@ -1,3 +1,5 @@
+#' Find Matrix Deviation
+#'
 #' Calculate the mean element-wise absolute deviation between two matrices.
 #'
 #' @param mat_A a matrix
