@@ -106,9 +106,6 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
   }
 
   #### Essential Regression with Prior Information Part II #####################
-  #### find number of significant betas allowed by cutoff
-  num_betas <- ceiling(alpha_level * 2 * prior_er$K)
-
   #### find significant betas
   betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
   sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
@@ -137,7 +134,7 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
                   "priorER_results" = prior_er, ## priorER - prior info
                   "sample_sigma" = sigma, ## sigma used in plainER
                   "prior_knowledge_sigma" = prior_sigma, ## Delta used to represent prior knowledge
-                  "priorER_sigma" = bal_mat, ## sigma used in priorER
+                  "priorER_sigma" = bal_sigma, ## sigma used in priorER
                   "plainER_betas" = plain_betas, ## plainER betas
                   "priorER_betas" = betas, ## priorER betas - no bayes
                   "prior_adj_betas" = new_betas) ## variational bayes adjusted betas
