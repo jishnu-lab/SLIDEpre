@@ -13,12 +13,12 @@
 #' @param I_hat_list estimated matrix
 #' @param conf_int boolean indicated whether to calculate confidence intervals
 #' @param alpha_level value for confidence intervals
-#' @param correction type of multiple testing correction to perform
+#' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
 #' @param support whether to do calculations on support of WHAT
 #' @return a list including the estimates for \eqn{\beta} and the confidence intervals (if requested)
 
 estBeta <- function(y, x, sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_list,
-                     conf_int = T, alpha_level = 0.05, correction = NULL,
+                     conf_int = T, alpha_level = 0.05, correction = TRUE,
                      support = NULL) {
   n <- nrow(x); p <- ncol(x)
   R <- matrix(0, nrow = p, ncol = ncol(A_hat))
@@ -49,10 +49,8 @@ estBeta <- function(y, x, sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_list,
                         Omega_hat = Omega_hat, I_hat = I_hat,
                         I_hat_list = I_hat_list)
     beta_var[beta_var < 0] = 0
-    if (!is.null(correction)) {
-      if (correction == "Bonferroni") {
-        alpha_level <- alpha_level / ncol(A_hat)
-      }
+    if (correction) {
+      alpha_level <- alpha_level / ncol(A_hat)
     }
     CIs_beta <- cbind(lower = beta_est - stats::qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n),
                       upper = beta_est + stats::qnorm(1 - alpha_level / 2) * sqrt(beta_var) / sqrt(n))

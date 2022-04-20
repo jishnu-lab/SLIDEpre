@@ -4,12 +4,12 @@
 \alias{bayesVarSel}
 \title{Variational Bayes Variable Selection}
 \usage{
-bayesVarSel(z, y, imps, er_res, thresh = 0.01)
+bayesVarSel(z, y, imp_clusts, er_res, thresh = 0.01)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
-\item{imps}{a vector of cluster indices to keep}
+\item{imp_clusts}{a vector of cluster indices to keep}
 
 \item{er_res}{a list output by the function link[EssReg]{plainER} or \link[EssReg]{priorER}}
 

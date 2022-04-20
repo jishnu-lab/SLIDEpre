@@ -60,7 +60,7 @@ control the false discovery rate, default is 0.2}
 
 \item{support}{a boolean ???}
 
-\item{correction}{a string indicating the type of multi-testing correction to perform}
+\item{correction}{a boolean flag indicating whether to perform Bonferroni multiple testing correction}
 
 \item{change_all}{a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
 for an important feature (T) or to just change to more extreme values (F)}

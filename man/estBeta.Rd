@@ -15,7 +15,7 @@ estBeta(
   I_hat_list,
   conf_int = T,
   alpha_level = 0.05,
-  correction = NULL,
+  correction = TRUE,
   support = NULL
 )
 }
@@ -40,7 +40,7 @@ estBeta(
 
 \item{alpha_level}{value for confidence intervals}
 
-\item{correction}{type of multiple testing correction to perform}
+\item{correction}{a boolean flag indicating whether to perform Bonferroni multiple testing correction}
 
 \item{support}{whether to do calculations on support of WHAT}
 }

@@ -20,7 +20,7 @@
 #' @param equal_var a boolean indicating whether there is equal variance ??
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
 #' @param support a boolean ???
-#' @param correction a string indicating the type of multi-testing correction to perform
+#' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
 #' @param verbose a boolean indicating whether to include printing
 #' @param out_path a string path to where to save output
 #' @return a list of results from the Essential Regression framework including: \eqn{K} = number of clusters,
@@ -33,7 +33,7 @@
 plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
-                    correction = "Bonferroni", verbose = F, out_path = NULL) {
+                    correction = TRUE, verbose = F, out_path = NULL) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
@@ -46,7 +46,9 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
 
   #### save correlation matrix heatmap
   if (!is.null(out_path)) {
-    grDevices::pdf(file = paste0(out_path, "/corr_mat_heatmap.pdf"))
+    pdf_file <- paste0(out_path, "/corr_mat_heatmap.pdf")
+    dir.create(file.path(dirname(pdf_file)))
+    grDevices::pdf(file = pdf_file)
     makeHeatmap(sigma, "Correlation Matrix Heatmap", T, T)
     grDevices::dev.off()
   }
@@ -57,11 +59,14 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                                sigma = sigma,
                                thresh = thresh_fdr)
     sigma <- control_fdr$thresh_sigma
+    kept_entries <- control_fdr$kept_entries
   }
 
   #### save thresholding correlation matrix heatmap
   if (!is.null(out_path)) {
-    grDevices::pdf(file = paste0(out_path, "/thresh_corr_mat_heatmap.pdf"))
+    pdf_file <- paste0(out_path, "/thresh_corr_mat_heatmap.pdf")
+    dir.create(file.path(dirname(pdf_file)))
+    grDevices::pdf(file = pdf_file)
     makeHeatmap(sigma, "FDR Thresholded Correlation Matrix Heatmap", T, T)
     grDevices::dev.off()
   }

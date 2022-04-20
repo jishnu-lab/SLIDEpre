@@ -20,7 +20,7 @@ plainER(
   equal_var = F,
   alpha_level = 0.05,
   support = NULL,
-  correction = "Bonferroni",
+  correction = TRUE,
   verbose = F,
   out_path = NULL
 )
@@ -57,7 +57,7 @@ control the false discovery rate, default is 0.2}
 
 \item{support}{a boolean ???}
 
-\item{correction}{a string indicating the type of multi-testing correction to perform}
+\item{correction}{a boolean flag indicating whether to perform Bonferroni multiple testing correction}
 
 \item{verbose}{a boolean indicating whether to include printing}
 
