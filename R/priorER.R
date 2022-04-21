@@ -56,6 +56,7 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
                       verbose = verbose)
   opt_delta <- plain_er$opt_delta
   opt_lambda <- plain_er$opt_lambda
+  sigma <- plain_er$thresh_sigma
   plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
 
   #### at this point, we have fully run LOVE/done cross-validation and can now
@@ -73,8 +74,8 @@ priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL
   #### Essential Regression with Prior Information Part I ######################
   if (length(excl_imp) > 0) {
     #### construct the expert knowledge matrix
-    prior_sigma <- makeDelta(y = y,
-                             x = x,
+    prior_sigma <- makeDelta(x = x,
+                             sigma = sigma,
                              imps = excl_imp,
                              er_res = plain_er,
                              change_all = change_all,

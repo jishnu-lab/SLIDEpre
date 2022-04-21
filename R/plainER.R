@@ -186,7 +186,8 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                 pred = pred_result,
                 opt_lambda = opt_lambda,
                 opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
-                Q = Q))
+                Q = Q,
+                thresh_sigma = sigma))
   }
   return(list(K = ncol(A_hat),
               A = A_hat,
@@ -198,5 +199,6 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
               pred = pred_result,
               opt_lambda = opt_lambda,
               opt_delta = opt_delta / sqrt(log(max(p, n)) / n),
-              Q = Q))
+              Q = Q,
+              thresh_sigma = sigma))
 }
