@@ -3,6 +3,7 @@
 export(adjMat)
 export(clustMem)
 export(corrToP)
+export(essregCV)
 export(estOmega)
 export(findAlpha)
 export(findRho)

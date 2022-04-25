@@ -54,7 +54,7 @@ makeDelta <- function(x, sigma, imps, er_res, change_all = F, equal_var = F) {
   for (i in 1:nrow(abs_sc)) {
     row_i <- abs_sc[i,]
     max_ind <- max_inds[i]
-    cutoffs <- (delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imps]
+    cutoffs <- rep(2 * delta, length(imps)) #(delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imps]
     replacements <- max_vals[i] - cutoffs - 1e-10
     ## adjust sign to match original correlation, or set to 0 if cutoffs > max_vals[i]
     replacements <- ifelse(replacements < 0, 0, sign(sigma[i, max_ind]) * replacements)

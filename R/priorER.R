@@ -35,7 +35,7 @@
 priorER <- function(y, x, sigma, imps, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, thresh = 0.001,
-                    support = NULL, correction = "Bonferroni", change_all = F, verbose = F) {
+                    support = NULL, correction = T, change_all = F, verbose = F) {
   #### run plainER() first
   plain_er <- plainER(y = y,
                       x = x,

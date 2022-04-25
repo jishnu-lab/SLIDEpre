@@ -33,7 +33,7 @@
 plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
-                    correction = TRUE, verbose = F, out_path = NULL) {
+                    correction = T, verbose = F, out_path = NULL) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)

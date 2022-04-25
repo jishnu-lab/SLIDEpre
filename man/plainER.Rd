@@ -20,7 +20,7 @@ plainER(
   equal_var = F,
   alpha_level = 0.05,
   support = NULL,
-  correction = TRUE,
+  correction = T,
   verbose = F,
   out_path = NULL
 )

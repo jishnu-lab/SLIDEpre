@@ -20,8 +20,9 @@ priorER(
   merge = F,
   equal_var = F,
   alpha_level = 0.05,
+  thresh = 0.001,
   support = NULL,
-  correction = "Bonferroni",
+  correction = T,
   change_all = F,
   verbose = F
 )
@@ -57,6 +58,8 @@ control the false discovery rate, default is 0.2}
 \item{equal_var}{a boolean indicating whether there is equal variance ??}
 
 \item{alpha_level}{\eqn{\alpha}, a numerical constant used in confidence interval calculation}
+
+\item{thresh}{a numerical constant used as the threshold for convergence in Variational Bayes}
 
 \item{support}{a boolean ???}
 
