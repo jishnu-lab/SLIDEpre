@@ -1,0 +1,43 @@
+---
+# path to .csv file for data matrix
+x_path: /Volumes/aerosengart G-Drive/Das Lab/results/check_xy_priors/x_preScale.csv      
+# path to .csv file for response vector
+y_path: /Volumes/aerosengart G-Drive/Das Lab/results/check_xy_priors/check_y.csv 
+# path to directory for saving results
+out_path: /Users/aerosengart/Documents/Das Lab/output
+# number of folds for cross-validation   
+k: 5
+# number of replicates for cross-validation
+nreps: 20
+# is y categorical?
+y_factor: FALSE
+# select optimal parameter values by correlation?
+sel_corr: TRUE
+# permutation test type
+perm_option: "y"
+# type of beta estimation - can be LS or NULL          
+beta_est: LS     
+# find confidence intervals for betas?         
+conf_int: TRUE          
+# estimate responses (do prediction)?  
+pred: TRUE
+# number of replicates for cross-validation  
+rep_cv: 50        
+# diagonal structure of data matrix?       
+diagonal: FALSE   
+# use intersection (FALSE) or union (TRUE) for merging        
+merge: FALSE   
+# do columns of data matrix have equal variance?           
+equal_var: FALSE   
+# alpha level for confidence intervals      
+alpha_level: 0.05   
+# literally no idea what this is      
+support: NULL    
+# do multiple testing correction?         
+correction: T      
+# include print statements?       
+verbose: TRUE      
+# false discovery rate thresholding p-value cutoff      
+thresh_fdr: 0.2 
+# change entire row/column for important variables?          
+change_all: FALSE

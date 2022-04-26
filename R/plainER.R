@@ -2,11 +2,9 @@
 #'
 #' Perform Essential Regression without prior knowledge.
 #'
-#' @param y a response vector of dimension \eqn{n}
+#' @param y a response vector of dimension \eqn{n}, must be continous
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
-#' @param kept_sigma a matrix of dimensions \eqn{p \times p} with values 1/0 indicating
-#' whether a given entry was removed via thresholding (1) or not (0) with function \link[EssReg]{threshSigma}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
@@ -34,6 +32,16 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
                     correction = T, verbose = F, out_path = NULL) {
+  ## Data Housekeeping #########################################################
+  raw_y <- y
+  raw_x <- x
+
+  ## standardization
+  x <- scale(x, T, T)
+  y <- scale(y, T, T)
+
+  opt_lambda <- lambda ## no longer CV lambda
+  ## ER Housekeeping ###########################################################
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
@@ -44,9 +52,10 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
   #### statistical guarantees in the paper hold
   delta_scaled <- delta * sqrt(log(max(p, n)) / n)
 
+  ## Sigma Thresholding ########################################################
   #### save correlation matrix heatmap
   if (!is.null(out_path)) {
-    pdf_file <- paste0(out_path, "/corr_mat_heatmap.pdf")
+    pdf_file <- paste0(out_path, "delta", delta[1], "_corr_mat_heatmap.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F)
     grDevices::pdf(file = pdf_file)
     makeHeatmap(sigma, "Correlation Matrix Heatmap", T, T)
@@ -62,22 +71,27 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
     kept_entries <- control_fdr$kept_entries
   }
 
-  #### save thresholding correlation matrix heatmap
+  #### save threshold correlation matrix heatmap
   if (!is.null(out_path)) {
-    pdf_file <- paste0(out_path, "/thresh_corr_mat_heatmap.pdf")
+    pdf_file <- paste0(out_path, "delta", delta[1], "/thresh_corr_mat_heatmap.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F)
     grDevices::pdf(file = pdf_file)
     makeHeatmap(sigma, "FDR Thresholded Correlation Matrix Heatmap", T, T)
     grDevices::dev.off()
   }
 
+  ## Delta Cross-Validation ####################################################
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
+  #### use the unstandardized version of x (if available) to avoid signal leakage in CV
   opt_delta <- ifelse(length(delta_scaled) > 1,
-                      stats::median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
-                                                              deltas_scaled = delta_scaled,
-                                                              diagonal = diagonal, se_est = se_est,
-                                                              merge = merge))),
+                      stats::median(replicate(rep_cv,
+                                              cvDelta(raw_x = raw_x,
+                                                      fdr_entries = kept_entries,
+                                                      deltas_scaled = delta_scaled,
+                                                      diagonal = diagonal,
+                                                      se_est = se_est,
+                                                      merge = merge))),
                       delta_scaled)
 
   #### estimate membership matrix Ai
@@ -88,10 +102,13 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
     opt_delta <- ifelse(length(delta_scaled) > 1,
-                        stats::median(replicate(rep_cv, cvDelta(x = x, fdr_entries = kept_entries,
-                                                                deltas_scaled = delta_scaled,
-                                                                diagonal = diagonal, se_est = se_est,
-                                                                merge = F))),
+                        stats::median(replicate(rep_cv,
+                                                cvDelta(raw_x = raw_x,
+                                                        fdr_entries = kept_entries,
+                                                        deltas_scaled = delta_scaled,
+                                                        diagonal = diagonal,
+                                                        se_est = se_est,
+                                                        merge = F))),
                         delta_scaled)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)
   }
@@ -116,6 +133,7 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
 
   #### Prediction --- what is Q??
   if (pred) {
+    #### use standardized x and y
     pred_result <- prediction(y = y, x = x, sigma = sigma, A_hat = A_hat,
                               Gamma_hat = Gamma_hat, I_hat = I_hat)
 
@@ -136,8 +154,7 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
     beta_hat <- beta_cis <- beta_var <- NULL
     if (beta_est == "Dantzig") {
       beta_hat <- estBetaDant(y = y, x = x, A_hat = A_hat, C_hat = C_hat,
-                              I_hat = I_hat, delta = opt_delta, mu = 0.5,
-                              lambda = 0.5)
+                              I_hat = I_hat, delta = opt_delta, mu = 0.5, lambda = 0.5)
     }
   } else {
     if (conf_int) {
@@ -151,7 +168,7 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
         #                                                           pure_vec = result_AI$pure_ec,
         #                                                           diagonal = diagonal))),
         #                  lambda)
-        opt_lambda <- lambda
+        # opt_lambda <- lambda
         if (opt_lambda > 0) {
           AI_hat <- abs(A_hat[I_hat, ]) ## just rows of pure variables
           sigma_bar_sup <- max(solve(crossprod(AI_hat), t(AI_hat)) %*% se_est[I_hat]) ## not sure what this does
@@ -167,6 +184,7 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
       Gamma_hat[-I_hat] <- diag(sigma[-I_hat, -I_hat]) - diag(A_hat[-I_hat,] %*% C_hat %*% t(A_hat[-I_hat, ]))
       Gamma_hat[Gamma_hat < 0] <- 1e2 #### replace negative values with 100
     }
+    #### use standardized x and y
     res_beta <- estBeta(y = y, x = x, sigma = sigma, A_hat = A_hat,
                         C_hat = C_hat, Gamma_hat = Gamma_hat, I_hat = I_hat,
                         I_hat_list = I_hat_list, conf_int = conf_int,

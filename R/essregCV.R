@@ -25,6 +25,7 @@
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
 #' @param thresh a numerical constant used as the threshold for convergence in Variational Bayes
 #' @param support a boolean ???
+#' @param svm a boolean flag indicating whether to fit svm/svr and use that for prediction
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
 #' @param change_all a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
 #' for an important feature (T) or to just change to more extreme values (F)
@@ -33,8 +34,8 @@
 #' @export
 
 essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
-                     rep_cv = 50, alpha_level = 0.05, thresh = 0.001, perm_option = "x",
-                     y_factor = T, beta_est = "NULL", sel_corr = T,
+                     rep_cv = 50, alpha_level = 0.05, thresh = 0.001, perm_option = NULL,
+                     y_factor = F, beta_est = "NULL", sel_corr = T, svm = F,
                      diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
                      change_all = F, verbose = F, delta_grid = NULL) {
 
@@ -71,16 +72,21 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   if (!is.null(priors)) {
     methods <- c(methods, "priorER")
   }
-  if (perm_option == "x") {
-    perm_col_ind <- sample(1:ncol(x))
-    methods <- c(methods, paste0(methods, "_x"))
-  } else if (perm_option == "y_before_split") {
-    perm_row_ind <- sample(1:nrow(x))
-    methods <- c(methods, paste0(methods, "_ybs"))
-  } else if (perm_option == "x_y") {
-    perm_col_ind <- sample(1:ncol(x))
-    perm_row_ind <- sample(1:nrow(x))
-    methods <- c(methods, paste0(methods, "_xy"))
+
+  if (!is.null(perm_option)) {
+    if (perm_option == "x") { ## permute columns of x
+      perm_col_ind <- sample(1:ncol(x))
+      methods <- c(methods, paste0(methods, "_x"))
+    } else if (perm_option == "y_before_split") { ## permute y before splitting into train/valid
+      perm_row_ind <- sample(1:nrow(x))
+      methods <- c(methods, paste0(methods, "_ybs"))
+    } else if (perm_option == "x_y") {
+      perm_col_ind <- sample(1:ncol(x))
+      perm_row_ind <- sample(1:nrow(x))
+      methods <- c(methods, paste0(methods, "_xy"))
+    } else {
+      methods <- c(methods, paste0(methods, "_y"))
+    }
   }
 
   ## initialization
@@ -105,29 +111,34 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       cat("CV for ", method_j, ". . . \n")
 
       ## permute and standardize sets
-      if (grepl(method_j, "ybs", fixed = TRUE)) {
-        perm_train_y <- y[perm_row_ind][-valid_ind]
-        stands <- standCV(train_y = perm_train_y,
+      if (grepl(x = method_j, pattern = "ybs", fixed = TRUE)) {
+        train_y <- y[perm_row_ind][-valid_ind]
+        stands <- standCV(train_y = train_y,
                           train_x = train_x,
                           valid_y = valid_y,
                           valid_x = valid_x)
-      } else if (grepl(method_j, "x_y", fixed = TRUE)) {
-        perm_train_x <- train_x[, perm_col_ind]
-        perm_train_y <- y[perm_row_ind][-valid_ind]
-        stands <- standCV(train_y = perm_train_y,
-                          train_x = perm_train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
-      } else if (grepl(method_j, "x", fixed = TRUE)) {
-        perm_train_x <- train_x[, perm_col_ind]
+      } else if (grepl(x = method_j, pattern = "x_y", fixed = TRUE)) {
+        train_x <- train_x[, perm_col_ind]
+        train_y <- y[perm_row_ind][-valid_ind]
         stands <- standCV(train_y = train_y,
-                          train_x = perm_train_x,
+                          train_x = train_x,
                           valid_y = valid_y,
                           valid_x = valid_x)
-      } else { ## just permute y
+      } else if (grepl(x = method_j, pattern = "x", fixed = TRUE)) {
+        train_x <- train_x[, perm_col_ind]
+        stands <- standCV(train_y = train_y,
+                          train_x = train_x,
+                          valid_y = valid_y,
+                          valid_x = valid_x)
+      } else if (grepl(x = method_j, pattern = "y", fixed = TRUE)) { ## just permute y
         perm_ind <- sample(1:nrow(train_x))
-        perm_train_y <- train_y[perm_ind]
-        stands <- standCV(train_y = perm_train_y,
+        train_y <- train_y[perm_ind]
+        stands <- standCV(train_y = train_y,
+                          train_x = train_x,
+                          valid_y = valid_y,
+                          valid_x = valid_x)
+      } else {
+        stands <- standCV(train_y = train_y,
                           train_x = train_x,
                           valid_y = valid_y,
                           valid_x = valid_x)
@@ -138,10 +149,10 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       valid_x_std <- stands$valid_x
       valid_y_std <- stands$valid_y
 
-      if (grepl(method_j, "plainER", fixed = TRUE)) { ## plain essential regression
-        res <- plainER(y = train_y_std,
-                       x = train_x_std,
-                       sigma = cor(train_x_std),
+      if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression
+        res <- plainER(y = train_y,
+                       x = train_x,
+                       sigma = cor(train_x),
                        delta = delta,
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,
@@ -160,11 +171,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         pred_all_betas <- res$pred$er_predictor
         beta_train <- train_x_std %*% pred_all_betas
         beta_valid <- valid_x_std %*% pred_all_betas
-      } else if (grepl(method_j, "priorER", fixed = TRUE)) { ## prior essential regression
-        res <- priorER(y = train_y_std,
-                       x = train_x_std,
+        pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
+        res <- priorER(y = train_y,
+                       x = train_x,
                        imps = priors,
-                       sigma = cor(train_x_std),
+                       sigma = cor(train_x),
                        delta = delta,
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,
@@ -185,6 +197,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         pred_all_betas <- res$pred$er_predictor
         beta_train <- train_x_std %*% pred_all_betas
         beta_valid <- valid_x_std %*% pred_all_betas
+        pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
           cvfit <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)
@@ -199,16 +212,17 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## get things for svm
         beta_train <- train_x_std[, sub_beta_hat]
         beta_valid <- valid_x_std[, sub_beta_hat, drop = F]
-
-        #pred_vals<- glmnet::predict.glmnet(cvfit$glmnet.fit, valid_x_std, s = cvfit$lambda.min)
+        pred_vals <- glmnet::predict.glmnet(cvfit$glmnet.fit, valid_x_std, s = cvfit$lambda.min)
       }
 
-      ## fit svm
-      res_tune <- e1071::tune.svm(x = beta_train, y = train_y_std, cost = 2 ^ seq(-3, 3, 1)) ## linear kernel
-      ## get predicted values on validation set
-      pred_vals <- stats::predict(object = res_tune$best.model, newdata = beta_valid)
+      if (svm) { ## if svm flag == TRUE, use svm/svr to get predicted values for validation set
+        ## fit svm
+        res_tune <- e1071::tune.svm(x = beta_train, y = train_y_std, cost = 2 ^ seq(-3, 3, 1)) ## linear kernel
+        ## get predicted values on validation set
+        pred_vals <- stats::predict(object = res_tune$best.model, newdata = beta_valid)
+      }
 
-      if (sel_corr) {
+      if (sel_corr) { ## if using correlation to evaluate model fit
         method_res <- results[[method_j]]
         method_res[[length(method_res) + 1]] <- cbind(valid_y_std, pred_vals)
         results[[method_j]] <- method_res
@@ -226,6 +240,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
           results <- rbind(results, iter_res)
         }
       }
+
     }
   }
   ## set results data frame column names
