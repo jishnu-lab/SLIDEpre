@@ -4,7 +4,7 @@
 #'
 #' @param y a response vector of dimension \eqn{n}, must be continous
 #' @param x a data matrix of dimensions \eqn{n \times p}
-#' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
+#' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
@@ -28,7 +28,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
+plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
                     correction = T, verbose = F, out_path = NULL) {
@@ -48,6 +48,11 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
   } else {
     se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
   }
+
+  if (is.null(sigma)) {
+    sigma <- cor(x)
+  }
+
   #### scale delta by this value to satisfy some requirements so that the
   #### statistical guarantees in the paper hold
   delta_scaled <- delta * sqrt(log(max(p, n)) / n)

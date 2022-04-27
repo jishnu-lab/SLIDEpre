@@ -7,7 +7,7 @@
 plainER(
   y,
   x,
-  sigma,
+  sigma = NULL,
   delta,
   thresh_fdr = 0.2,
   beta_est = "NULL",
@@ -30,7 +30,7 @@ plainER(
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
+\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}}
 
 \item{delta}{\eqn{\delta}, a numerical constant used for thresholding}
 

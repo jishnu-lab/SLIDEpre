@@ -7,7 +7,6 @@
 priorER(
   y,
   x,
-  sigma,
   imps,
   delta,
   thresh_fdr = 0.2,
@@ -31,8 +30,6 @@ priorER(
 \item{y}{a response vector of dimension \eqn{n}}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
-
-\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
 \item{imps}{a vector of important feature indices/names}
 
@@ -69,6 +66,8 @@ control the false discovery rate, default is 0.2}
 for an important feature (T) or to just change to more extreme values (F)}
 
 \item{verbose}{a boolean indicating whether to include printing}
+
+\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 }
 \value{
 a list of results from the Essential Regression framework including: \eqn{K = } number of clusters,
