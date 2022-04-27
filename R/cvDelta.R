@@ -29,7 +29,7 @@ cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, merge) {
   x_val <- std$valid_x
 
   #### recalculate se_est
-  se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
+  se_est <- apply(x_train, 2, stats::sd) #### get sd of columns for feature matrix
 
   #### calculate the sample correlation matrix for training set
   sigma_train <- cor(x_train);

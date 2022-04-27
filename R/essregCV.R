@@ -39,9 +39,6 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                      diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
                      change_all = F, verbose = F, delta_grid = NULL) {
 
-  ## make correlation matrix
-  sigma <- cor(x)
-
   if (y_factor) {
     orig_y <- y
     y <- ifelse(y > mean(y), 0, 1)
@@ -152,7 +149,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression
         res <- plainER(y = train_y,
                        x = train_x,
-                       sigma = cor(train_x),
+                       sigma = NULL,
                        delta = delta,
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,
@@ -176,7 +173,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         res <- priorER(y = train_y,
                        x = train_x,
                        imps = priors,
-                       sigma = cor(train_x),
+                       sigma = NULL,
                        delta = delta,
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,

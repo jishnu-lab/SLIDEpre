@@ -27,7 +27,7 @@ pipelineER1 <- function(yaml_path) {
   foreach::foreach (i = 1:length(deltas)) %dopar% {
     plainER(y = y,
             x = x,
-            sigma = cor(x),
+            sigma = NULL,
             delta = deltas[[i]],
             beta_est = er_input$beta_est,
             lambda = 0.5,
