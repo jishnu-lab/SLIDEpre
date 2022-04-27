@@ -90,12 +90,13 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   #### of CV_Delta and select median of replicates
   #### use the unstandardized version of x (if available) to avoid signal leakage in CV
   opt_delta <- ifelse(length(delta_scaled) > 1,
-                      stats::median(replicate(rep_cv,
+                      stats::median(unlist(replicate(rep_cv,
                                               cvDelta(raw_x = raw_x,
                                                       fdr_entries = kept_entries,
                                                       deltas_scaled = delta_scaled,
                                                       diagonal = diagonal,
-                                                      merge = merge))),
+                                                      merge = merge),
+                                              simplify = FALSE))),
                       delta_scaled)
 
   #### estimate membership matrix Ai
@@ -106,12 +107,13 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
     opt_delta <- ifelse(length(delta_scaled) > 1,
-                        stats::median(replicate(rep_cv,
+                        stats::median(unlist(replicate(rep_cv,
                                                 cvDelta(raw_x = raw_x,
                                                         fdr_entries = kept_entries,
                                                         deltas_scaled = delta_scaled,
                                                         diagonal = diagonal,
-                                                        merge = F))),
+                                                        merge = F),
+                                                simplify = FALSE))),
                         delta_scaled)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)
   }
@@ -164,12 +166,14 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
       if (length(result_AI$pure_vec) != nrow(sigma)) {
         sigma_TJ <- estSigmaTJ(sigma = sigma, AI = A_hat, pure_vec = result_AI$pure_vec)
         # opt_lambda <- ifelse(length(lambda) > 1,
-        #                  stats::median(replicate(rep_cv, cvLambda(x = x,
-        #                                                           fdr_entries = kept_entries,
-        #                                                           lambdas = lambda,
-        #                                                           AI = result_AI$AI,
-        #                                                           pure_vec = result_AI$pure_ec,
-        #                                                           diagonal = diagonal))),
+        #                  stats::median(unlist(replicate(rep_cv,
+        #                                                 cvLambda(x = x,
+        #                                                          fdr_entries = kept_entries,
+        #                                                          lambdas = lambda,
+        #                                                          AI = result_AI$AI,
+        #                                                          pure_vec = result_AI$pure_ec,
+        #                                                          diagonal = diagonal),
+        #                                                 simplify = F))),
         #                  lambda)
         # opt_lambda <- lambda
         if (opt_lambda > 0) {
