@@ -4,10 +4,10 @@
 \alias{cvDelta}
 \title{\eqn{\delta} Cross-Validation}
 \usage{
-cvDelta(x, fdr_entries, deltas_scaled, diagonal, se_est, merge)
+cvDelta(raw_x, fdr_entries, deltas_scaled, diagonal, merge)
 }
 \arguments{
-\item{x}{data matrix of dimensions \eqn{n \times p}}
+\item{raw_x}{data matrix of dimensions \eqn{n \times p}, not standardized}
 
 \item{fdr_entries}{a matrix of dimensions \eqn{p \times p} that contains a 1 in positions where the
 entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
@@ -15,8 +15,6 @@ entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 \item{deltas_scaled}{a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}}
 
 \item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
-
-\item{se_est}{estimated standard errors}
 
 \item{merge}{a boolean indicating merge style}
 }

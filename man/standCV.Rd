@@ -4,14 +4,14 @@
 \alias{standCV}
 \title{Standardization for k-fold cross-validation}
 \usage{
-standCV(valid_y, valid_x, train_x, train_y)
+standCV(valid_x, train_x, valid_y = NULL, train_y = NULL)
 }
 \arguments{
-\item{valid_y}{the validation set made from the response vector}
-
 \item{valid_x}{the validation set made from the data matrix}
 
 \item{train_x}{the training set made from the data matrix}
+
+\item{valid_y}{the validation set made from the response vector}
 
 \item{train_y}{the training set made from the response vector}
 }

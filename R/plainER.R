@@ -90,7 +90,6 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                                                       fdr_entries = kept_entries,
                                                       deltas_scaled = delta_scaled,
                                                       diagonal = diagonal,
-                                                      se_est = se_est,
                                                       merge = merge))),
                       delta_scaled)
 
@@ -107,7 +106,6 @@ plainER <- function(y, x, sigma, delta, thresh_fdr = 0.2, beta_est = "NULL",
                                                         fdr_entries = kept_entries,
                                                         deltas_scaled = delta_scaled,
                                                         diagonal = diagonal,
-                                                        se_est = se_est,
                                                         merge = F))),
                         delta_scaled)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)

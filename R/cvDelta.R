@@ -10,11 +10,10 @@
 #' entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not
 #' @param deltas_scaled a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
-#' @param se_est estimated standard errors
 #' @param merge a boolean indicating merge style
 #' @return the selected optimal \eqn{\delta}
 
-cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, se_est, merge) {
+cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, merge) {
   #### get data matrix dimensions
   n <- nrow(raw_x); p <- ncol(raw_x)
 
@@ -23,11 +22,14 @@ cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, se_est, merge) 
   x_train <- raw_x[samp_ind, ]
   x_val <- raw_x[-samp_ind, ]
 
-  #### standardize if indicated
+  #### standardize
   std <- standCV(valid_x = x_val,
                  train_x = x_train)
   x_train <- std$train_x
   x_val <- std$valid_x
+
+  #### recalculate se_est
+  se_est <- apply(x, 2, stats::sd) #### get sd of columns for feature matrix
 
   #### calculate the sample correlation matrix for training set
   sigma_train <- cor(x_train);

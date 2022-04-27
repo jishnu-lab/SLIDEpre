@@ -26,7 +26,7 @@ plainER(
 )
 }
 \arguments{
-\item{y}{a response vector of dimension \eqn{n}}
+\item{y}{a response vector of dimension \eqn{n}, must be continous}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
@@ -62,9 +62,6 @@ control the false discovery rate, default is 0.2}
 \item{verbose}{a boolean indicating whether to include printing}
 
 \item{out_path}{a string path to where to save output}
-
-\item{kept_sigma}{a matrix of dimensions \eqn{p \times p} with values 1/0 indicating
-whether a given entry was removed via thresholding (1) or not (0) with function \link[EssReg]{threshSigma}}
 }
 \value{
 a list of results from the Essential Regression framework including: \eqn{K} = number of clusters,

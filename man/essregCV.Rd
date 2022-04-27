@@ -15,10 +15,11 @@ essregCV(
   rep_cv = 50,
   alpha_level = 0.05,
   thresh = 0.001,
-  perm_option = "x",
-  y_factor = T,
+  perm_option = NULL,
+  y_factor = F,
   beta_est = "NULL",
   sel_corr = T,
+  svm = F,
   diagonal = F,
   merge = F,
   equal_var = F,
@@ -61,6 +62,8 @@ control the false discovery rate, default is 0.2}
 
 \item{sel_corr}{a boolean flag indicating whether to perform cross-validation by evaluating the correlation
 between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})}
+
+\item{svm}{a boolean flag indicating whether to fit svm/svr and use that for prediction}
 
 \item{diagonal}{a boolean indicating the diagonal structure of the data ???}
 
