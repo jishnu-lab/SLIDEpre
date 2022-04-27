@@ -24,7 +24,7 @@ pipelineER1 <- function(yaml_path) {
                  seq(0.1, 1, 0.1))
 
   ## Step 1: Coarse Delta Search
-  foreach (i = 1:length(deltas)) %dopar% {
+  foreach::foreach (i = 1:length(deltas)) %dopar% {
     plainER(y = y,
             x = x,
             sigma = cor(x),
