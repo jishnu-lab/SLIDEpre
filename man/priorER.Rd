@@ -8,6 +8,7 @@ priorER(
   y,
   x,
   imps,
+  sigma = NULL,
   delta,
   thresh_fdr = 0.2,
   beta_est = "NULL",
@@ -32,6 +33,8 @@ priorER(
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
 \item{imps}{a vector of important feature indices/names}
+
+\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
 \item{delta}{\eqn{\delta}, a numerical constant used for thresholding}
 
@@ -66,8 +69,6 @@ control the false discovery rate, default is 0.2}
 for an important feature (T) or to just change to more extreme values (F)}
 
 \item{verbose}{a boolean indicating whether to include printing}
-
-\item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 }
 \value{
 a list of results from the Essential Regression framework including: \eqn{K = } number of clusters,

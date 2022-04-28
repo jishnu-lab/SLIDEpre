@@ -3,6 +3,7 @@
 #' Perform k-fold cross-validation for essential regression to select
 #'
 #' @importFrom magrittr '%>%'
+#' @importFrom foreach '%dopar%'
 #' @param k an integer for number of folds to use in cross-validation
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}

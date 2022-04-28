@@ -90,13 +90,12 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   #### of CV_Delta and select median of replicates
   #### use the unstandardized version of x (if available) to avoid signal leakage in CV
   opt_delta <- ifelse(length(delta_scaled) > 1,
-                      stats::median(unlist(replicate(rep_cv,
-                                              cvDelta(raw_x = raw_x,
-                                                      fdr_entries = kept_entries,
-                                                      deltas_scaled = delta_scaled,
-                                                      diagonal = diagonal,
-                                                      merge = merge),
-                                              simplify = FALSE))),
+                      stats::median(cvDelta(raw_x = raw_x,
+                                            fdr_entries = kept_entries,
+                                            deltas_scaled = delta_scaled,
+                                            diagonal = diagonal,
+                                            merge = merge,
+                                            rep_cv = rep_cv)),
                       delta_scaled)
 
   #### estimate membership matrix Ai
@@ -107,13 +106,12 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
     opt_delta <- ifelse(length(delta_scaled) > 1,
-                        stats::median(unlist(replicate(rep_cv,
-                                                cvDelta(raw_x = raw_x,
-                                                        fdr_entries = kept_entries,
-                                                        deltas_scaled = delta_scaled,
-                                                        diagonal = diagonal,
-                                                        merge = F),
-                                                simplify = FALSE))),
+                        stats::median(cvDelta(raw_x = raw_x,
+                                              fdr_entries = kept_entries,
+                                              deltas_scaled = delta_scaled,
+                                              diagonal = diagonal,
+                                              merge = F,
+                                              rep_cv = rep_cv)),
                         delta_scaled)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)
   }

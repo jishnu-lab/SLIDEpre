@@ -32,7 +32,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-priorER <- function(y, x, imps, delta, thresh_fdr = 0.2, beta_est = "NULL",
+priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, thresh = 0.001,
                     support = NULL, correction = T, change_all = F, verbose = F) {
