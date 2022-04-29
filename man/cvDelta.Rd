@@ -4,7 +4,7 @@
 \alias{cvDelta}
 \title{\eqn{\delta} Cross-Validation}
 \usage{
-cvDelta(raw_x, fdr_entries, deltas_scaled, diagonal, merge, rep_cv)
+cvDelta(raw_x, fdr_entries, deltas_scaled, diagonal, merge)
 }
 \arguments{
 \item{raw_x}{data matrix of dimensions \eqn{n \times p}, not standardized}
@@ -17,8 +17,6 @@ entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 \item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
 
 \item{merge}{a boolean indicating merge style}
-
-\item{rep_cv}{number of replicates for cross-validation}
 }
 \value{
 the selected optimal \eqn{\delta}
