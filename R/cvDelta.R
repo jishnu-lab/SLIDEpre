@@ -13,57 +13,46 @@
 #' @param deltas_scaled a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
 #' @param merge a boolean indicating merge style
-#' @param rep_cv number of replicates for cross-validation
 #' @return the selected optimal \eqn{\delta}
 
-cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, merge, rep_cv) {
+
+cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, merge) {
   #### get data matrix dimensions
   n <- nrow(raw_x); p <- ncol(raw_x)
 
-  foreach::foreach (i = 1:rep_cv, .combine = c) %dopar% {
-    #### split data into training/validation sets
-    samp_ind <- sample(n, floor(n / 2))
-    x_train <- raw_x[samp_ind, ]
-    x_val <- raw_x[-samp_ind, ]
+  #### split data into training/validation sets
+  samp_ind <- sample(n, floor(n / 2))
+  x_train <- raw_x[samp_ind, ]
+  x_val <- raw_x[-samp_ind, ]
 
-    #### standardize
-    std <- standCV(valid_x = x_val,
-                   train_x = x_train)
-    x_train <- std$train_x
-    x_val <- std$valid_x
+  #### calculate the sample correlation matrix for training set
+  sigma_train <- cor(x_train);
+  sigma_train <- sigma_train * fdr_entries #### control for FDR
+  diag(sigma_train) <- 0 #### set diagonal to 0 for findRowMax()
+  se_est <- apply(x_train, 2, stats::sd)
 
-    #### recalculate se_est
-    se_est <- apply(x_train, 2, stats::sd) #### get sd of columns for feature matrix
+  #### calculate the sample correlation matrix for validation set
+  sigma_val <- cor(x_val)
+  sigma_val <- sigma_val * fdr_entries #### control for FDR
 
-    #### calculate the sample correlation matrix for training set
-    sigma_train <- cor(x_train);
-    sigma_train <- sigma_train * fdr_entries #### control for FDR
-    diag(sigma_train) <- 0 #### set diagonal to 0 for findRowMax()
+  result_max <- findRowMax(abs(sigma_train))
+  max_vals <- result_max$max_vals
+  max_inds <- result_max$max_inds
 
-    #### calculate the sample correlation matrix for validation set
-    sigma_val <- cor(x_val)
-    sigma_val <- sigma_val * fdr_entries #### control for FDR
+  loss <- c()
+  for (i in 1:length(deltas_scaled)) {
+    result_fitted <- calFittedSigma(sigma = sigma_train, delta = deltas_scaled[i],
+                                    max_vals = max_vals, max_inds = max_inds,
+                                    se_est = se_est, diagonal = diagonal, merge = merge)
+    fit_sigma <- result_fitted$fit_sigma
+    pure_vec <- result_fitted$pure_vec
 
-    result_max <- findRowMax(abs(sigma_train))
-    max_vals <- result_max$max_vals
-    max_inds <- result_max$max_inds
-
-    loss <- c()
-    for (i in 1:length(deltas_scaled)) {
-      result_fitted <- calFittedSigma(sigma = sigma_train, delta = deltas_scaled[i],
-                                      max_vals = max_vals, max_inds = max_inds,
-                                      se_est = se_est, diagonal = diagonal, merge = merge)
-      fit_sigma <- result_fitted$fit_sigma
-      pure_vec <- result_fitted$pure_vec
-
-      if (is.null(dim(fit_sigma)) && fit_sigma == -1) {
-        loss[i] <- Inf
-      } else {
-        denom <- length(pure_vec) * (length(pure_vec) - 1)
-        loss[i] <- 2 * offSum(sigma_val[pure_vec, pure_vec], fit_sigma, se_est[pure_vec]) / denom
-      }
+    if (is.null(dim(fit_sigma)) && fit_sigma == -1) {
+      loss[i] <- Inf
+    } else {
+      denom <- length(pure_vec) * (length(pure_vec) - 1)
+      loss[i] <- 2 * offSum(sigma_val[pure_vec, pure_vec], fit_sigma, se_est[pure_vec]) / denom
     }
-    deltas_scaled[which.min(loss)]
-  } -> delta_min_loss
-  return (delta_min_loss)
+  }
+  return(deltas_scaled[which.min(loss)])
 }

@@ -2,6 +2,7 @@
 #'
 #' Perform Essential Regression without prior knowledge.
 #'
+#' @importFrom foreach '%dopar%'
 #' @param y a response vector of dimension \eqn{n}, must be continous
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}
@@ -89,14 +90,19 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
   #### use the unstandardized version of x (if available) to avoid signal leakage in CV
-  opt_delta <- ifelse(length(delta_scaled) > 1,
-                      stats::median(cvDelta(raw_x = raw_x,
-                                            fdr_entries = kept_entries,
-                                            deltas_scaled = delta_scaled,
-                                            diagonal = diagonal,
-                                            merge = merge,
-                                            rep_cv = rep_cv)),
-                      delta_scaled)
+  delta_reps <- ifelse(length(delta_scaled) > 1,
+                       rep_cv,
+                       1)
+
+  foreach::foreach(i = 1:delta_reps, .combine = c) %dopar% {
+    cvDelta(raw_x = raw_x,
+            fdr_entries = kept_entries,
+            deltas_scaled = delta_scaled,
+            diagonal = diagonal,
+            merge = merge)
+  } -> cv_delta_reps
+
+  opt_delta <- stats::median(cv_delta_reps)
 
   #### estimate membership matrix Ai
   #### also returns a vector of the indices of estimated pure variables
@@ -105,14 +111,15 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   pure_numb <- sapply(result_AI$pure_list, FUN = function(x) {length(c(x$pos, x$neg))})
   if (sum(pure_numb == 1) > 0) {
     cat("Changing ``merge'' to ``union'' and reselect delta ... \n")
-    opt_delta <- ifelse(length(delta_scaled) > 1,
-                        stats::median(cvDelta(raw_x = raw_x,
-                                              fdr_entries = kept_entries,
-                                              deltas_scaled = delta_scaled,
-                                              diagonal = diagonal,
-                                              merge = F,
-                                              rep_cv = rep_cv)),
-                        delta_scaled)
+    foreach::foreach(i = 1:delta_reps, .combine = c) %dopar% {
+      cvDelta(raw_x = raw_x,
+              fdr_entries = kept_entries,
+              deltas_scaled = delta_scaled,
+              diagonal = diagonal,
+              merge = F)
+    } -> cv_delta_reps
+
+    opt_delta <- stats::median(cv_delta_reps)
     result_AI <- estAI(sigma = sigma, delta = opt_delta, se_est = se_est, merge = F)
   }
 
