@@ -7,6 +7,7 @@
 #' @export
 
 toCont <- function(y) {
+  y <- unlist(y)
   uniq_vals <- unique(y)
   num_uniq <- length(uniq_vals)
   cont_vals <- seq(1, num_uniq)
