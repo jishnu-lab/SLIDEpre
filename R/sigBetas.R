@@ -10,8 +10,6 @@
 
 sigBetas <- function(betas, cutoff) {
   num_betas <- length(betas)
-  print(num_betas)
-  print(betas)
   betas <- data.frame(seq(1, num_betas),
                       betas)
   colnames(betas) <- c("ind", "beta")

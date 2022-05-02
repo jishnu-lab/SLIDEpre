@@ -41,8 +41,9 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                      change_all = F, verbose = F, delta_grid = NULL) {
 
   if (y_factor) {
-    orig_y <- y
-    y <- ifelse(y > mean(y), 0, 1)
+    y <- toCont(y)
+    orig_y <- y$cat_y
+    y <- y$cont_y
     eval_type <- "auc"
   } else{
     eval_type <- "mse"

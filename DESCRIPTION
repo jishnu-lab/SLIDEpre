@@ -26,6 +26,7 @@ Imports:
     methods,
     pheatmap,
     pls,
+    plyr,
     shiny,
     stats,
     tidyr,
