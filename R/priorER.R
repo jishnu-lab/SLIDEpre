@@ -57,7 +57,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   opt_delta <- plain_er$opt_delta
   opt_lambda <- plain_er$opt_lambda
   sigma <- plain_er$thresh_sigma
-  plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
+  #plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
 
   #### at this point, we have fully run LOVE/done cross-validation and can now
   #### begin to incorporate the prior information
@@ -108,26 +108,26 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
 
   #### Essential Regression with Prior Information Part II #####################
   #### find significant betas
-  betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
-  sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
+  #betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
+  #sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
 
   #### find important features in each cluster
-  clust_feats <- list()
-  imp_clusts <- NULL
-  prior_er_res <- readER(prior_er)
-  for (i in 1:prior_er$K) {
-    cluster <- unlist(prior_er_res$clusters[[i]])
-    imp_feats_cluster <- intersect(cluster, imps)
-    clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
-    if (length(imp_feats_cluster) > 0) {
-      imp_clusts <- c(imp_clusts, i)
-    }
-  }
+  # clust_feats <- list()
+  # imp_clusts <- NULL
+  # prior_er_res <- readER(prior_er)
+  # for (i in 1:prior_er$K) {
+  #   cluster <- unlist(prior_er_res$clusters[[i]])
+  #   imp_feats_cluster <- intersect(cluster, imps)
+  #   clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
+  #   if (length(imp_feats_cluster) > 0) {
+  #     imp_clusts <- c(imp_clusts, i)
+  #   }
+  # }
 
   #### attempt to make the clusters with important features significant
-  prior_z <- predZ(x = x, er_res = prior_er)
-  new_betas <- bayesVarSel(z = prior_z, y = y, imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
-  new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
+  #prior_z <- predZ(x = x, er_res = prior_er)
+  #new_betas <- bayesVarSel(z = prior_z, y = y, imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
+  #new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
 
   #### Essential Regression with Prior Information Part III ####################
   #### compile results
@@ -135,10 +135,10 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                   "priorER_results" = prior_er, ## priorER - prior info
                   "sample_sigma" = sigma, ## sigma used in plainER
                   "prior_knowledge_sigma" = prior_sigma, ## Delta used to represent prior knowledge
-                  "priorER_sigma" = bal_sigma, ## sigma used in priorER
-                  "plainER_betas" = plain_betas, ## plainER betas
-                  "priorER_betas" = betas, ## priorER betas - no bayes
-                  "prior_adj_betas" = new_betas) ## variational bayes adjusted betas
+                  "priorER_sigma" = bal_sigma) ## sigma used in priorER
+                  #"plainER_betas" = plain_betas, ## plainER betas
+                  #"priorER_betas" = betas, ## priorER betas - no bayes
+                  #"prior_adj_betas" = new_betas) ## variational bayes adjusted betas
 
   return (results)
 }

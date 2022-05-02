@@ -10,8 +10,11 @@
 
 sigBetas <- function(betas, cutoff) {
   num_betas <- length(betas)
-  betas <- data.frame("ind" = seq(1, num_betas),
-                      "beta" = betas)
+  print(num_betas)
+  print(betas)
+  betas <- data.frame(seq(1, num_betas),
+                      betas)
+  colnames(betas) <- c("ind", "beta")
   num_sel <- ceiling(num_betas * cutoff / 2)
   neg <- betas %>%
     dplyr::filter(beta < 0)
