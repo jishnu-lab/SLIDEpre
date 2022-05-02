@@ -16,7 +16,6 @@ essregCV(
   alpha_level = 0.05,
   thresh = 0.001,
   perm_option = NULL,
-  y_factor = F,
   beta_est = "NULL",
   sel_corr = T,
   svm = F,
@@ -55,8 +54,6 @@ control the false discovery rate, default is 0.2}
 
 \item{perm_option}{a string indicating the type of permutation type do perform
 (can be NULL, "x", "x_y", or "y_before_split")}
-
-\item{y_factor}{a boolean flag indicating whether \eqn{y} is a factor or not}
 
 \item{beta_est}{a string indicating the type of estimation to use for \eqn{\beta}}
 

@@ -18,6 +18,12 @@ pipelineER2 <- function(yaml_path) {
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1)) ## not standardized
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1)) ## not standardized
 
+  if (er_input$y_factor) {
+    y <- toCont(y)
+    orig_y <- y$cat_y
+    y <- y$cont_y
+  }
+
   ## Step 3: Fine Delta Search ###################################################
   if (is.null(delta_grid)) {
     d_lbd <- best_delta - best_delta / 2

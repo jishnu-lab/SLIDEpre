@@ -14,7 +14,6 @@
 #' control the false discovery rate, default is 0.2
 #' @param perm_option a string indicating the type of permutation type do perform
 #' (can be NULL, "x", "x_y", or "y_before_split")
-#' @param y_factor a boolean flag indicating whether \eqn{y} is a factor or not
 #' @param beta_est a string indicating the type of estimation to use for \eqn{\beta}
 #' @param sel_corr a boolean flag indicating whether to perform cross-validation by evaluating the correlation
 #' between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})
@@ -36,14 +35,11 @@
 
 essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, thresh = 0.001, perm_option = NULL,
-                     y_factor = F, beta_est = "NULL", sel_corr = T, svm = F,
+                     beta_est = "NULL", sel_corr = T, svm = F,
                      diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
                      change_all = F, verbose = F, delta_grid = NULL) {
 
   if (y_factor) {
-    y <- toCont(y)
-    orig_y <- y$cat_y
-    y <- y$cont_y
     eval_type <- "auc"
   } else{
     eval_type <- "mse"
