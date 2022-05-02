@@ -61,6 +61,7 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   ## Sigma Thresholding ########################################################
   #### save correlation matrix heatmap
   if (!is.null(out_path)) {
+    dir.create(file.path(paste0(out_path, "delta", delta[1])), showWarnings = F)
     pdf_file <- paste0(out_path, "delta", delta[1], "/corr_mat_heatmap.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F)
     grDevices::pdf(file = pdf_file)
