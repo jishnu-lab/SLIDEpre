@@ -125,7 +125,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   }
 
   #### attempt to make the clusters with important features significant
-  prior_z <- predZ(x = scale_x, er_res = prior_er)
+  prior_z <- predZ(x = scale(x, T, T), er_res = prior_er)
   new_betas <- bayesVarSel(z = prior_z, y = scale(y, T, T), imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
   new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
 
