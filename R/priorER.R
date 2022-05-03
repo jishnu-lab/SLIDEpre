@@ -103,11 +103,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                         correction = correction,
                         verbose = verbose)
   } else { ## if all of the important features were in clusters, then don't need to do Part I
-    results <- list("plainER_results" = plain_er, ## plainER - no prior info
-                    "priorER_results" = NULL, ## priorER - prior info
-                    "sample_sigma" = sigma, ## sigma used in plainER
-                    "prior_knowledge_sigma" = NULL,
-                    "priorER_sigma" = NULL)
+    prior_er <- plain_er
   }
 
   #### Essential Regression with Prior Information Part II #####################
