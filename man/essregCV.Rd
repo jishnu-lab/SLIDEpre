@@ -19,6 +19,7 @@ essregCV(
   beta_est = "NULL",
   sel_corr = T,
   svm = F,
+  y_factor = F,
   diagonal = F,
   merge = F,
   equal_var = F,
@@ -61,6 +62,8 @@ control the false discovery rate, default is 0.2}
 between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})}
 
 \item{svm}{a boolean flag indicating whether to fit svm/svr and use that for prediction}
+
+\item{y_factor}{a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})}
 
 \item{diagonal}{a boolean indicating the diagonal structure of the data ???}
 

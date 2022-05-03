@@ -58,6 +58,7 @@ pipelineER1 <- function(yaml_path) {
                        x = x,
                        y = y,
                        delta = mag_delta,
+                       y_factor = er_input$y_factor,
                        perm_option = er_input$perm_option,
                        beta_est = er_input$beta_est,
                        sel_corr = er_input$sel_corr,
