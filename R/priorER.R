@@ -108,25 +108,25 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
 
   #### Essential Regression with Prior Information Part II #####################
   #### find significant betas
-  #betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
-  #sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
+  betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
+  sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
 
   #### find important features in each cluster
-  # clust_feats <- list()
-  # imp_clusts <- NULL
-  # prior_er_res <- readER(prior_er)
-  # for (i in 1:prior_er$K) {
-  #   cluster <- unlist(prior_er_res$clusters[[i]])
-  #   imp_feats_cluster <- intersect(cluster, imps)
-  #   clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
-  #   if (length(imp_feats_cluster) > 0) {
-  #     imp_clusts <- c(imp_clusts, i)
-  #   }
-  # }
+  clust_feats <- list()
+  imp_clusts <- NULL
+  prior_er_res <- readER(prior_er)
+  for (i in 1:prior_er$K) {
+    cluster <- unlist(prior_er_res$clusters[[i]])
+    imp_feats_cluster <- intersect(cluster, imps)
+    clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
+    if (length(imp_feats_cluster) > 0) {
+      imp_clusts <- c(imp_clusts, i)
+    }
+  }
 
   #### attempt to make the clusters with important features significant
-  #prior_z <- predZ(x = x, er_res = prior_er)
-  #new_betas <- bayesVarSel(z = prior_z, y = y, imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
+  prior_z <- predZ(x = scale_x, er_res = prior_er)
+  new_betas <- bayesVarSel(z = prior_z, y = scale(y, T, T), imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
   #new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
 
   #### Essential Regression with Prior Information Part III ####################

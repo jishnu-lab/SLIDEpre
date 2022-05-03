@@ -58,7 +58,6 @@ pipelineER2 <- function(yaml_path) {
       temp <- essregCV(k = er_input$k,
                        x = x,
                        y = y,
-                       y_factor = er_input$y_factor,
                        delta = best_delta,
                        perm_option = er_input$perm_option,
                        beta_est = er_input$beta_est,
