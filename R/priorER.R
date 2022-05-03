@@ -57,7 +57,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   opt_delta <- plain_er$opt_delta
   opt_lambda <- plain_er$opt_lambda
   sigma <- plain_er$thresh_sigma
-  #plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
+  plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
 
   #### at this point, we have fully run LOVE/done cross-validation and can now
   #### begin to incorporate the prior information
@@ -103,7 +103,11 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                         correction = correction,
                         verbose = verbose)
   } else { ## if all of the important features were in clusters, then don't need to do Part I
-    prior_er <- plain_er
+    results <- list("plainER_results" = plain_er, ## plainER - no prior info
+                    "priorER_results" = NULL, ## priorER - prior info
+                    "sample_sigma" = sigma, ## sigma used in plainER
+                    "prior_knowledge_sigma" = NULL,
+                    "priorER_sigma" = NULL)
   }
 
   #### Essential Regression with Prior Information Part II #####################
@@ -127,7 +131,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   #### attempt to make the clusters with important features significant
   prior_z <- predZ(x = scale_x, er_res = prior_er)
   new_betas <- bayesVarSel(z = prior_z, y = scale(y, T, T), imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
-  #new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
+  new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
 
   #### Essential Regression with Prior Information Part III ####################
   #### compile results
@@ -135,10 +139,10 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                   "priorER_results" = prior_er, ## priorER - prior info
                   "sample_sigma" = sigma, ## sigma used in plainER
                   "prior_knowledge_sigma" = prior_sigma, ## Delta used to represent prior knowledge
-                  "priorER_sigma" = bal_sigma) ## sigma used in priorER
-                  #"plainER_betas" = plain_betas, ## plainER betas
-                  #"priorER_betas" = betas, ## priorER betas - no bayes
-                  #"prior_adj_betas" = new_betas) ## variational bayes adjusted betas
+                  "priorER_sigma" = bal_sigma, ## sigma used in priorER
+                  "plainER_betas" = plain_betas, ## plainER betas
+                  "priorER_betas" = betas, ## priorER betas - no bayes
+                  "prior_adj_betas" = new_betas) ## variational bayes adjusted betas
 
   return (results)
 }
