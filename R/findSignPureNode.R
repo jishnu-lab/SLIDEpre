@@ -28,7 +28,7 @@ findSignPureNode <- function(pure_list, sigma) {
       }
       signed_pure_list[[i]] <- list(pos = pos, neg = neg)
     } else {
-      sigend_pure_list[[i]] <- list(pos = pure_i, neg = list())
+      signed_pure_list[[i]] <- list(pos = pure_i, neg = list())
     }
   }
   return(signed_pure_list)

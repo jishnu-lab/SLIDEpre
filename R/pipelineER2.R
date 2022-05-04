@@ -25,7 +25,7 @@ pipelineER2 <- function(yaml_path) {
   }
 
   ## Step 3: Fine Delta Search ###################################################
-  if (is.null(delta_grid)) {
+  if (length(er_input$best_delta) == 1) {
     d_lbd <- best_delta - best_delta / 2
     d_ubd <- best_delta + best_delta / 2
     delta_grid <- seq(d_lbd, d_ubd, best_delta / 100)
@@ -34,7 +34,7 @@ pipelineER2 <- function(yaml_path) {
   fine_delta_er <- plainER(y = y,
                            x = x,
                            sigma = cor(x),
-                           delta = delta_grid,
+                           delta = er_input$best_delta,
                            beta_est = er_input$beta_est,
                            lambda = 0.5,
                            rep_cv = er_input$rep_cv,
@@ -93,7 +93,7 @@ pipelineER2 <- function(yaml_path) {
     dplyr::mutate(delta = as.factor(lambda),
                   method = as.factor(method))
   pdf_file <- paste0(er_input$out_path, "/lambda_selection_boxplot.pdf")
-  dir.create(file.path(dirname(pdf_file)), showWarnings = F)
+  dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
   lambda_boxplot <- ggplot2::ggplot(data = sel_corr_res,
                                    ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
     ggplot2::geom_boxplot()

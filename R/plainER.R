@@ -93,19 +93,18 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NUL
   #### if delta has more than 1 element, then do rep_CV # of replicates
   #### of CV_Delta and select median of replicates
   #### use the unstandardized version of x (if available) to avoid signal leakage in CV
-  delta_reps <- ifelse(length(delta_scaled) > 1,
-                       rep_cv,
-                       1)
-
-  foreach::foreach(i = 1:delta_reps, .combine = c) %dopar% {
-    cvDelta(raw_x = raw_x,
-            fdr_entries = kept_entries,
-            deltas_scaled = delta_scaled,
-            diagonal = diagonal,
-            merge = merge)
-  } -> cv_delta_reps
-
-  opt_delta <- stats::median(cv_delta_reps)
+  if (length(delta_scaled) > 1) {
+    foreach::foreach(i = 1:rep_cv, .combine = c) %dopar% {
+      cvDelta(raw_x = raw_x,
+              fdr_entries = kept_entries,
+              deltas_scaled = delta_scaled,
+              diagonal = diagonal,
+              merge = merge)
+    } -> cv_delta_reps
+    opt_delta <- stats::median(cv_delta_reps)
+  } else {
+    opt_delta <- delta_scaled
+  }
 
   #### estimate membership matrix Ai
   #### also returns a vector of the indices of estimated pure variables

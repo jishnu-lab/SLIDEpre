@@ -93,7 +93,7 @@ pipelineER1 <- function(yaml_path) {
     dplyr::mutate(delta = as.factor(delta),
                   method = as.factor(method))
   pdf_file <- paste0(er_input$out_path, "/delta_selection_boxplot.pdf")
-  dir.create(file.path(dirname(pdf_file)), showWarnings = F)
+  dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
   delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
                                    ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
     ggplot2::geom_boxplot()

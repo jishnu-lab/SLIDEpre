@@ -42,7 +42,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
   if (y_factor) {
     eval_type <- "auc"
-  } else{
+  } else {
     eval_type <- "mse"
   }
 
@@ -236,7 +236,6 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
           results <- rbind(results, iter_res)
         }
       }
-
     }
   }
   ## set results data frame column names
