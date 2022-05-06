@@ -20,6 +20,7 @@ pipelineER2 <- function(yaml_path) {
 
   if (er_input$y_factor) {
     y <- toCont(y)
+    saveRDS(y, file = paste0(er_input$out_path, "/pipeline2_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
   }
@@ -48,6 +49,8 @@ pipelineER2 <- function(yaml_path) {
                            thresh_fdr = er_input$thresh_fdr)
 
   best_delta <- fine_delta_er$opt_delta
+
+  saveRDS(fine_delta_er, file = paste0(er_input$out_path, "/pipeline_step3.rds"))
 
   ## Step 4: Lambda Search #######################################################
   corr_bp_data <- NULL
@@ -78,6 +81,7 @@ pipelineER2 <- function(yaml_path) {
     corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                      "result" = lambda_rep)
   }
+  saveRDS(corr_bp_data, file = paste0(er_input$out_path, "/pipeline_step4.rds"))
 
   ## create boxplot of replicate correlations
   sel_corr_res <- NULL

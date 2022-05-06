@@ -14,5 +14,6 @@ toCont <- function(y) {
   corresp_vals <- cbind(uniq_vals, cont_vals)
   new_y <- plyr::mapvalues(y, from = uniq_vals, to = cont_vals)
   return (list("cat_y" = y,
-               "cont_y" = new_y))
+               "cont_y" = as.numeric(new_y),
+               "mapping" = corresp_vals))
 }

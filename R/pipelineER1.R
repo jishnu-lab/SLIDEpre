@@ -20,6 +20,7 @@ pipelineER1 <- function(yaml_path) {
 
   if (er_input$y_factor) {
     y <- toCont(y)
+    saveRDS(y, file = paste0(er_input$out_path, "/pipeline1_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
   }
@@ -47,6 +48,7 @@ pipelineER1 <- function(yaml_path) {
             verbose = er_input$verbose,
             thresh_fdr = er_input$thresh_fdr)
   } -> coarse_res
+  saveRDS(coarse_res, file = paste0(er_input$out_path, "/pipeline_step1.rds"))
 
   ## Step 2: K-Fold Cross-Validation To Find Delta Magnitude
   corr_bp_data <- NULL
@@ -78,6 +80,7 @@ pipelineER1 <- function(yaml_path) {
     corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                      "result" = delta_rep)
   }
+  saveRDS(corr_bp_data, file = paste0(er_input$out_path, "/pipeline_step2.rds"))
 
   ## create boxplot of replicate correlations
   sel_corr_res <- NULL
