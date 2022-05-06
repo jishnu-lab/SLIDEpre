@@ -109,27 +109,10 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   }
 
   #### Essential Regression with Prior Information Part II #####################
-  #### find significant betas
-  betas <- sigBetas(betas = prior_er$beta, cutoff = alpha_level * 2)
-  sig_betas <- unlist(c(betas$pos_sig, betas$neg_sig))
-
-  #### find important features in each cluster
-  clust_feats <- list()
-  imp_clusts <- NULL
-  prior_er_res <- readER(prior_er)
-  for (i in 1:prior_er$K) {
-    cluster <- unlist(prior_er_res$clusters[[i]])
-    imp_feats_cluster <- intersect(cluster, imps)
-    clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
-    if (length(imp_feats_cluster) > 0) {
-      imp_clusts <- c(imp_clusts, i)
-    }
-  }
-
-  #### attempt to make the clusters with important features significant
-  prior_z <- predZ(x = scale(x, T, T), er_res = prior_er)
-  new_betas <- bayesVarSel(z = prior_z, y = scale(y, T, T), imp_clusts = imp_clusts, er_res = prior_er, thresh = thresh)
-  new_betas <- sigBetas(betas = new_betas, cutoff = alpha_level * 2)
+  new_betas <- betaBMA(x = x,
+                       y = y,
+                       er_res = prior_er,
+                       imps = imps)
 
   #### Essential Regression with Prior Information Part III ####################
   #### compile results
@@ -138,9 +121,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                   "sample_sigma" = sigma, ## sigma used in plainER
                   "prior_knowledge_sigma" = prior_sigma, ## Delta used to represent prior knowledge
                   "priorER_sigma" = bal_sigma, ## sigma used in priorER
-                  "plainER_betas" = plain_betas, ## plainER betas
-                  "priorER_betas" = betas, ## priorER betas - no bayes
-                  "prior_adj_betas" = new_betas) ## variational bayes adjusted betas
+                  "beta_bma" = new_betas) ## new betas (BMA, MPM, HPM)
 
   return (results)
 }

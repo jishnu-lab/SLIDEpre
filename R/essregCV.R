@@ -251,7 +251,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
     colnames(res_df) <- c("method", "spearman_corr")
     res_df <- res_df %>%
       as.data.frame() %>%
-      dplyr::mutate(spearman_corr = as.numeric(spearman_corr))
+      dplyr::mutate(spearman_corr = as.numeric(as.character(spearman_corr)))
     return (res_df)
   } else {
     if (eval_type == "mse") {
