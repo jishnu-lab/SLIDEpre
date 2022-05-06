@@ -5,6 +5,7 @@
 #' @param x data matrix of dimensions \eqn{n \times p}
 #' @param er_res the results of a run of \code{plainER()} or \code{priorER()}
 #' @return estimates for \eqn{Z}
+#' @export
 
 predZ <- function(x, er_res) {
   A_hat <- er_res$A
