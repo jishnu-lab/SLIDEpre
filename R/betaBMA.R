@@ -93,5 +93,6 @@ betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
   all_betas <- rep(0, ncol(prior_z))
   all_betas[imp_clusts] <- unlist(imp_betas)
   all_betas[-imp_clusts] <- unlist(nonimp_beta)
-  return(all_betas)
+  return(list("beta_est" = all_betas,
+              "imp_clusters" = imp_clusts))
 }
