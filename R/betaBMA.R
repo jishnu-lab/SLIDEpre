@@ -51,6 +51,7 @@ betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
   }
 
   p <- ncol(z_imp)
+  cat("Running BAS.lm . . . ")
   imp_betas <- BAS::bas.lm(scale_y ~ z_imp,
                            prior = "g-prior",
                            alpha = 1,
@@ -62,7 +63,7 @@ betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
                            MCMC.iterations = p * 2^15,
                            thin = p) ## thin every p iterations
 
-  imp_betas <- coef(z_betas, estimator = estim)
+  imp_betas <- coef(imp_betas, estimator = estim)
   imp_betas <- imp_betas$postmean ## get posterior mean
   imp_betas <- imp_betas[-1] ## remove intercept estimate
 
