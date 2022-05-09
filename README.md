@@ -1,5 +1,5 @@
-# EssReg
-An R package for Essential Regression from [Bing et al. 2022](#1).
+# EssReg with Prior Information
+An R package for Essential Regression with Prior Information as well as the vanilla Essential Regression implementaiton from [Bing et al. 2022](#1).
 
 This package includes the foundational framework found in the paper's code (found [here](https://github.com/jishnu-lab/ER) and stable release found [here](https://zenodo.org/record/6178063#.YkMbXi-B1Ac)) as well
 as builds upon this base by incorporating prior knowledge into the Essential Regression scheme. 
