@@ -112,7 +112,8 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   new_betas <- betaBMA(x = x,
                        y = y,
                        er_res = prior_er,
-                       imps = imps)
+                       imps = imps,
+                       estim = "BMA")
 
   #### Essential Regression with Prior Information Part III ####################
   #### compile results

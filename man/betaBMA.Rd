@@ -4,7 +4,7 @@
 \alias{betaBMA}
 \title{PriorER - Bayesian Model Averaging For \eqn{\beta}s}
 \usage{
-betaBMA(x, y, er_res, imps)
+betaBMA(x, y, er_res, imps, estim = "BMA")
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
@@ -14,10 +14,13 @@ betaBMA(x, y, er_res, imps)
 \item{er_res}{the result of \link{plainER} or \link{priorER}}
 
 \item{imps}{a vector of important variables}
+
+\item{estim}{the type of estimator used for Bayesian Model Averaging. options include
+"BMA" = Bayesian Model Averaging Model, "HPM" = Highest Probability Model,
+"MPM" = Median Probability Model}
 }
 \value{
-nothing is returned, saves boxplot of cross-validation results for user to use
-in selecting optimal \eqn{\delta}
+a vector of \eqn{\beta} estimates
 }
 \description{
 Find new estimates for \eqn{\beta}s using Bayesian Adaptive
