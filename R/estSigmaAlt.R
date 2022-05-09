@@ -8,6 +8,7 @@
 #' @param beta_hat estimated values of \eqn{\beta}
 #' @param C_hat estimated matrix
 #' @return ???
+#' @export
 
 estSigmaAlt <- function(y, h_hat, beta_hat, C_hat) {
   n <- length(y)

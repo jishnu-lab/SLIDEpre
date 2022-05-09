@@ -7,6 +7,7 @@
 #' @param y response vector of dimension \eqn{K}
 #' @param lambda \eqn{\lambda}, a positive constant
 #' @return a vector of dimension \eqn{K}
+#' @export
 
 LP <- function(y, lambda) {
   K <- length(y)

@@ -6,6 +6,7 @@
 #' diagonal of 0s
 #' @return a list including the index of the (first) maximal absolute values of the rows of
 #' \eqn{\Sigma} as well as the values
+#' @export
 
 findRowMax <- function(abs_sigma) {
   p <- nrow(abs_sigma)

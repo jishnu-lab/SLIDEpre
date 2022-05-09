@@ -11,6 +11,7 @@
 #' @return a list including: \eqn{A_I}, a matrix of dimensions \eqn{p \times K},
 #' a vector of the indices of estimated pure variables, and a list of the indices of
 #' the estimated pure variables
+#' @export
 
 
 estAI <- function(sigma, delta, se_est, merge) {

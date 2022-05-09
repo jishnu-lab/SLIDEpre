@@ -6,6 +6,7 @@
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param AI a matrix of dimensions \eqn{p \times K}
 #' @return a matrix of dimensions \eqn{p \times p}
+#' @export
 
 adjustSign <- function(sigma, AI) {
   signed_sigma <- matrix(0, nrow(AI), nrow(AI))

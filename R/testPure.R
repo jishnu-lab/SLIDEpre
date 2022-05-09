@@ -12,6 +12,7 @@
 #' @param delta \eqn{\delta}, a numerical constant
 #' @param se_est a vector of estimates of the standard deviations of the rows of the data matrix, \eqn{x}
 #' @return TRUE or FALSE
+#' @export
 
 testPure <- function(sigma_row, row_ind, s_i, max_vals, max_inds, delta, se_est) {
   for (i in 1:length(s_i)) {

@@ -6,6 +6,7 @@
 #' @param A a matrix
 #' @param B a matrix of same dimensions as \eqn{A}
 #' @return a list of column and sign permutation matrices
+#' @export
 
 getOptPerm <- function(A, B) {
   K <- ncol(A)

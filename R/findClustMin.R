@@ -7,6 +7,7 @@
 #' @param cluster a cluster found by Essential Regression (list format)
 #' @param clust_targ a vector of the mixed variables of interest in the cluster
 #' @return the maximum absolute minimum correlation found out of all of the rows provided
+#' @export
 
 
 findClustMin <- function(sigma, cluster, clust_targ) {

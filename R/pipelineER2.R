@@ -99,7 +99,7 @@ pipelineER2 <- function(yaml_path) {
   pdf_file <- paste0(er_input$out_path, "/lambda_selection_boxplot.pdf")
   dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
   lambda_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                   ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
+                                   ggplot2::aes(x = lambda, y = spearman_corr, fill = method)) +
     ggplot2::geom_boxplot()
   ggplot2::ggsave(pdf_file, lambda_boxplot)
 }

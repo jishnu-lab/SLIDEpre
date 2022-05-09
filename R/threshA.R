@@ -7,6 +7,7 @@
 #' @param mu threshold, a positive value
 #' @param scale boolean for whether to normalize
 #' @return thresholded version of matrix \code{A}
+#' @export
 
 threshA <- function(A, mu, scale = FALSE) {
   scaledA <- A

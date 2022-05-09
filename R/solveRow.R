@@ -6,6 +6,7 @@
 #' @param C matrix?
 #' @param lambda \eqn{\labmda}
 #' @return value
+#' @export
 
 solveRow <- function(col_ind, C, lambda) {
   #### set up linear program

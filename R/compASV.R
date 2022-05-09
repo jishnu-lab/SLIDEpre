@@ -13,6 +13,7 @@
 #' @param I_hat vector of pure node indices
 #' @param I_hat_list list of pure node indices by cluster
 #' @return ???
+#' @export
 
 compASV <- function(sigma_alt, BI, Theta_hat, Gamma_hat, beta_hat, Omega_hat, I_hat, I_hat_list) {
   D_tau_bar <- t(BI) %*% diag(Gamma_hat[I_hat]) %*% BI

@@ -4,6 +4,7 @@
 #'
 #' @param pure_list estimated indices of pure nodes
 #' @return true or false depending upon existence of singleton element
+#' @export
 
 singleton <- function(pure_list) {
   if (length(pure_list) == 0) {

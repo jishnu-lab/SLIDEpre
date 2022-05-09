@@ -7,6 +7,7 @@
 #' @param cluster a cluster found by Essential Regression (list format)
 #' @param clust_targ a vector of the pure nodes in the cluster
 #' @return the median correlation found out of all of the rows provided
+#' @export
 
 
 findClustMed <- function(sigma, cluster, clust_targ) {

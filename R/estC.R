@@ -10,6 +10,7 @@
 #' @param AI a matrix of dimensions \eqn{p \times K}
 #' @param diagonal boolean indicating whether to only estimated diagonal elements of \eqn{C} (default = F)
 #' @return an estimate of \eqn{C} of dimensions \eqn{K \times K}
+#' @export
 
 estC <- function(sigma, AI, diagonal = F) {
   K <- ncol(AI)

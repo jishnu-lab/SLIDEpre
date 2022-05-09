@@ -6,6 +6,7 @@
 #' @param pure_list a list of pure node indices
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @return a list of signed subpartitions of pure node indices
+#' @export
 
 findSignPureNode <- function(pure_list, sigma) {
   signed_pure_list <- list()

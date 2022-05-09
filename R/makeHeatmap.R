@@ -8,6 +8,7 @@
 #' @param cluster a boolean indicating whether to perform hierarchical clustering
 #' @param names a boolean indicating whether to display column/row names
 #' @return a heatmap
+#' @export
 
 makeHeatmap <- function(mat, title, cluster = T, names = F) {
   heatmap <- pheatmap::pheatmap(mat, cluster_rows = cluster, cluster_cols = cluster,

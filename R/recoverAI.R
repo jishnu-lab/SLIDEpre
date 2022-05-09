@@ -5,6 +5,7 @@
 #' @param pure_list a list of group indices of the pure nodes with sign
 #' @param p the number of features
 #' @return a matrix of dimensions \eqn{p \times K}
+#' @export
 
 recoverAI <- function(pure_list, p) {
   K <- length(pure_list)

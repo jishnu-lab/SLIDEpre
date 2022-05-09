@@ -7,6 +7,7 @@
 #' @param lambda \eqn{\lambda}, a positive constant
 #' @param se_est_J the estimated standard errors of indices in \eqn{J}
 #' @return an estimate of matrix \eqn{A_J}
+#' @export
 
 estAJDant <- function(C_hat, sigma_TJ, lambda, se_est_J) {
   AJ <- matrix(0, ncol(sigma_TJ), nrow(sigma_TJ))

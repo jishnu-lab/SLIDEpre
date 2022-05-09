@@ -8,6 +8,7 @@
 #' @param val1 first value
 #' @param val2 second value
 #' @return the natural logarithm of multivariate Gamma function
+#' @export
 
 logGamma <- function(p, val1, val2) {
   base <- 0.0

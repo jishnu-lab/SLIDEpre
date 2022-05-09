@@ -12,6 +12,7 @@
 #' @param merge boolean indicating merge style
 #' @return A list including the list of estimated pure node indices and a vector
 #' of the estimated pure node indices.
+#' @export
 
 findPureNode <- function(abs_sigma, delta, max_vals, max_inds, se_est, merge) {
   G <- list() #### groups

@@ -4,6 +4,7 @@
 #'
 #' @param A a matrix
 #' @return a vector containing the scaled \eqn{L_1} and Frobenius norms
+#' @export
 
 calARates <- function(A) {
   frob <- norm(A, "F") / sqrt(ncol(A) * nrow(A))

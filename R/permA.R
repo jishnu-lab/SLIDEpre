@@ -6,6 +6,7 @@
 #' @param A a matrix
 #' @param B a matrix of same dimensions as \eqn{A}
 #' @return the optimal permutation of \eqn{A}
+#' @export
 
 permA <- function(A, B) {
   if (sum(dim(A) == dim(B)) == 2) {

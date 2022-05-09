@@ -11,6 +11,7 @@
 #' @param delta \eqn{\delta}, a numeric constant
 #' @param se_est vector of standard deviations of features (columns of \code{x})
 #' @return a vector of indices
+#' @export
 
 findRowMaxInd <- function(i, max_val, max_ind, row_i, delta, se_est) {
   ## lbd <- delta * sd(feat i) * sd(feat max_val) + delta * sd(feat i) * sd(each feat)

@@ -11,6 +11,7 @@
 #' @param mu ???? \eqn{\mu}
 #' @param lambda numeric value for \eqn{\lambda} used in soft thresholding
 #' @return Dantzig-type estimator results for \eqn{\beta}
+#' @export
 
 estBetaDant <- function(y, x, A_hat, C_hat, I_hat, delta, mu = 0.5, lambda = 0.5) {
   n <- nrow(x); p <- ncol(x)

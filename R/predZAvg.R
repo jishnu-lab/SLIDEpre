@@ -7,6 +7,7 @@
 #' @param C_hat a matrix of dimensions
 #' @param S_beta ???
 #' @return ????
+#' @export
 
 predZAvg <- function(x, A_hat, C_hat, S_beta) {
   G_hat <- crossprod(A_hat) + solve(C_hat)

@@ -6,6 +6,7 @@
 #' @param AI a matrix of dimensions \eqn{p \times K}
 #' @param pure_vec a vector of indices of the pure nodes
 #' @return an estimate for \eqn{\Sigma_{\hat{TJ}}} of dimensions \eqn{K \times |J|}
+#' @export
 
 estSigmaTJ <- function(sigma, AI, pure_vec) {
   #### adjust sign of entries in sigma according to AI

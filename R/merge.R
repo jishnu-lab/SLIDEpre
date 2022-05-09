@@ -5,6 +5,7 @@
 #' @param clusters a list of groups of node indices
 #' @param group a vector of node indices
 #' @return a list of the merged results
+#' @export
 
 merge <- function(clusters, group) {
   # merge the new group with the previous ones which have common nodes

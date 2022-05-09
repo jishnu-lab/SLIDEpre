@@ -36,24 +36,23 @@ betaBMA <- function(x, y, er_res, imps) {
   imp_probs <- rep(0.5, ncol(prior_z))
   imp_probs[imp_clusts] <- 1
 
+
   ## do BAS for BMA
   cat("Running bas.lm . . .")
   new_betas <- BAS::bas.lm(scale_y ~ prior_z,
                            prior = "g-prior",
                            alpha = 1,
-                           initprobs = imp_probs,
                            modelprior = BAS::beta.binomial(),
                            force.heredity = FALSE,
                            pivot = TRUE,
                            method = "MCMC",
+                           include.always = '~ ',
                            MCMC.iterations = 100000)
 
   cat("Finding median probability model . . .")
   mpm <- coef(new_betas, estimator = "MPM")
   cat("Finding highest probability model . . . ")
   hpm <- coef(new_betas, estimator = "HPM")
-  cat("Finding best predictive model . . .")
-  bpm <- coef(new_betas, estimator = "BPM")
   cat("Finding Bayesian model average model . . .")
   bma <- coef(new_betas, estimator = "BMA")
 
@@ -62,6 +61,5 @@ betaBMA <- function(x, y, er_res, imps) {
 
   return (list("MPM" = mpm$postmean,
                "HPM" = hpm$postmean,
-               "BPM" = bpm$postmean,
                "BMA" = bma$postmean))
 }

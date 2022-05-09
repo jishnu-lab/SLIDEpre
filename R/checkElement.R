@@ -6,6 +6,7 @@
 #' @param element an element
 #' @param groupList a list
 #' @return group and sublist index if found, \code{(0, 0)} otherwise
+#' @export
 
 checkElement <- function(element, groupList) {
   for (i in 1:length(groupList)) {

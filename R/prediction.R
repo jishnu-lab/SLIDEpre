@@ -9,6 +9,7 @@
 #' @param Gamma_hat a matrix of dimensions
 #' @param I_hat a matrix of dimensions
 #' @return a list including \eqn{\hat{\theta}}, the predicted values, and \eqn{\Theta}
+#' @export
 
 prediction <- function(y, x, sigma, A_hat, Gamma_hat, I_hat) {
   K <- ncol(A_hat) #### number of clusters

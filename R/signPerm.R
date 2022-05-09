@@ -4,6 +4,7 @@
 #'
 #' @param n an integer
 #' @return matrix of dimensions \eqn{2^n \times n} containing all sign permutations
+#' @export
 
 signPerm <- function(n) {
   signPerms <- rep(1, n)

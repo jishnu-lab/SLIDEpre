@@ -14,6 +14,7 @@
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
 #' @param k number of folds for \eqn{k}-fold cross-validation
 #' @return the selected optimal \eqn{\lambda}
+#' @export
 
 cvLambda <- function(x, fdr_entries, lambdas, AI, pure_vec, diagonal, k) {
   #### split data matrix into training/validation sets

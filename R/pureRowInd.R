@@ -4,6 +4,7 @@
 #'
 #' @param A a matrix of dimensions \eqn{p \times K}
 #' @return a vector of indices
+#' @export
 
 pureRowInd <- function(A) {
   pureVec <- c()

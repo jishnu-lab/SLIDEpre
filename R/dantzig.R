@@ -6,6 +6,7 @@
 #' @param target_vec a vector
 #' @param lambda \eqn{\lambda}, a positive constant
 #' @return a row of \eqn{A_J} estimated with a Dantzig-type estimator
+#' @export
 
 dantzig <- function(C_hat, target_vec, lambda) {
   K <- length(target_vec) ## number of clusters (columns in Y_hat)

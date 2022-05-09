@@ -12,6 +12,7 @@
 #' @param merge a boolean indicating the merge style
 #' @return a list containing a vector of the indices of the estimated pure variables and
 #' the fitted value of \eqn{A_I \cdot C \cdot A_I^\top}. returns -1 if only one pure node is identified
+#' @export
 
 calFittedSigma <- function(sigma, delta, max_vals, max_inds, se_est, diagonal, merge) {
   #### find pure nodes

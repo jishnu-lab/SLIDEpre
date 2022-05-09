@@ -6,6 +6,7 @@
 #' @param n number of rows/samples in data matrix (integer)
 #' @param p number of columns/features in data matrix (integer)
 #' @return numeric
+#' @export
 
 toPhi <- function(alpha, n, p) {
   phi <- ((alpha * n) + ((1 - alpha) * p) + (1 - alpha)) / (1 - alpha)

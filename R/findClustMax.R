@@ -7,6 +7,7 @@
 #' @param cluster a cluster found by Essential Regression (list format)
 #' @param clust_targ a vector of the target nodes in the cluster
 #' @return the absolute maximum correlation found out of all of the rows provided
+#' @export
 
 
 findClustMax <- function(sigma, cluster, clust_targ) {

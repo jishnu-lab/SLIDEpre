@@ -16,6 +16,7 @@
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
 #' @param support whether to do calculations on support of WHAT
 #' @return a list including the estimates for \eqn{\beta} and the confidence intervals (if requested)
+#' @export
 
 estBeta <- function(y, x, sigma, A_hat, C_hat, Gamma_hat, I_hat, I_hat_list,
                      conf_int = T, alpha_level = 0.05, correction = TRUE,

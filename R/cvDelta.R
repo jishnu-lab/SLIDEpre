@@ -14,6 +14,7 @@
 #' @param diagonal a boolean indicating the diagonal structure of \eqn{C}
 #' @param merge a boolean indicating merge style
 #' @return the selected optimal \eqn{\delta}
+#' @export
 
 
 cvDelta <- function(raw_x, fdr_entries, deltas_scaled, diagonal, merge) {

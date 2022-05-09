@@ -6,6 +6,7 @@
 #' @param mat2 a matrix of same dimensions as \code{mat1}
 #' @param weights the weights to use in calculating the sum
 #' @return the sum of squares
+#' @export
 
 offSum <- function(mat1, mat2, weights) {
   tmp <- (mat1 - mat2) / weights

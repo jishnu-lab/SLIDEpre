@@ -11,6 +11,7 @@
 #' @return a list including the clusters, pure variables, mixed variables, the significant
 #' cluster indices, and the features found in the significant clusters
 #' found by ER
+#' @export
 
 bayesVarSel <- function(z, y, imp_clusts, er_res, thresh = 0.01) {
   n <- length(y)
