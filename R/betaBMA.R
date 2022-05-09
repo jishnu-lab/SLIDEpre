@@ -68,7 +68,7 @@ betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
   imp_betas <- imp_betas[-1] ## remove intercept estimate
 
   ## Step 2: Non-Important Clusters
-  new_y <- y - z_imp %*% imp_betas
+  new_y <- scale_y - z_imp %*% imp_betas
   new_A <- er_res$A[, -imp_clusts]
   new_C <- er_res$C[-imp_clusts, -imp_clusts]
   new_I_clust <- er_res$I_clust[-imp_clusts]
