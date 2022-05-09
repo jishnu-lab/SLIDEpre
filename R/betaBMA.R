@@ -87,7 +87,7 @@ betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
                           correction = TRUE,
                           support = NULL)
   ## get beta estimates
-  nonimp_beta <- nonimp_beta$beta_hat
+  nonimp_beta <- nonimp_betas$beta_hat
 
   ## concatenate the nonimportant and important beta estimates
   all_betas <- rep(0, ncol(prior_z))
