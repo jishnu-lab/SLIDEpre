@@ -21,6 +21,8 @@
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
 #' @param thresh a numerical constant used as the threshold for convergence in Variational Bayes
 #' @param support a boolean ???
+#' @param estim the type of estimator to use for BMA.
+#' Highest Probability Model = "HPM", Bayesian Model Averaging Model = "BMA", Median Probability Model = "MPM".
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
 #' @param change_all a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
 #' for an important feature (T) or to just change to more extreme values (F)
@@ -34,7 +36,7 @@
 
 priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
-                    merge = F, equal_var = F, alpha_level = 0.05, thresh = 0.001,
+                    merge = F, equal_var = F, alpha_level = 0.05, thresh = 0.001, estim = "HPM",
                     support = NULL, correction = T, change_all = F, verbose = F) {
   #### run plainER() first
   plain_er <- plainER(y = y,
@@ -113,7 +115,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
                        y = y,
                        er_res = prior_er,
                        imps = imps,
-                       estim = "BMA")
+                       estim = estim)
 
   #### Essential Regression with Prior Information Part III ####################
   #### compile results

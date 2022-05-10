@@ -15,7 +15,7 @@
 #' @return a vector of \eqn{\beta} estimates
 #' @export
 
-betaBMA <- function(x, y, er_res, imps, estim = "BMA") {
+betaBMA <- function(x, y, er_res, imps, estim = "HPM") {
   #### find important features in each cluster
   er_read <- readER(er_res)
   clust_feats <- list()
