@@ -15,7 +15,7 @@
 #' @return a vector of \eqn{\beta} estimates
 #' @export
 
-betaBMA <- function(x, y, er_res, imps, estim = "HPM") {
+betaBMA <- function(x, y, er_res, imps, method = "split", estim = "HPM") {
   #### find important features in each cluster
   er_read <- readER(er_res)
   clust_feats <- list()
@@ -41,34 +41,71 @@ betaBMA <- function(x, y, er_res, imps, estim = "HPM") {
   z_imp <- prior_z[, imp_clusts]
   loadings <- er_res$A[, imp_clusts]
   z_imp_probs <- rep(0, ncol(z_imp))
-  ## make initial inclusion probabilities - weighted average of loadings in A matrix
+  ## make initial inclusion probabilities
   for (i in 1:ncol(loadings)) {
-    column <- loadings[, i]
-    abs_col <- abs(column)
-    col_sum <- sum(abs(column))
-    n_nonzero <- sum(abs_col != 0)
-    z_imp_probs[i] <- col_sum / n_nonzero
+    column <- loadings[, i] ## get one column of loadings matrix A
+    abs_col <- abs(column) ## take absolute value
+    abs_col <- abs_col[imps] ## get just rows of important features
+    num_nonzero <- length(which(abs_col > 0)) ## get number of nonzero entries
+    z_imp_probs[i] <- num_nonzero / length(which(column != 0)) ## divide by total number of nonzero entries
+  }
+  ## rescale probabilities to be [0.5, 1.0]
+  z_imp_probs <- scales::rescale(z_imp_probs, to = c(0.5, 1.0))
+
+  ## split zs by correlation similarity
+  z_corr <- cor(z_imp)
+  corr_dist <- stats::as.dist(1 - z_corr)
+  corr_tree <- stats::hclust(corr_dist, method = "complete")
+  corr_dend <- stats::as.dendrogram(corr_tree)
+
+  ## find location of cutting
+  k <- 1
+  k_unknown <- TRUE
+  while (k_unknown) {
+    k <- k + 1
+    clusters <- dendextend::cutree(corr_dend, k = k)
+    cl_tab <- table(clusters)
+    biggest_group <- 20
+    for (i in 1:length(cl_tab)) {
+      if (cl_tab[i] > biggest_group) {
+        biggest_group <- cl_tab[i]
+      }
+    }
+    if (biggest_group <= 20) {
+      k_unknown <- FALSE
+    }
   }
 
-  p <- ncol(z_imp)
-  cat("Running BAS.lm . . . ")
-  imp_betas <- BAS::bas.lm(scale_y ~ z_imp,
-                           prior = "g-prior",
-                           alpha = 1,
-                           modelprior = BAS::beta.binomial(alpha = 1, beta = 1),
-                           force.heredity = FALSE,
-                           pivot = TRUE,
-                           method = "MCMC",
-                           initprobs = z_imp_probs,
-                           MCMC.iterations = p * 2^15,
-                           thin = p) ## thin every p iterations
+  cat("Running BAS.lm . . . \n")
+  all_imp_betas <- rep(0, ncol(z_imp))
+  for (i in 1:k) { ## loop through dendrogram clusters
+    cat("    Running BMA for Dendrogram Cluster #", i, ". . . \n")
+    ## get one dendrogram cluster
+    cluster <- clusters[which(clusters == i)]
+    cluster_inds <- names(cluster) %>%
+      as.numeric()
+    z_clust <- z_imp[, cluster_inds]
+    z_clust_imp_probs <- z_imp_probs[cluster_inds]
 
-  imp_betas <- coef(imp_betas, estimator = estim)
-  imp_betas <- imp_betas$postmean ## get posterior mean
-  imp_betas <- imp_betas[-1] ## remove intercept estimate
+    ## do BMA
+    imp_betas_bas <- BAS::bas.lm(scale_y ~ z_clust,
+                                 prior = "g-prior",
+                                 alpha = 1,
+                                 modelprior = BAS::beta.binomial(alpha = 1, beta = 1),
+                                 force.heredity = FALSE,
+                                 pivot = TRUE,
+                                 method = "BAS",
+                                 initprobs = z_clust_imp_probs)
+
+    imp_betas <- coef(imp_betas_bas, estimator = estim)
+    imp_betas <- imp_betas$postmean ## get posterior means
+    imp_betas <- imp_betas[-1] ## remove intercept estimate
+
+    all_imp_betas[which(clusters == i)] <- imp_betas
+  }
 
   ## Step 2: Non-Important Clusters
-  new_y <- scale_y - z_imp %*% imp_betas
+  new_y <- scale_y - z_imp %*% all_imp_betas
   new_A <- er_res$A[, -imp_clusts]
   new_C <- er_res$C[-imp_clusts, -imp_clusts]
   new_I_clust <- er_res$I_clust[-imp_clusts]
@@ -91,7 +128,7 @@ betaBMA <- function(x, y, er_res, imps, estim = "HPM") {
 
   ## concatenate the nonimportant and important beta estimates
   all_betas <- rep(0, ncol(prior_z))
-  all_betas[imp_clusts] <- unlist(imp_betas)
+  all_betas[imp_clusts] <- unlist(all_imp_betas)
   all_betas[-imp_clusts] <- unlist(nonimp_beta)
   return(list("beta_est" = all_betas,
               "imp_clusters" = imp_clusts))
