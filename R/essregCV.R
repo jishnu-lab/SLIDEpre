@@ -31,20 +31,26 @@
 #' @param change_all a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
 #' for an important feature (T) or to just change to more extreme values (F)
 #' @param verbose a boolean indicating whether to include printing
+#' @param rep an integer indicating the replicate number
+#' @param out_path path for saving output
 #' @return An object of class \sQuote{data.frame}
 #' @export
 
 essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, thresh = 0.001, perm_option = NULL,
-                     beta_est = "NULL", sel_corr = T, svm = F, y_factor = F,
+                     beta_est = "NULL", sel_corr = T, svm = F, y_factor = F, out_path,
                      diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
-                     change_all = F, verbose = F, delta_grid = NULL) {
+                     change_all = F, verbose = F, delta_grid = NULL, rep) {
 
   if (y_factor) {
     eval_type <- "auc"
   } else {
     eval_type <- "mse"
   }
+
+  ## create output directory
+  new_dir <- paste0(out_path, "/replicate", rep, "/")
+  dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
   ## divide into folds
   ## first part is partition()
@@ -64,9 +70,9 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   group_inds <- extract
 
   ## methods list
-  methods <- c("plainER", "lasso")
+  methods <- c("plainER", "plainER_IVS", "lasso")
   if (!is.null(priors)) {
-    methods <- c(methods, "priorER")
+    methods <- c(methods, "priorER", "priorER_IVS")
   }
 
   if (!is.null(perm_option)) {
@@ -80,9 +86,9 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       perm_col_ind <- sample(1:ncol(x))
       perm_row_ind <- sample(1:nrow(x))
       methods <- c(methods, paste0(methods, "_xy"))
-    } else {
-      methods <- c(methods, paste0(methods, "_y"))
     }
+  } else {
+    methods <- c(methods, paste0(methods, "_y"))
   }
 
   ## initialization
@@ -194,13 +200,84 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         beta_train <- train_x_std %*% pred_all_betas
         beta_valid <- valid_x_std %*% pred_all_betas
         pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "plainER_IVS", fixed = TRUE)){ ## plain essential regression with IVS
+        res <- plainER(y = train_y,
+                       x = train_x,
+                       sigma = NULL,
+                       delta = delta,
+                       lambda = lambda,
+                       thresh_fdr = thresh_fdr,
+                       rep_cv = rep_cv,
+                       alpha_level = alpha_level,
+                       beta_est = beta_est,
+                       conf_int = T,
+                       pred = T,
+                       diagonal = diagonal,
+                       merge = merge,
+                       equal_var = equal_var,
+                       support = support,
+                       correction = correction)
+
+        ## re-estimate betas of ivs-selected zs
+        zs <- predZ(x = train_x_std, er_res = res)
+        ivs <- IVS(y = train_y_std, z = zs)
+        new_A <- res$A[, ivs]
+        new_I_clust <- res$I_clust[ivs]
+        new_I <- unlist(new_I_clust)
+        ivs_betas <- prediction(y = train_y_std,
+                                x = train_x_std,
+                                sigma = cor(train_x_std),
+                                A_hat = new_A,
+                                Gamma_hat = res$Gamma,
+                                I_hat = new_I)
+
+        beta_train <- train_x_std %*% ivs_betas$er_predictor
+        beta_valid <- valid_x_std %*% ivs_betas$er_predictor
+        pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)){ ## prior essential regression with IVS
+        res <- priorER(y = train_y,
+                       x = train_x,
+                       imps = priors,
+                       sigma = NULL,
+                       delta = delta,
+                       lambda = lambda,
+                       thresh_fdr = thresh_fdr,
+                       thresh = thresh,
+                       rep_cv = rep_cv,
+                       alpha_level = alpha_level,
+                       beta_est = beta_est,
+                       conf_int = T,
+                       pred = T,
+                       diagonal = diagonal,
+                       merge = merge,
+                       equal_var = equal_var,
+                       support = support,
+                       correction = correction,
+                       change_all = change_all)
+
+        ## re-estimate betas of ivs-selected zs
+        zs <- predZ(x = train_x_std, er_res = res)
+        ivs <- IVS(y = train_y_std, z = zs)
+        new_A <- res$A[, ivs]
+        new_I_clust <- res$I_clust[ivs]
+        new_I <- unlist(new_I_clust)
+        ivs_betas <- prediction(y = train_y_std,
+                                x = train_x_std,
+                                sigma = cor(train_x_std),
+                                A_hat = new_A,
+                                Gamma_hat = res$priorER_results$Gamma,
+                                I_hat = new_I)
+
+        beta_train <- train_x_std %*% ivs_betas$er_predictor
+        beta_valid <- valid_x_std %*% ivs_betas$er_predictor
+        pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
-          cvfit <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)
+          res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)
         } else {
-          cvfit <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 10, standardize = F, grouped = F)
+          res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 10, standardize = F, grouped = F)
         }
-        beta_hat <- coef(cvfit, s = cvfit$lambda.min)[-1]
+        beta_hat <- coef(cvfit, s = res$lambda.min)[-1]
         sub_beta_hat <- which(beta_hat != 0)
         if (length(sub_beta_hat) == 0) { ## if lasso selects no variable, randomly pick 5 features instead
           sub_beta_hat <- sample(1:ncol(train_x_std), 5)
@@ -208,8 +285,10 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## get things for svm
         beta_train <- train_x_std[, sub_beta_hat]
         beta_valid <- valid_x_std[, sub_beta_hat, drop = F]
-        pred_vals <- glmnet::predict.glmnet(cvfit$glmnet.fit, valid_x_std, s = cvfit$lambda.min)
+        pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
       }
+
+      saveRDS(res, file = paste(new_dir, "/", method_j, "_fold", i, ".rds"))
 
       if (svm) { ## if svm flag == TRUE, use svm/svr to get predicted values for validation set
         ## fit svm

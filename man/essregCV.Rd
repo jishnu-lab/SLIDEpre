@@ -20,6 +20,7 @@ essregCV(
   sel_corr = T,
   svm = F,
   y_factor = F,
+  out_path,
   diagonal = F,
   merge = F,
   equal_var = F,
@@ -27,7 +28,8 @@ essregCV(
   correction = T,
   change_all = F,
   verbose = F,
-  delta_grid = NULL
+  delta_grid = NULL,
+  rep
 )
 }
 \arguments{
@@ -65,6 +67,8 @@ between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the
 
 \item{y_factor}{a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})}
 
+\item{out_path}{path for saving output}
+
 \item{diagonal}{a boolean indicating the diagonal structure of the data ???}
 
 \item{merge}{a boolean indicating the merge type}
@@ -79,6 +83,8 @@ between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the
 for an important feature (T) or to just change to more extreme values (F)}
 
 \item{verbose}{a boolean indicating whether to include printing}
+
+\item{rep}{an integer indicating the replicate number}
 }
 \value{
 An object of class \sQuote{data.frame}

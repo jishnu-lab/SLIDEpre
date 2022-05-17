@@ -46,7 +46,8 @@ pipelineER1 <- function(yaml_path) {
             support = er_input$support,
             correction = er_input$correction,
             verbose = er_input$verbose,
-            thresh_fdr = er_input$thresh_fdr)
+            thresh_fdr = er_input$thresh_fdr,
+            out_path = er_input$out_path)
   } -> coarse_res
   saveRDS(coarse_res, file = paste0(er_input$out_path, "/pipeline_step1.rds"))
 
@@ -75,7 +76,9 @@ pipelineER1 <- function(yaml_path) {
                        change_all = er_input$change_all,
                        correction = er_input$correction,
                        verbose = er_input$verbose,
-                       thresh_fdr = er_input$thresh_fdr)
+                       thresh_fdr = er_input$thresh_fdr,
+                       out_path = er_input$out_path,
+                       rep = j)
     } -> delta_rep
     corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                      "result" = delta_rep)

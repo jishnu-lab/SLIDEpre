@@ -4,12 +4,12 @@
 \alias{IVS}
 \title{Iterative Variable Selection}
 \usage{
-IVS(y, Z, verbose = F)
+IVS(y, z, verbose = F)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
-\item{Z}{a matrix of dimensions \eqn{p \times K}}
+\item{z}{a matrix of dimensions \eqn{p \times K}}
 }
 \value{
 a vector of selected variable indices
