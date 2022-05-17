@@ -65,13 +65,13 @@ betaBMA <- function(x, y, er_res, imps, method = "split", estim = "HPM") {
     k <- k + 1
     clusters <- dendextend::cutree(corr_dend, k = k)
     cl_tab <- table(clusters)
-    biggest_group <- 20
+    biggest_group <- 25
     for (i in 1:length(cl_tab)) {
       if (cl_tab[i] > biggest_group) {
         biggest_group <- cl_tab[i]
       }
     }
-    if (biggest_group <= 20) {
+    if (biggest_group <= 25) {
       k_unknown <- FALSE
     }
   }
