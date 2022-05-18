@@ -5,21 +5,40 @@
 #' @importFrom magrittr '%>%'
 #' @param y a response vector of dimension \eqn{n}
 #' @param z a matrix of dimensions \eqn{p \times K}
+#' @param imp_z a vector of indices indicating the important clusters
 #' @return a vector of selected variable indices
 #' @export
 
-IVS <- function(y, z, verbose = F){
-  if (is.null(y) | is.null(z)){
+IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
+  if (is.null(y) | is.null(z)) {
     stop("y and z must be given")
   }
-  pvalueVec  <- NULL
+  pvalueVec <- NULL
 
-  for(i in 1:ncol(z)){
-    pvalueVec <- rbind(pvalueVec,summary(lm(y~z[,i]))$coef[2,"Pr(>|t|)"])
+  for(i in 1:ncol(z)) {
+    pvalueVec <- rbind(pvalueVec, summary(lm(y ~ z[, i]))$coef[2, "Pr(>|t|)"])
   }
 
-  ii <- which(pvalueVec<0.1)
-  z <- z[,ii]
+  if (!is.null(imps)) {
+    #### find important features in each cluster
+    er_read <- readER(er_res)
+    clust_feats <- list()
+    imp_clusts <- NULL
+    for (i in 1:er_res$K) {
+      cluster <- unlist(er_read$clusters[[i]])
+      imp_feats_cluster <- intersect(cluster, imps)
+      clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
+      if (length(imp_feats_cluster) > 0) {
+        imp_clusts <- c(imp_clusts, i)
+      }
+    }
+    ii <- c(which(pvalueVec < 0.1), imp_clusts) ## keep clusters with low enough p-value and imp_z
+  } else {
+    ii <- which(pvalueVec < 0.1)
+  }
+
+  ii <- unique(ii)
+  z <- z[, ii]
 
   ## Select the first variable
   minPvalI <- which.min(pvalueVec[ii])
@@ -27,26 +46,61 @@ IVS <- function(y, z, verbose = F){
   AdR_old <- 0
   Ad_new  <- 1
 
-  while (Ad_new > AdR_old){
-    Obj <- NULL
-    for (i in c(1:ncol(z))[-S]){
-      r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
-      colinear   <- summary(lm(z[, i] ~ z[, S]))$r.squared
-      Obj <- rbind(Obj, cbind(i, r_adjusted - colinear))
+  if (!is.null(imps)) {
+    ## make weight for R^2
+    loadings <- er_res$A
+    z_imp_probs <- rep(0, ncol(z))
+    for (i in 1:length(ii)) {
+      column <- loadings[, ii[i]] ## get one column of loadings matrix A
+      imp_col <- column[imps] ## get just rows of important features
+      num_nonzero <- length(which(imp_col > 0)) ## get number of nonzero important features
+      z_imp_probs[i] <- 1 + (num_nonzero / length(which(column != 0))) ## 1 + proportion of nonzero features are imp
     }
 
-    S <- c(S,unname(Obj[which.max(Obj[,2]),1]))
-    ifelse(length(S)==1,AdR_old <- summary(lm(y~z[,S]))$adj.r.squared,AdR_old <- summary(lm(y~z[,S[-length(S)]]))$adj.r.squared)
-    Ad_new <- summary(lm(y~z[,S]))$adj.r.squared
+    while (Ad_new > AdR_old) {
+      Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
+      for (i in c(1:ncol(z))[-S]) {
+        r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
+        colinear   <- summary(lm(z[, i] ~ z[, S]))$r.squared
+        Obj <- rbind(Obj, cbind(i, (r_adjusted - colinear), (r_adjusted * z_imp_probs[i] - colinear)))
+      }
 
-    if (verbose == T) {
-      print(paste("old Adj R2 is:",AdR_old))
-      print(paste("new Adj R2 is:",Ad_new))
+      S <- c(S, unname(Obj[which.max(Obj[, 3]), 1]))
+      ifelse(length(S) == 1,
+             AdR_old <- summary(lm(y ~ z[, S]))$adj.r.squared,
+             AdR_old <- summary(lm(y ~ z[, S[-length(S)]]))$adj.r.squared)
+      Ad_new <- summary(lm(y ~ z[,S]))$adj.r.squared
+
+      if (verbose == T) {
+        print(paste("old Adj R2 is:", AdR_old))
+        print(paste("new Adj R2 is:", Ad_new))
+      }
+    }
+  } else {
+    while (Ad_new > AdR_old) {
+      Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
+      for (i in c(1:ncol(z))[-S]) {
+        r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
+        colinear   <- summary(lm(z[, i] ~ z[, S]))$r.squared
+        Obj <- rbind(Obj, cbind(i, (r_adjusted - colinear)))
+      }
+
+      S <- c(S, unname(Obj[which.max(Obj[, 2]), 1]))
+      ifelse(length(S) == 1,
+             AdR_old <- summary(lm(y ~ z[, S]))$adj.r.squared,
+             AdR_old <- summary(lm(y ~ z[, S[-length(S)]]))$adj.r.squared)
+      Ad_new <- summary(lm(y ~ z[,S]))$adj.r.squared
+
+      if (verbose == T) {
+        print(paste("old Adj R2 is:", AdR_old))
+        print(paste("new Adj R2 is:", Ad_new))
+      }
     }
   }
 
   a <- length(S)
   print(a)
   print(S)
+
   return(ii[S[-a]])
 }
