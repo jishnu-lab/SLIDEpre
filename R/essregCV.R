@@ -49,7 +49,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   }
 
   ## create output directory
-  new_dir <- paste0(out_path, "/replicate", rep, "/")
+  new_dir <- paste0(out_path, "replicate", rep, "/")
   dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
   ## divide into folds
@@ -218,21 +218,14 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                        support = support,
                        correction = correction)
 
-        ## re-estimate betas of ivs-selected zs
-        zs <- predZ(x = train_x_std, er_res = res)
-        ivs <- IVS(y = train_y_std, z = zs)
-        new_A <- res$A[, ivs]
-        new_I_clust <- res$I_clust[ivs]
-        new_I <- unlist(new_I_clust)
-        ivs_betas <- prediction(y = train_y_std,
-                                x = train_x_std,
-                                sigma = cor(train_x_std),
-                                A_hat = new_A,
-                                Gamma_hat = res$Gamma,
-                                I_hat = new_I)
+        ## calculate predicted values
+        train_z <- predZ(x = train_x_std, er_res = res)
+        ivs <- IVS(y = train_y_std, z = train_z)
+        ivs_betas <- res$beta[ivs]
+        valid_z <- predZ(x = valid_x_std, er_res = res)
 
-        beta_train <- train_x_std %*% ivs_betas$er_predictor
-        beta_valid <- valid_x_std %*% ivs_betas$er_predictor
+        beta_train <- train_z[, ivs] %*% ivs_betas
+        beta_valid <- valid_z[, ivs] %*% ivs_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)){ ## prior essential regression with IVS
         res <- priorER(y = train_y,
@@ -255,21 +248,14 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                        correction = correction,
                        change_all = change_all)
 
-        ## re-estimate betas of ivs-selected zs
-        zs <- predZ(x = train_x_std, er_res = res)
-        ivs <- IVS(y = train_y_std, z = zs)
-        new_A <- res$A[, ivs]
-        new_I_clust <- res$I_clust[ivs]
-        new_I <- unlist(new_I_clust)
-        ivs_betas <- prediction(y = train_y_std,
-                                x = train_x_std,
-                                sigma = cor(train_x_std),
-                                A_hat = new_A,
-                                Gamma_hat = res$priorER_results$Gamma,
-                                I_hat = new_I)
+        ## calculate predicted values
+        train_z <- predZ(x = train_x_std, er_res = res)
+        ivs <- IVS(y = train_y_std, z = train_z)
+        ivs_betas <- res$beta[ivs]
+        valid_z <- predZ(x = valid_x_std, er_res = res)
 
-        beta_train <- train_x_std %*% ivs_betas$er_predictor
-        beta_valid <- valid_x_std %*% ivs_betas$er_predictor
+        beta_train <- train_z[, ivs] %*% ivs_betas
+        beta_valid <- valid_z[, ivs] %*% ivs_betas
         pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
@@ -277,7 +263,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         } else {
           res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 10, standardize = F, grouped = F)
         }
-        beta_hat <- coef(cvfit, s = res$lambda.min)[-1]
+        beta_hat <- coef(res, s = res$lambda.min)[-1]
         sub_beta_hat <- which(beta_hat != 0)
         if (length(sub_beta_hat) == 0) { ## if lasso selects no variable, randomly pick 5 features instead
           sub_beta_hat <- sample(1:ncol(train_x_std), 5)
@@ -288,7 +274,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
       }
 
-      saveRDS(res, file = paste(new_dir, "/", method_j, "_fold", i, ".rds"))
+      saveRDS(res, file = paste0(new_dir, method_j, "_fold", i, ".rds"))
 
       if (svm) { ## if svm flag == TRUE, use svm/svr to get predicted values for validation set
         ## fit svm
