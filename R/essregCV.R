@@ -286,7 +286,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         new_betas <- coef(lm(train_y_std ~ train_z[, sig_betas]))[-1]
         beta_train <- train_z[, sig_betas] %*% new_betas
         #beta_valid <- valid_z[, sig_betas] %*% new_betas
-        beta-valid <- valid_z %*% new_betas
+        beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
         res <- priorER(y = train_y,
