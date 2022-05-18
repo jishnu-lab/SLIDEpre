@@ -4,12 +4,16 @@
 \alias{IVS}
 \title{Iterative Variable Selection}
 \usage{
-IVS(y, z, verbose = F)
+IVS(y, z, imps = NULL, er_res = NULL, verbose = F)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n}}
 
 \item{z}{a matrix of dimensions \eqn{p \times K}}
+
+\item{imps}{a vector of indices indicating the important features}
+
+\item{er_res}{an object returned by \code{plainER} or \code{priorER}}
 }
 \value{
 a vector of selected variable indices

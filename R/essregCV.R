@@ -70,7 +70,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   group_inds <- extract
 
   ## methods list
-  methods <- c("plainER", "plainER_allZs", "plainER_IVS", "lasso")
+  methods <- c("plainER", "plainER_allZs", "plainER_IVS", "lasso", "IVS")
   if (!is.null(priors)) {
     methods <- c(methods, "priorER", "priorER_allZs", "priorER_IVS")
   }
@@ -172,11 +172,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
         ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res)
+        valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
 
         new_betas <- coef(lm(train_y_std ~ train_z[, ivs]))[-1]
         beta_train <- train_z[, ivs] %*% new_betas
-        beta_valid <- valid_z[, ivs] %*% new_betas
+        #beta_valid <- valid_z[, ivs] %*% new_betas
+        beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)){ ## prior essential regression with IVS
         res <- priorER(y = train_y,
@@ -202,11 +203,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
         ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res)
+        valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
 
         new_betas <- coef(lm(train_y_std ~ train_z[, ivs]))[-1]
         beta_train <- train_z[, ivs] %*% new_betas
-        beta_valid <- valid_z[, ivs] %*% new_betas
+        #beta_valid <- valid_z[, ivs] %*% new_betas
+        beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "plainER_allZs", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         res <- plainER(y = train_y,
@@ -277,13 +279,14 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
-        valid_z <- predZ(x = valid_x_std, er_res = res)
         sig_betas <- sigBetas(betas = res$beta, cutoff = 0.1) ## Top 5% positive/negative
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
+        valid_z <- predZ(x = valid_x_std, er_res = res, inds = sig_betas)
 
         new_betas <- coef(lm(train_y_std ~ train_z[, sig_betas]))[-1]
         beta_train <- train_z[, sig_betas] %*% new_betas
-        beta_valid <- valid_z[, sig_betas] %*% new_betas
+        #beta_valid <- valid_z[, sig_betas] %*% new_betas
+        beta-valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
         res <- priorER(y = train_y,
@@ -308,13 +311,22 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res$priorER_results)
-        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results)
         sig_betas <- sigBetas(betas = res$priorER_results$beta, cutoff = 0.1) ## Top 5% positive/negative
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
+        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results, inds = sig_betas)
 
         new_betas <- coef(lm(train_y_std ~ train_z[, sig_betas]))[-1]
         beta_train <- train_z[, sig_betas] %*% new_betas
-        beta_valid <- valid_z[, sig_betas] %*% new_betas
+        #beta_valid <- valid_z[, sig_betas] %*% new_betas
+        beta_valid <- valid_z %*% new_betas
+        pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "IVS", fixed = TRUE)) { ## just IVS
+        ivs <- IVS(train_y_std, train_x_std)
+        ivs_x <- train_x_std[, ivs]
+        new_betas <- coef(lm(train_y_std ~ ivs_x))[-1]
+
+        beta_train <- ivs_x %*% new_betas
+        beta_valid <- valid_x_std[, ivs] %*% new_betas
         pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small

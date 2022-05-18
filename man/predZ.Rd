@@ -4,12 +4,14 @@
 \alias{predZ}
 \title{Estimate \eqn{Z}}
 \usage{
-predZ(x, er_res)
+predZ(x, er_res, inds = NULL)
 }
 \arguments{
-\item{x}{data matrix of dimensions \eqn{n \times p}}
+\item{x}{data matrix}
 
 \item{er_res}{the results of a run of \code{plainER()} or \code{priorER()}}
+
+\item{inds}{a vector of Z indices to use for calculating \eqn{Z}}
 }
 \value{
 estimates for \eqn{Z}

@@ -2,14 +2,18 @@
 #'
 #' Additional prediction function using the support of \eqn{\beta}.
 #'
-#' @param x data matrix of dimensions \eqn{n \times p}
+#' @param x data matrix
 #' @param er_res the results of a run of \code{plainER()} or \code{priorER()}
+#' @param inds a vector of Z indices to use for calculating \eqn{Z}
 #' @return estimates for \eqn{Z}
 #' @export
 
-predZ <- function(x, er_res) {
-  A_hat <- er_res$A
-  C_hat <- er_res$C
+predZ <- function(x, er_res, inds = NULL) {
+  if (is.null(inds)) {
+    inds <- seq(1:ncol(er_res$A))
+  }
+  A_hat <- er_res$A[, inds]
+  C_hat <- er_res$C[inds, inds]
   Gamma_hat <- er_res$Gamma
   Gamma_hat <- ifelse(Gamma_hat == 0, 1e-10, Gamma_hat)
   Gamma_hat_inv <- diag(Gamma_hat ** (-1))
