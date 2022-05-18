@@ -151,56 +151,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       valid_x_std <- stands$valid_x
       valid_y_std <- stands$valid_y
 
-      if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression
-        res <- plainER(y = train_y,
-                       x = train_x,
-                       sigma = NULL,
-                       delta = delta,
-                       lambda = lambda,
-                       thresh_fdr = thresh_fdr,
-                       rep_cv = rep_cv,
-                       alpha_level = alpha_level,
-                       beta_est = beta_est,
-                       conf_int = T,
-                       pred = T,
-                       diagonal = diagonal,
-                       merge = merge,
-                       equal_var = equal_var,
-                       support = support,
-                       correction = correction)
-
-        ## get things for svm
-        pred_all_betas <- res$pred$er_predictor
-        beta_train <- train_x_std %*% pred_all_betas
-        beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
-        res <- priorER(y = train_y,
-                       x = train_x,
-                       imps = priors,
-                       sigma = NULL,
-                       delta = delta,
-                       lambda = lambda,
-                       thresh_fdr = thresh_fdr,
-                       thresh = thresh,
-                       rep_cv = rep_cv,
-                       alpha_level = alpha_level,
-                       beta_est = beta_est,
-                       conf_int = T,
-                       pred = T,
-                       diagonal = diagonal,
-                       merge = merge,
-                       equal_var = equal_var,
-                       support = support,
-                       correction = correction,
-                       change_all = change_all)
-
-        ## get things for svm
-        pred_all_betas <- res$pred$er_predictor
-        beta_train <- train_x_std %*% pred_all_betas
-        beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "plainER_IVS", fixed = TRUE)){ ## plain essential regression with IVS
+      if (grepl(x = method_j, pattern = "plainER_IVS", fixed = TRUE)){ ## plain essential regression with IVS
         res <- plainER(y = train_y,
                        x = train_x,
                        sigma = NULL,
@@ -256,6 +207,55 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
         beta_train <- train_z[, ivs] %*% ivs_betas
         beta_valid <- valid_z[, ivs] %*% ivs_betas
+        pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression
+        res <- plainER(y = train_y,
+                       x = train_x,
+                       sigma = NULL,
+                       delta = delta,
+                       lambda = lambda,
+                       thresh_fdr = thresh_fdr,
+                       rep_cv = rep_cv,
+                       alpha_level = alpha_level,
+                       beta_est = beta_est,
+                       conf_int = T,
+                       pred = T,
+                       diagonal = diagonal,
+                       merge = merge,
+                       equal_var = equal_var,
+                       support = support,
+                       correction = correction)
+
+        ## get things for svm
+        pred_all_betas <- res$pred$er_predictor
+        beta_train <- train_x_std %*% pred_all_betas
+        beta_valid <- valid_x_std %*% pred_all_betas
+        pred_vals <- beta_valid
+      } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
+        res <- priorER(y = train_y,
+                       x = train_x,
+                       imps = priors,
+                       sigma = NULL,
+                       delta = delta,
+                       lambda = lambda,
+                       thresh_fdr = thresh_fdr,
+                       thresh = thresh,
+                       rep_cv = rep_cv,
+                       alpha_level = alpha_level,
+                       beta_est = beta_est,
+                       conf_int = T,
+                       pred = T,
+                       diagonal = diagonal,
+                       merge = merge,
+                       equal_var = equal_var,
+                       support = support,
+                       correction = correction,
+                       change_all = change_all)
+
+        ## get things for svm
+        pred_all_betas <- res$pred$er_predictor
+        beta_train <- train_x_std %*% pred_all_betas
+        beta_valid <- valid_x_std %*% pred_all_betas
         pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
