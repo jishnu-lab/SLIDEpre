@@ -5,7 +5,8 @@
 #' @importFrom magrittr '%>%'
 #' @param y a response vector of dimension \eqn{n}
 #' @param z a matrix of dimensions \eqn{p \times K}
-#' @param imp_z a vector of indices indicating the important clusters
+#' @param imps a vector of indices indicating the important features
+#' @param er_res an object returned by \code{plainER} or \code{priorER}
 #' @return a vector of selected variable indices
 #' @export
 
