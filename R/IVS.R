@@ -91,17 +91,14 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
              AdR_old <- summary(lm(y ~ z[, S]))$adj.r.squared,
              AdR_old <- summary(lm(y ~ z[, S[-length(S)]]))$adj.r.squared)
       Ad_new <- summary(lm(y ~ z[,S]))$adj.r.squared
-
+      a <- length(S)
       if (verbose == T) {
         print(paste("old Adj R2 is:", AdR_old))
         print(paste("new Adj R2 is:", Ad_new))
+        print(ii[S[-a]])
       }
     }
   }
-
-  a <- length(S)
-  print(a)
-  print(S)
 
   return(ii[S[-a]])
 }

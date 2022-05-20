@@ -346,7 +346,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
       }
 
-      saveRDS(res, file = paste0(new_dir, method_j, "_fold", i, ".rds"))
+      save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rds"))
 
       if (svm) { ## if svm flag == TRUE, use svm/svr to get predicted values for validation set
         ## fit svm

@@ -4,11 +4,13 @@
 \alias{pipelineER1}
 \title{Essential Regression Pipeline - Steps 1, 2}
 \usage{
-pipelineER1(yaml_path)
+pipelineER1(yaml_path, steps = "all")
 }
 \arguments{
 \item{yaml_path}{the path to a .yaml file containing all necessary parameters/arguments
 for Essential Regression}
+
+\item{steps}{an integer or string indicating which steps of the pipeline to perform: 1, 2, "all"}
 }
 \value{
 nothing is returned, saves boxplot of cross-validation results for user to use
