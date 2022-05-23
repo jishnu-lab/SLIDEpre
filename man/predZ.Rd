@@ -4,14 +4,12 @@
 \alias{predZ}
 \title{Estimate \eqn{Z}}
 \usage{
-predZ(x, er_res, inds = NULL)
+predZ(x, er_res)
 }
 \arguments{
 \item{x}{data matrix}
 
 \item{er_res}{the results of a run of \code{plainER()} or \code{priorER()}}
-
-\item{inds}{a vector of Z indices to use for calculating \eqn{Z}}
 }
 \value{
 estimates for \eqn{Z}
