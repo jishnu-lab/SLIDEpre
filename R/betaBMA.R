@@ -57,7 +57,6 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
 
   imp_betas <- coef(imp_betas_bas, estimator = estim)
   imp_betas <- imp_betas$postmean ## get posterior means
-  imp_betas <- imp_betas[-1] ## remove intercept estimate
 
   ## Step 2: Non-Important Clusters
   new_y <- scale_y - z_imp %*% imp_betas
