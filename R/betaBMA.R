@@ -46,7 +46,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
   }
 
   ## do BMA
-  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp,
+  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp - 1,
                                prior = "g-prior",
                                alpha = 1,
                                modelprior = BAS::beta.binomial(alpha = 1, beta = 1),
@@ -61,9 +61,9 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
 
   ## Step 2: Non-Important Clusters
   new_y <- scale_y - z_imp %*% imp_betas
-  new_A <- er_res$A[, -imp_clusts]
-  new_C <- er_res$C[-imp_clusts, -imp_clusts]
-  new_I_clust <- er_res$I_clust[-imp_clusts]
+  new_A <- er_res$A[, -imps_z]
+  new_C <- er_res$C[-imps_z, -imps_z]
+  new_I_clust <- er_res$I_clust[-imps_z]
   new_I <- unlist(new_I_clust)
   ## re-estimate betas for the non-important features
   nonimp_betas <- estBeta(y = new_y,
@@ -86,5 +86,5 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
   all_betas[imp_clusts] <- unlist(imp_betas)
   all_betas[-imp_clusts] <- unlist(nonimp_beta)
   return(list("beta_est" = all_betas,
-              "imp_clusters" = imp_clusts))
+              "imp_clusters" = imps_z))
 }
