@@ -158,12 +158,17 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ivs <- IVS(y = train_y_std, z = train_z)
         valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
 
-        new_betas <- coef(lm(train_y_std ~ train_z[, ivs]))[-1]
+        new_betas <- betaBMA(x = train_x,
+                             y = train_y,
+                             er_res = res,
+                             imps = NULL,
+                             imps_z = ivs,
+                             estim = "HPM")["beta_est"]
         beta_train <- train_z[, ivs] %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
         beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)){ ## prior essential regression with IVS
+      } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)) { ## prior essential regression with IVS
         load(paste0(new_dir, methods[2], "_fold", i, ".rda")) ## load in the priorER results from other loop
 
         ## calculate predicted values
@@ -171,7 +176,13 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ivs <- IVS(y = train_y_std, z = train_z)
         valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
 
-        new_betas <- coef(lm(train_y_std ~ train_z[, ivs]))[-1]
+
+        new_betas <- betaBMA(x = train_x,
+                             y = train_y,
+                             er_res = res,
+                             imps = priors,
+                             imps_z = ivs,
+                             estim = "HPM")["beta_est"]
         beta_train <- train_z[, ivs] %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
         beta_valid <- valid_z %*% new_betas
@@ -216,7 +227,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
         valid_z <- predZ(x = valid_x_std, er_res = res, inds = sig_betas)
 
-        new_betas <- coef(lm(train_y_std ~ train_z[, sig_betas]))[-1]
+        new_betas <- betaBMA(x = train_x,
+                             y = train_y,
+                             er_res = res,
+                             imps = NULL,
+                             imps_z = sig_betas,
+                             estim = "HPM")["beta_est"]
         beta_train <- train_z[, sig_betas] %*% new_betas
         #beta_valid <- valid_z[, sig_betas] %*% new_betas
         beta_valid <- valid_z %*% new_betas
@@ -248,7 +264,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
         valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results, inds = sig_betas)
 
-        new_betas <- coef(lm(train_y_std ~ train_z[, sig_betas]))[-1]
+        new_betas <- betaBMA(x = train_x,
+                             y = train_y,
+                             er_res = res,
+                             imps = priors,
+                             imps_z = sig_betas,
+                             estim = "HPM")["beta_est"]
         beta_train <- train_z[, sig_betas] %*% new_betas
         #beta_valid <- valid_z[, sig_betas] %*% new_betas
         beta_valid <- valid_z %*% new_betas
