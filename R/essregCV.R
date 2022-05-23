@@ -156,7 +156,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
         ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
+        valid_z <- predZ(x = valid_x_std, er_res = res)
 
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
@@ -174,7 +174,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
         ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res, inds = ivs)
+        valid_z <- predZ(x = valid_x_std, er_res = res)
 
 
         new_betas <- betaBMA(x = train_x,
@@ -225,7 +225,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         train_z <- predZ(x = train_x_std, er_res = res)
         sig_betas <- sigBetas(betas = res$beta, cutoff = 0.1) ## Top 5% positive/negative
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
-        valid_z <- predZ(x = valid_x_std, er_res = res, inds = sig_betas)
+        valid_z <- predZ(x = valid_x_std, er_res = res)
 
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
@@ -262,7 +262,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         train_z <- predZ(x = train_x_std, er_res = res$priorER_results)
         sig_betas <- sigBetas(betas = res$priorER_results$beta, cutoff = 0.1) ## Top 5% positive/negative
         sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
-        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results, inds = sig_betas)
+        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results)
 
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
