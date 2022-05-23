@@ -82,8 +82,8 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
 
   ## concatenate the nonimportant and important beta estimates
   all_betas <- rep(0, ncol(prior_z))
-  all_betas[imp_clusts] <- unlist(imp_betas)
-  all_betas[-imp_clusts] <- unlist(nonimp_beta)
+  all_betas[imps_z] <- unlist(imp_betas)
+  all_betas[-imps_z] <- unlist(nonimp_beta)
   return(list("beta_est" = all_betas,
               "imp_clusters" = imps_z))
 }
