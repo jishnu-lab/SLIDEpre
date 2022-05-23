@@ -21,6 +21,7 @@ Imports:
     linprog,
     magrittr,
     MASS,
+    matlib,
     Matrix,
     matrixcalc,
     methods,
