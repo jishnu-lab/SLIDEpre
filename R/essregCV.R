@@ -164,7 +164,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              imps = NULL,
                              imps_z = ivs,
                              estim = "HPM")
-        beta_train <- train_z[, ivs] %*% new_betas
+        beta_train <- train_z %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
         beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
@@ -183,7 +183,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              imps = priors,
                              imps_z = ivs,
                              estim = "HPM")
-        beta_train <- train_z[, ivs] %*% new_betas
+        beta_train <- train_z %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
         beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
@@ -233,7 +233,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              imps = NULL,
                              imps_z = sig_betas,
                              estim = "HPM")
-        beta_train <- train_z[, sig_betas] %*% new_betas
+        beta_train <- train_z %*% new_betas
         #beta_valid <- valid_z[, sig_betas] %*% new_betas
         beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
@@ -270,7 +270,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              imps = priors,
                              imps_z = sig_betas,
                              estim = "HPM")
-        beta_train <- train_z[, sig_betas] %*% new_betas
+        beta_train <- train_z %*% new_betas
         #beta_valid <- valid_z[, sig_betas] %*% new_betas
         beta_valid <- valid_z %*% new_betas
         pred_vals <- beta_valid
