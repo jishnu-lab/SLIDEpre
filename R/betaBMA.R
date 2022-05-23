@@ -60,7 +60,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
   imp_betas <- imp_betas[-1] ## remove intercept estimate
 
   ## Step 2: Non-Important Clusters
-  new_y <- scale_y - z_imp %*% all_imp_betas
+  new_y <- scale_y - z_imp %*% imp_betas
   new_A <- er_res$A[, -imp_clusts]
   new_C <- er_res$C[-imp_clusts, -imp_clusts]
   new_I_clust <- er_res$I_clust[-imp_clusts]
@@ -83,7 +83,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
 
   ## concatenate the nonimportant and important beta estimates
   all_betas <- rep(0, ncol(prior_z))
-  all_betas[imp_clusts] <- unlist(all_imp_betas)
+  all_betas[imp_clusts] <- unlist(imp_betas)
   all_betas[-imp_clusts] <- unlist(nonimp_beta)
   return(list("beta_est" = all_betas,
               "imp_clusters" = imp_clusts))
