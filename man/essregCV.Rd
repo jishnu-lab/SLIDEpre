@@ -27,7 +27,6 @@ essregCV(
   support = NULL,
   correction = T,
   change_all = F,
-  verbose = F,
   delta_grid = NULL,
   rep
 )
@@ -81,8 +80,6 @@ between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the
 
 \item{change_all}{a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
 for an important feature (T) or to just change to more extreme values (F)}
-
-\item{verbose}{a boolean indicating whether to include printing}
 
 \item{rep}{an integer indicating the replicate number}
 }
