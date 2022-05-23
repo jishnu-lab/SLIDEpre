@@ -39,10 +39,11 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) 
       num_nonzero <- length(which(abs_col > 0)) ## get number of nonzero entries
       z_imp_probs[i] <- num_nonzero / length(which(column != 0)) ## divide by total number of nonzero entries
     }
+    ## rescale probabilities to be [0.5, 1.0]
+    z_imp_probs <- scales::rescale(z_imp_probs, to = c(0.5, 1.0))
+  } else {
+    z_imp_probs <- rep(0.5, ncol(z_imp))
   }
-
-  ## rescale probabilities to be [0.5, 1.0]
-  z_imp_probs <- scales::rescale(z_imp_probs, to = c(0.5, 1.0))
 
   ## do BMA
   imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp,
