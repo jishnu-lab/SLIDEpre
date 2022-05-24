@@ -16,7 +16,7 @@
 #' @return a vector of \eqn{\beta} estimates
 #' @export
 
-betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL) {
+betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   ## scale y
   scale_y <- scale(y, T, T)
   ## scale x

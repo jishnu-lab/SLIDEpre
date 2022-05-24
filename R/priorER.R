@@ -19,7 +19,6 @@
 #' @param merge a boolean indicating the merge type
 #' @param equal_var a boolean indicating whether there is equal variance ??
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
-#' @param thresh a numerical constant used as the threshold for convergence in Variational Bayes
 #' @param support a boolean ???
 #' @param estim the type of estimator to use for BMA.
 #' Highest Probability Model = "HPM", Bayesian Model Averaging Model = "BMA", Median Probability Model = "MPM".
@@ -36,7 +35,7 @@
 
 priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
-                    merge = F, equal_var = F, alpha_level = 0.05, thresh = 0.001, estim = "HPM",
+                    merge = F, equal_var = F, alpha_level = 0.05, estim = "HPM",
                     support = NULL, correction = T, change_all = F, verbose = F) {
   #### run plainER() first
   plain_er <- plainER(y = y,
@@ -111,10 +110,20 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   }
 
   #### Essential Regression with Prior Information Part II #####################
+  #### subset Zs using IVS
+  zs <- predZ(x = x,
+              er_res = prior_er)
+  imps_z <- IVS(y = y,
+                z = zs,
+                imps = imps,
+                er_res = prior_er)
+
+  #### re-estimate betas
   new_betas <- betaBMA(x = x,
                        y = y,
                        er_res = prior_er,
                        imps = imps,
+                       imps_z = imps_z,
                        estim = estim)
 
   #### Essential Regression with Prior Information Part III ####################

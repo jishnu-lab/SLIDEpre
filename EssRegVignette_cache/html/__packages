@@ -1,0 +1,17 @@
+matrixcalc
+readr
+ROCR
+e1071
+dplyr
+foreach
+iterators
+doParallel
+scales
+MASS
+clusterGeneration
+rngtools
+doRNG
+matlib
+BAS
+gmp
+EssReg

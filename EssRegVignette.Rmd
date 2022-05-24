@@ -1,0 +1,331 @@
+---
+title: "Essential Regression Vignette"
+author: "Das Lab"
+output:
+  html_document:
+    theme: flatly
+    highlight: tango
+---
+
+### Housekeeping
+```{r setup, echo = F, warning = F, message = F}
+knitr::opts_chunk$set(echo = TRUE)
+## REMOVE IN FINAL VERSION!!!!!!!!
+#devtools::install_github("aerosengart/EssReg", auth_token = "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")
+```
+
+Before beginning, please ensure that the following packages are installed and libraries are loaded:
+```{r setup-pkgs, include = T, warning = F, message = F}
+library(matrixcalc)
+library(readr)
+library(ROCR)
+library(e1071)
+library(dplyr)
+library(doParallel)
+library(foreach)
+library(scales)
+library(clusterGeneration)
+library(doRNG)
+library(matlib)
+library(BAS)
+library(gmp)
+library(EssReg)
+```
+
+The Essential Regression package is available for downloading using the following:
+`devtools::install_github("aerosengart/EssReg", auth_token = "TOKEN_HERE")`
+
+We also recommend running some of these function in parallel. We prepare the environment for this using the following code:
+```{r setup-par, include = T, warning = F, message = F}
+cores <- detectCores()
+registerDoParallel(cores)
+```
+
+### Data Set-Up
+We first must load in our data. Essential Regression (both `plainER()` and `priorER()`) accepts a data matrix ($\mathbf{X}$) of dimensions $n \times p$, where $n$ is the number of samples/patients/instances and $p$ is the number of features/variables, and a response vector ($\mathbf{Y}$) of dimension $n$ that can be either categorical or continuous. 
+
+As an example, we use a dataset of expression measurements of 900 genes from 24 patients. $\mathbf{Y}$ is the Modified Rodnan Skin Score. 
+```{r data-load}
+data(x_data); data(y_data)
+```
+
+-----
+
+### Plain Essential Regression  {.tabset .tabset-fade .tabset-pills}
+
+The function, `plainER()`, requires non-standardized data because of an internal cross-validation regime. Thus, there is little pre-processing to perform before we can dive into using the package!
+
+#### Function Parameters
+In this section, we briefly cover the many parameters and flags passed to `plainER()` for run specification.
+
+- `x`: $\mathbf{X}$, a data matrix [$n \times p$].
+- `y`: $\mathbf{Y}$, a vector [$n$].
+- `sigma`: $\hat{\Sigma}$, the sample correlation matrix calculated from $\mathbf{X}$ [$p \times p$].
+- `thresh_fdr`: The false discovery rate threshold on $\hat{\Sigma}$. We use this value as the upper limit for the $p$-values of the entries of `sigma` - if a given $p$-value is less than `thresh_fdr`, the entry is set to 0 in `sigma`.
+- `delta`: $\delta$, a numerical constant used in the LOVE algorithm (CITE) for identifying latent cluster membership. We can specify either a single value or a range over which to search for the optimal value.
+- `lambda`: $\lambda$, a numerical constant used in the LOVE algorithm (CITE) for identifying latent cluster membership.
+- `beta_est`: A string indicating the type of estimation to use for $\beta$, the coefficients on $\mathbf{Z}$. This parameter can be `NULL` (do not estimate $\beta$), `Dantzig` (estimate sparse $\beta$), or `LS` (default).
+- `correction`: A boolean flag indicating whether to perform Bonferroni multiple testing correction when estimating $\beta$. This should always be `TRUE`.
+- `conf_int`: A boolean flag indicating whether to calculate confidence intervals for the $\beta$ estimates. This should always be set to `TRUE` to allow for mixed variables. 
+- `alpha_level`: $\alpha$, the significance level for confidence interval calculation.
+- `pred`: A boolean flag indicating whether to perform prediction. If `TRUE`, then the results returned by `plainER()` will include the $\hat{\theta}_{ER}$ (see supplement 2.2.1), $\Theta$ (see supplement 2.3), and predicted values. 
+- `rep_cv`: An integer indicating the number of replicates to perform when cross-validating to find $\delta$.
+- `merge`: A boolean flag indicating the type of merging to perform. The default is `FALSE`, which corresponds to merging via set intersection, while `TRUE` corresponds to merging via set union.
+- `equal_var`: A boolean flag indicating whether the data matrix, $x$, has equal variance amongst its columns.
+- `out_path`: A string path to the directory in which to save output.
+- `diagonal`: A boolean flag indicating ???????
+- `support`: A boolean flag indicating ??????
+
+Additional information on the exact algorithm and methodology behind LOVE and Essential Regression is outside the scope of this tutorial, but they can be found in the original manuscripts: 
+
+#### Running `plainER()`
+Now that we understand the function specification, we can run Essential Regression.
+```{r init-er, message = F, warning = F, cache = T}
+initial_run <- plainER(y = y_data,
+                       x = x_data,
+                       sigma = cor(x_data),
+                       thresh_fdr = 0.2,
+                       delta = seq(0.001, 0.1, 0.001),
+                       lambda = 0.5, 
+                       beta_est = T,
+                       correction = T,
+                       conf_int = T,
+                       alpha_level = 0.05,
+                       pred = T, 
+                       rep_cv = 50,
+                       merge = F,
+                       equal_var = F,
+                       out_path = "temp/",
+                       diagonal = F,
+                       support = F)
+```
+
+`plainER()` has a significant amount of output, which we cover below. 
+
+- `K`: The number of clusters identified by LOVE.
+- `A`: $\hat{A}$, the estimated allocation matrix that indicates the latent cluster membership for all features [$p \times K$].
+- `C`: $\hat{C}$, the estimated covariance matrix of $\mathbf{Z}$ [$K \times K$].
+- `I_clust`: $\hat{I}$ as a list where each entry, $i$, is a vector containing the features that are found in latent cluster $i$.
+- `I`: $\hat{I}$ as a vector of all features that are included in the latent clusters.
+- `Gamma`: $\Gamma$, the estimated covariance of the error terms, $W$, from the factorization of $\mathbf{X}$ into $A\mathbf{Z} + W$. 
+- `beta`: $\beta$, the estimated coefficients for the regression on the latent variables, $\mathbf{Y} = \beta \mathbf{Z} + \epsilon.
+- `beta_conf_int`: The confidence intervals for the estimation of $\beta$ according to the signficance level, $\alpha$, specified by `alpha_level`.
+- `beta_var`: The variance of the estimates of $\beta$.
+- `pred`: A list containing the Essential Regression predictor ($\hat{\theta}_{ER}$), $\hat{\Theta}$, as well as the predicted values ($\mathbf{Y}$) made using the predictor. 
+- `opt_lambda`: The value of $\lambda$ used.
+- `opt_delta`: The value of $\delta$ used.
+- `Q`: $\hat{\theta}_{ER}^\top \times \mathbf{X}^\top$ [$p \times K$]
+- `thresh_sigma`: The matrix, $\hat{\Sigma}$, after thresholding according to `thresh_fdr`. 
+
+If `out_path` is supplied to the call to `plainER()`, then the function also saves heatmaps of $\hat{\Sigma}$ and the thresholded version of $\hat{\Sigma}$.
+
+#### Inspection of Results
+We can peek at what $\delta$ `plainER()` decided to use after 50 replicates of cross-validation:
+```{r init-delta, cache = T, warning = F, message = F}
+initial_run$opt_delta
+```
+
+We can also use the `makeHeatmap()` function, a wrapper for the `pheatmap()` function from `pheatmap`, to view the thresholded $\hat{\Sigma}$ matrix:
+```{r init-sigma-hmap, warning = F, message = F}
+makeHeatmap(mat = initial_run$thresh_sigma, ## matrix
+            title = "Thresholded Sigma Matrix",  ## plot title
+            cluster = T, ## boolean for clustering
+            names = T) ## boolean for displaying column/row names
+```
+
+This should match with the heatmap created and saved within `plainER()`.
+
+Note: The heatmaps will be saved to a directory labeled with either the value of $\delta$ used in Essential Regression if a single value is provided or the first value of $\delta$ in the range to search over if a sequence is provided.
+
+For more information on the clustering of the variables, we can use the `readER()` function. `readER()` takes as input the results of `plainER()` and returns a list of latent clusters, a vector fo pure variable indices, and a vector of mixed variable indices.
+
+```{r init-read, warning = F, message = F, cache = T}
+initial_read <- readER(initial_run)
+```
+First 10 pure variables: `r initial_read$pure_vars[1:10]`
+First 10 mixed variables: `r initial_read$pure_vars[1:10]`
+
+-----
+
+### Essential Regression with Prior Information {.tabset .tabset-fade .tabset-pills}
+
+The function, `priorER()`, is very similar to `plainER()` but makes a few adjustments to the sample correlation matrix and to the estimation of $\beta$.
+
+#### Function Parameters
+`priorER()` inherits all of the parameters from `plainER` (with the exception of `out_path`) and only adds a few more, which are described below:
+
+- `imp`: A vector of important feature/variable indices.
+- `change_all`: (For `priorER()`), a boolean flag indicating whether to change $\hat{\Sigma}$ minimally (`FALSE`) or to change all entries (`TRUE`).
+- `estim`: A string indicating the type of estimator to use in Bayesian Model Averaging. Can be `HPM` (highest probability model), `BMA` (Bayesian model averaging model), or `MPM` (median probability model).
+
+#### Algorithm
+As mentioned above, `priorER()` incorporates prior information into Essential Regression by adjusting the correlation structure of the data and using prior probabilities to nudge the estimation of $\beta$ towards the variables known to be influential in the response from expert knowledge (call these *important* and other variables *nonimportant*). 
+
+The motivation behind the methodology is two-fold. Firstly, if an important variable is not allocated to any $\mathbf{Z}$, then it contributes nothing to prediction or inference. Thus, we want to "rescue" all important variables that are lost in the LOVE algorithm, and we do this by boosting their correlations in $\hat{\Sigma}$. Secondly, important variables are known to be relevant to the relationship between $\mathbf{X}$ and $\mathbf{Y}$. We therefore attempt to give them more influence in the regression of $\mathbf{Y}$ on $\mathbf{Z}$ by boosting the coefficients on the latent clusters in $\mathbf{Z}$ which have been allocated more important variables. 
+
+##### Point 1: Rescue Important Variables
+The LOVE algorithm is based almost entirely on the sample correlation matrix of the data, $x$. We will not go into too much depth here, but we do discuss some important points that are needed for understanding the background of `priorER()`.
+
+LOVE divides the $p$ variables of the data matrix into three groups: pure variables, mixed variables, and discarded variables. Pure variables are allocated to one, and only one, latent cluster of $\mathbf{Z}$ with an absolute weight of 1. Mixed variables are allocated to one or more latent clusters with absolute weights of less than 1. Discarded variables are not allocated to any latent cluster. One key assumption is that every latent cluster is allocated at least two pure variables, so, in a way, each cluster hinges upon its pure variables.
+
+LOVE determines variable purity by iteratively comparing its corresponding row entries in $\hat{\Sigma}$ to the row and column maximums of $\hat{\Sigma}$. For variable $i$, we take row in $\hat{\Sigma}$, which we denote $\hat{\Sigma}_{i, \cdot}$. We identify the maximum entry in absolute value of $\hat{\Sigma}_{i, \cdot}$, barring the entry on the diagonal ($\hat{\Sigma}_{i, i}$), and call this $m_i$. We then obtain a list, call it $S_i$, of the indices of $\hat{\Sigma}_{i, \cdot}$ corresponding to entries within $2\delta$ of $m_i$. Variable $i$ is pure if for each $s$ in $S_i$, the maximum entry in absolute value of $\hat{\Sigma}_{\cdot, s}$ is within $2\delta$ of $m_i$. 
+
+From this brief overview of LOVE, it is clear that the allocation of a variable is determined by the correlation structure of the data, which itself is very fragile. Even adjusting just a single entry of $\hat{\Sigma}$ by too much can result in changing multiple variables from pure to mixed or mixed to pure. That being said, the only way to rescue a discarded variable is to increase its entry in $\hat{\Sigma}$. In an attempt to overcome this issue, we propose the following adjustment for important variables:
+
+Take the row, $\hat{\Sigma}_{j, \cdot}$, corresponding to an important variable.
+
+- For each entry $k$ of $\hat{\Sigma}_{j, \cdot}$:
+  + If $|\hat{\Sigma}_{j, k}| < |m_j| - 2\delta$, then let $\hat{\Sigma}_{j, k} = \text{sign}(\hat{\Sigma}_{j, k}) * (|m_j| - 2\delta - 1^{-10})$
+  + Otherwise, do not change the entry
+- Also replace column $\hat{\Sigma}_{\cdot, j}$ with the adjusted $\hat{\Sigma}_{j, \cdot}$ because $\hat{\Sigma}$ is symmetric. 
+
+In this way, we preserve the original sign of every entry $(j, k)$ of the sample correlation matrix, increase the correlations for important variables as desired, and we do not shift the purity of other nodes because we do not increase an correlations to the point where they appear in $S_i$ (as defined above). 
+
+This adjusted version of $\hat{\Sigma}$, call it $\Delta$, is then used as the target in a Bayesian covariance matrix shrinkage estimation regime detailed in [Hannart et al. (2014)](https://www.sciencedirect.com/sdfe/reader/pii/S0047259X14001316/pdf), [Gray et al. (2018)](https://arxiv.org/pdf/1809.08024.pdf), and [Gray Thesis (2019)](https://www.repository.cam.ac.uk/bitstream/handle/1810/300603/thesis.pdf?sequence=1&isAllowed=y). 
+
+It is very important to note that this matrix estimation method requires $\Delta$ to be positive definite, which we do via our function `madePosDef()`. Unfortunately, making this matrix positive definite requires adjusting the majority of the entries of $\Delta$, which, in turn, usually results in a slight interference in the purity structure of the variables. 
+
+##### Point 2: Important Variable Coefficients
+After ensuring that the important variables are found in at least one member of $\mathbf{Z}$, we turn towards having the values of $\beta$ reflect their importance. We use Bayesian Model Averaging as implemented in the package [`BAS`](https://cran.r-project.org/web/packages/BAS/index.html) to re-estimate $\beta$ on the significant members of $\mathbf{Z}$. We determine the significance of a latent cluster using the Iterative Variable Selection method, which is described below). 
+
+Call the significant clusters $\mathbf{Z}_s$ and their corresponding coefficients $\beta_s$. The prior inclusion probabilities are proportional to the proportion of non-zero entries in the allocation matrix, $\hat{A}$ that correspond to important variables, and they are scaled to be between 0.5 and 1. We then re-estimate the values of $\beta$ for $\mathbf{Z}_{-s}$ using the `estBeta()` function. However, this re-estimation is done for $\mathbf{Y} - \beta_s \mathbf{Z}_s$ rather than $\mathbf{Y}$ as in `plainER()`. 
+
+Our new estimate of $\beta$ is then $\beta_s$ and $\beta_{s}$ concatenated together. 
+
+#### Running `priorER()`
+For this example, and in the absence of expert knowledge, we will simply try to recover any variables discarded by the previous run of `plainER()`. 
+
+```{r missing-vars, message = F, warning = F, cache = T}
+all_genes <- seq(1, 900) ## vector of all genes
+incl_genes <- unlist(initial_read$clusters) %>% unique() ## vector of all vars found in clusters
+disc_genes <- setdiff(all_genes, incl_genes) ## discarded genes
+```
+
+Discarded genes: `r  indName(disc_genes, colnames(x_data), F)`
+
+We will use `disc_genes` as our list of important variables, and we will use the same values or $\delta$ and $\lambda$ as in our run of `plainER()`. 
+
+```{r init-per, message = F, warning = F, cache = T}
+initial_run_prior <- priorER(y = y_data,
+                             x = x_data,
+                             sigma = cor(x_data),
+                             imps = disc_genes, 
+                             thresh_fdr = 0.2,
+                             delta = initial_run$opt_delta,
+                             lambda = initial_run$opt_lambda, 
+                             beta_est = T,
+                             correction = T,
+                             conf_int = T,
+                             alpha_level = 0.05,
+                             pred = T,
+                             rep_cv = 50,
+                             merge = F,
+                             equal_var = F,
+                             estim = "HPM",
+                             change_all = F,
+                             diagonal = F,
+                             support = F)
+```
+
+`priorER()` returns several large objects, which we cover below. 
+
+- `plainER_results`: The results of an initial run of `plainER()`.
+- `priorER_results`: The results of running `plainER()` using prior information, implemented through the adjustment of $\hat{\Sigma}$ and the estimates of $\beta$. 
+- `sample_sigma`: $\hat{\Sigma}$, the correlation matrix used for `plainER_results`.
+- `prior_knowledge_sigma`: $\Delta$, the correlation matrix that has been adjusted to include prior knowledge.
+- `priorER_sigma`: A list containing the results of the correlation matrix shrinkage estimation of Gray et al. (2014):
+  + `adj_mat` : The correlation matrix used for `priorER_results` (this is a weighted average of $\Delta$ and $\hat{\Sigma}$)
+  + `marg_logliks`: A matrix of the marginal log-likelihoods calculated in the estimation algorithm.
+  + `marg_plot`: A plot of `marg_logliks` with the maximum indicated by a vertical line. 
+  + `optim_alpha`: $\alpha$, the optimal weight used in balancing $\Delta$ and $\hat{\Sigma}$ (`adj_mat` = $\alpha\Delta + (1-\alpha)\hat{\Sigma}$).
+- `beta_bma`: A list containing the new estimates of $\beta$ using Bayesian model averaging as well as a vector of the indices of the components of $\mathbf{Z}$ that were considered significant during the re-estimation process. 
+
+#### Inspection of Results
+
+
+-----
+
+### Iterative Variable Selection {.tabset .tabset-fade .tabset-pills}
+
+Iterative Variable Selection (IVS) is a variable selection used for linear regression that is designed to combat collinearity with high-dimensional data. 
+EXPAND THIS SECTION!!!!!!!!!!
+
+
+### Cross-Validation {.tabset .tabset-fade .tabset-pills}
+
+#### Running `essregCV()`
+We also provide a cross-validation regime based upon `K-CV()` in the original Essential Regression package. This regime is implemented in the function `essregCV()`, which accepts all of the parameters used in `plainER()` and `priorER()` in addition to a few others:
+
+- `k`: The number of folds to use for training/validation set creation.
+- `sel_corr`: A boolean flag indicating whether to evaluate models using the Spearman correlation between $\mathbf{Y}$ and $\hat{\mathbf{Y}}$ or to use MSE/AUC. 
+- `y_factor`: A boolean flag indicating whether `y` is categorical (`TRUE`) or continuous (`FALSE`).
+- `priors`: (For `priorER()`), a vector of the important feature/variable indices.
+- `perm_option`: A string indicating the type of permutation test do perform. Can be `NULL` for no permutations, `x` to permute the columns of `x`, `y` to permute the entries of `y`, `xy` to permute `x` and `y`, or `ybs` to permute the entries of `y` before splitting into training/validation sets. 
+- `change_all`: (For `priorER()`), a boolean flag indicating whether to change $\hat{\Sigma}$ minimally (`FALSE`) or to change all entries (`TRUE`).
+- `rep`: The replicate number. This is only used for saving intermediate output during cross-validation.
+
+#### Algorithm
+`essregCV()` compares several different linear models in order to provide a comprehensive view of Essential Regression's performance.
+The models include:
+
+1. linear regression with variables selected by LASSO
+2. linear regression with variables selected by IVS
+3. Essential Regression using all estimated latent clusters
+4. Essential Regression using a subset of latent clusters determined by coefficient weight
+5. Essential Regression using a subset of latent clusters determined by IVS
+6. Models 3-5 with prior information
+
+For one replicate of `essregCV()`: 
+
+- Divide `x` and `y` into `k` folds.
+- For each fold $i$:
+  + Perform the necessary permutations
+  + Hold fold $i$ as a validation set and place all other folds into the training set
+  + Standardize the training and validation sets
+  + For each method in the method list (any of 1-6 listed above), train a model on the training set and evaluate the fit with the validation set using either MSE, AUC, or Spearman correlation
+- Average the performance over all folds
+----
+
+### Pipeline {.tabset .tabset-fade .tabset-pills}
+
+The main contribution of this package is a pipeline for the estimation of the hyperparameters of Essential Regression, $\delta$ and $\lambda$. The pipeline consists of four steps, which are split into two functions: `pipeline1()` and `pipeline2()`. The algorithm is as follows:
+
+#### `pipeline1()`
+
+Step 1: 
+
+- Initialize a coarse grid of potential values for $\delta$:
+  + [0.001, 0.001] by 0.001
+  + [0.001, 0.01] by 0.001
+  + [0.01, 0.1] by 0.01
+  + [0.1, 1] by 0.1
+- Run `plainER()` on each of these sequences to get a list of four optimal values (one from each sequence)
+
+Step 2:
+
+- Run `essregCV()` for $r$ replicates
+- Plot the model performance for user inspection
+  + This step creates a boxplot of the average MSE/AUC/Spearman correlations by $\delta$. Separate boxes for no permutations and $y$ permutations are created if permutations of $y$ are conducted. 
+  
+`pipeline1()` also supports the specification of steps to run using the parameter `steps`. This parameter can be set to `1`, `2`, or `all`. 
+#### `pipeline2()`
+
+The second half of the Essential Regression pipeline requires the user to specify a range over which to conduct a fine search for $\delta$. Alternatively, the user can supply a single value, and the function will create its own fine grid around the provided value. 
+
+Step 3: 
+
+- Run `plainER()` on the provided (or generated) fine $\delta$ grid
+
+Step 4:
+
+- For each value of $\lambda$ in the vector provided by the user:
+  + Run `essregCV()` for $r$ replicates
+- Plot the model performance for user inspection
+  + This step creates a boxplot of the average MSE/AUC/Spearman correlations by $\lambda$. Separate boxes for no permutations and $y$ permutations are created if permutations of $y$ are conducted. 
+  
+After running both `pipeline1()` and `pipeline2()`, a user will have boxplots that provide insight into the optimal values to use for $\delta$ and $\lambda$. 
+  
+
+
+
+
