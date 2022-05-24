@@ -105,6 +105,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
     corr_bp_data <- NULL
     for (i in 1:length(coarse_res)) {
       mag_delta <- coarse_res[[i]]$opt_delta
+      magnitude <- deltas[i]
       cat("DELTA = ", mag_delta, " . . . \n")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
         temp <- essregCV(k = er_input$k,
@@ -126,7 +127,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                          change_all = er_input$change_all,
                          correction = er_input$correction,
                          thresh_fdr = er_input$thresh_fdr,
-                         out_path = er_input$out_path,
+                         out_path = paste0(er_input$out_path, "delta_", magnitude, "/"),
                          rep = j)
       } -> delta_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
