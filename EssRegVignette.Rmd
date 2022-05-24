@@ -392,13 +392,14 @@ beta_est: LS              # type of beta estimation - can be LS or NULL
 conf_int: TRUE            # find confidence intervals for betas?
 pred: TRUE                # estimate responses (do prediction)?
 rep_cv: 50                # number of replicates for cross-validation for delta
+sel_corr: TRUE            # perform evaluation using Spearman correlation?
 nreps: 10                 # number of replicates for cross-validation in step 2
 diagonal: FALSE           # diagonal structure of data matrix?
 merge: FALSE              # use intersection (FALSE) or union (TRUE) for merging
 equal_var: FALSE          # do columns of data matrix have equal variance?
 alpha_level: 0.05         # alpha level for confidence intervals
 support: NULL             # literally no idea what this is
-correction: T             # do multiple testing correction?
+correction: TRUE          # do multiple testing correction?
 verbose: TRUE             # include print statements?
 thresh_fdr: 0.2           # false discovery rate thresholding p-value cutoff
 change_all: FALSE         # change entire row/column for important variables?
