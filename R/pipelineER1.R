@@ -73,7 +73,6 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                          sel_corr = er_input$sel_corr,
                          lambda = 0.5,
                          svm = F,
-                         sel_corr = er_input$sel_corr,
                          rep_cv = er_input$rep_cv,
                          diagonal = er_input$diagonal,
                          merge = er_input$merge,
