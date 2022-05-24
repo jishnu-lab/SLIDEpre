@@ -21,7 +21,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
 
   if (er_input$y_factor) {
     y <- toCont(y)
-    saveRDS(y, file = paste0(er_input$out_path, "/pipeline1_y_mapping.rds"))
+    saveRDS(y, file = paste0(er_input$out_path, "pipeline1_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
   }
@@ -33,80 +33,35 @@ pipelineER1 <- function(yaml_path, steps = "all") {
 
   if (steps == 1) {
     ## Step 1: Coarse Delta Search #############################################
-    foreach::foreach (i = 1:length(deltas)) %dopar% {
-      plainER(y = y,
-              x = x,
-              sigma = NULL,
-              delta = deltas[[i]],
-              beta_est = er_input$beta_est,
-              lambda = 0.5,
-              rep_cv = er_input$rep_cv,
-              diagonal = er_input$diagonal,
-              merge = er_input$merge,
-              equal_var = er_input$equal_var,
-              alpha_level = er_input$alpha_level,
-              support = er_input$support,
-              correction = er_input$correction,
-              verbose = er_input$verbose,
-              thresh_fdr = er_input$thresh_fdr,
-              out_path = er_input$out_path)
-    } -> coarse_res
-    saveRDS(coarse_res, file = paste0(er_input$out_path, "/pipeline_step1.rds"))
+    if (file.exists(paste0(er_input$out_path, "pipeline_step1.rds"))) {
+      coarse_res <- readRDS(paste0(er_input$out_path, "pipeline_step1.rds"))
+    } else {
+      foreach::foreach (i = 1:length(deltas)) %dopar% {
+        plainER(y = y,
+                x = x,
+                sigma = NULL,
+                delta = deltas[[i]],
+                beta_est = er_input$beta_est,
+                lambda = 0.5,
+                rep_cv = er_input$rep_cv,
+                diagonal = er_input$diagonal,
+                merge = er_input$merge,
+                equal_var = er_input$equal_var,
+                alpha_level = er_input$alpha_level,
+                support = er_input$support,
+                correction = er_input$correction,
+                verbose = er_input$verbose,
+                thresh_fdr = er_input$thresh_fdr,
+                out_path = er_input$out_path)
+      } -> coarse_res
+      saveRDS(coarse_res, file = paste0(er_input$out_path, "pipeline_step1.rds"))
+    }
   } else if (steps == 2) {
     ## Step 2: K-Fold Cross-Validation To Find Delta Magnitude #################
     mag_delta <- er_input$delta
-    foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-      temp <- essregCV(k = er_input$k,
-                       x = x,
-                       y = y,
-                       delta = mag_delta,
-                       y_factor = er_input$y_factor,
-                       perm_option = er_input$perm_option,
-                       beta_est = er_input$beta_est,
-                       sel_corr = er_input$sel_corr,
-                       lambda = 0.5,
-                       svm = F,
-                       rep_cv = er_input$rep_cv,
-                       diagonal = er_input$diagonal,
-                       merge = er_input$merge,
-                       equal_var = er_input$equal_var,
-                       alpha_level = er_input$alpha_level,
-                       support = er_input$support,
-                       change_all = er_input$change_all,
-                       correction = er_input$correction,
-                       thresh_fdr = er_input$thresh_fdr,
-                       out_path = er_input$out_path,
-                       rep = j)
-    } -> delta_rep
-    saveRDS(delta_rep, file = paste0(er_input$out_path, "/delta", mag_delta, "_pipeline_step2.rds"))
-  } else {
-    ## Step 1: Coarse Delta Search #############################################
-    foreach::foreach (i = 1:length(deltas)) %dopar% {
-      plainER(y = y,
-              x = x,
-              sigma = NULL,
-              delta = deltas[[i]],
-              beta_est = er_input$beta_est,
-              lambda = 0.5,
-              rep_cv = er_input$rep_cv,
-              diagonal = er_input$diagonal,
-              merge = er_input$merge,
-              equal_var = er_input$equal_var,
-              alpha_level = er_input$alpha_level,
-              support = er_input$support,
-              correction = er_input$correction,
-              verbose = er_input$verbose,
-              thresh_fdr = er_input$thresh_fdr,
-              out_path = er_input$out_path)
-    } -> coarse_res
-    saveRDS(coarse_res, file = paste0(er_input$out_path, "/pipeline_step1.rds"))
-
-    ## Step 2: K-Fold Cross-Validation To Find Delta Magnitude #################
-    corr_bp_data <- NULL
-    for (i in 1:length(coarse_res)) {
-      mag_delta <- coarse_res[[i]]$opt_delta
-      magnitude <- deltas[i]
-      cat("DELTA = ", mag_delta, " . . . \n")
+    if (file.exists(paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))) {
+      delta_rep <- readRDS(paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))
+    } else {
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
         temp <- essregCV(k = er_input$k,
                          x = x,
@@ -118,6 +73,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                          sel_corr = er_input$sel_corr,
                          lambda = 0.5,
                          svm = F,
+                         sel_corr = er_input$sel_corr,
                          rep_cv = er_input$rep_cv,
                          diagonal = er_input$diagonal,
                          merge = er_input$merge,
@@ -127,13 +83,75 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                          change_all = er_input$change_all,
                          correction = er_input$correction,
                          thresh_fdr = er_input$thresh_fdr,
-                         out_path = paste0(er_input$out_path, "delta_", magnitude, "/"),
+                         out_path = er_input$out_path,
                          rep = j)
       } -> delta_rep
+      saveRDS(delta_rep, file = paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))
+    }
+  } else {
+    ## Step 1: Coarse Delta Search #############################################
+    if (file.exists(paste0(er_input$out_path, "pipeline_step1.rds"))) {
+      coarse_res <- readRDS(file = paste0(er_input$out_path, "pipeline_step1.rds"))
+    } else {
+      foreach::foreach (i = 1:length(deltas)) %dopar% {
+        plainER(y = y,
+                x = x,
+                sigma = NULL,
+                delta = deltas[[i]],
+                beta_est = er_input$beta_est,
+                lambda = 0.5,
+                rep_cv = er_input$rep_cv,
+                diagonal = er_input$diagonal,
+                merge = er_input$merge,
+                equal_var = er_input$equal_var,
+                alpha_level = er_input$alpha_level,
+                support = er_input$support,
+                correction = er_input$correction,
+                verbose = er_input$verbose,
+                thresh_fdr = er_input$thresh_fdr,
+                out_path = er_input$out_path)
+      } -> coarse_res
+      saveRDS(coarse_res, file = paste0(er_input$out_path, "pipeline_step1.rds"))
+    }
+
+    ## Step 2: K-Fold Cross-Validation To Find Delta Magnitude #################
+    corr_bp_data <- NULL
+    for (i in 1:length(coarse_res)) {
+      mag_delta <- coarse_res[[i]]$opt_delta
+      magnitude <- deltas[[i]][1]
+      cat("DELTA = ", mag_delta, " . . . \n")
+      if (file.exists(paste0(er_input$out_path, "pipeline2/delta_", mag_delta, ".rds"))) {
+        delta_rep <- readRDS(paste0(er_input$out_path, "pipeline2/delta_", mag_delta, ".rds"))
+      } else {
+        foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
+          temp <- essregCV(k = er_input$k,
+                           x = x,
+                           y = y,
+                           delta = mag_delta,
+                           y_factor = er_input$y_factor,
+                           perm_option = er_input$perm_option,
+                           beta_est = er_input$beta_est,
+                           sel_corr = er_input$sel_corr,
+                           lambda = 0.5,
+                           svm = F,
+                           rep_cv = er_input$rep_cv,
+                           diagonal = er_input$diagonal,
+                           merge = er_input$merge,
+                           equal_var = er_input$equal_var,
+                           alpha_level = er_input$alpha_level,
+                           support = er_input$support,
+                           change_all = er_input$change_all,
+                           correction = er_input$correction,
+                           thresh_fdr = er_input$thresh_fdr,
+                           out_path = paste0(er_input$out_path, "delta_", magnitude, "/"),
+                           rep = j)
+        } -> delta_rep
+        saveRDS(delta_rep, file = paste0(er_input$out_path, "pipeline2/delta_", mag_delta, ".rds"))
+      }
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                        "result" = delta_rep)
     }
-    saveRDS(corr_bp_data, file = paste0(er_input$out_path, "/pipeline_step2.rds"))
+    saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step2.rds"))
   }
 
   ## create boxplot of replicate correlations ##################################
