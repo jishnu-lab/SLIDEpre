@@ -31,7 +31,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                  seq(0.01, 0.1, 0.01),
                  seq(0.1, 1, 0.1))
 
-  if (steps == "1") {
+  if (steps == 1) {
     ## Step 1: Coarse Delta Search #############################################
     foreach::foreach (i = 1:length(deltas)) %dopar% {
       plainER(y = y,
@@ -52,7 +52,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
               out_path = er_input$out_path)
     } -> coarse_res
     saveRDS(coarse_res, file = paste0(er_input$out_path, "/pipeline_step1.rds"))
-  } else if (steps == "2") {
+  } else if (steps == 2) {
     ## Step 2: K-Fold Cross-Validation To Find Delta Magnitude #################
     mag_delta <- er_input$delta
     foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
