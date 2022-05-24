@@ -4,7 +4,7 @@
 \alias{betaBMA}
 \title{PriorER - Bayesian Model Averaging For \eqn{\beta}s}
 \usage{
-betaBMA(x, y, er_res, imps, imps_z, estim = "HPM", out_path = NULL)
+betaBMA(x, y, er_res, imps, imps_z, estim = "HPM")
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}

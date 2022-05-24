@@ -58,27 +58,28 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
       z_imp_probs[i] <- 1 + (num_nonzero / length(which(column != 0))) ## 1 + proportion of nonzero features are imp
     }
 
-    while (Ad_new > AdR_old) {
+    while (abs(Ad_new - AdR_old) > 0.01 && length(y) > (length(S) + 1) && length(S) < ncol(z)) {
       Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
       for (i in c(1:ncol(z))[-S]) {
         r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
         colinear   <- summary(lm(z[, i] ~ z[, S]))$r.squared
-        Obj <- rbind(Obj, cbind(i, (r_adjusted - colinear), (r_adjusted * z_imp_probs[i] - colinear)))
+        Obj <- rbind(Obj, cbind(i, (r_adjusted - colinear)))
       }
 
-      S <- c(S, unname(Obj[which.max(Obj[, 3]), 1]))
+      S <- c(S, unname(Obj[which.max(Obj[, 2]), 1]))
       ifelse(length(S) == 1,
              AdR_old <- summary(lm(y ~ z[, S]))$adj.r.squared,
              AdR_old <- summary(lm(y ~ z[, S[-length(S)]]))$adj.r.squared)
       Ad_new <- summary(lm(y ~ z[,S]))$adj.r.squared
-
+      a <- length(S)
       if (verbose == T) {
         print(paste("old Adj R2 is:", AdR_old))
         print(paste("new Adj R2 is:", Ad_new))
+        print(ii[S[-a]])
       }
     }
   } else {
-    while (Ad_new > AdR_old) {
+    while (abs(Ad_new - AdR_old) > 0.01 && length(y) > (length(S) + 1) && length(S) < ncol(z)) {
       Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
       for (i in c(1:ncol(z))[-S]) {
         r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared

@@ -11,7 +11,7 @@ output:
 ```{r setup, echo = F, warning = F, message = F}
 knitr::opts_chunk$set(echo = TRUE)
 ## REMOVE IN FINAL VERSION!!!!!!!!
-#devtools::install_github("aerosengart/EssReg", auth_token = "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")
+devtools::install_github("aerosengart/EssReg", auth_token = "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")
 ```
 
 Before beginning, please ensure that the following packages are installed and libraries are loaded:
@@ -201,7 +201,7 @@ incl_genes <- unlist(initial_read$clusters) %>% unique() ## vector of all vars f
 disc_genes <- setdiff(all_genes, incl_genes) ## discarded genes
 ```
 
-Discarded genes: `r  indName(disc_genes, colnames(x_data), F)`
+Discarded genes: `r indName(disc_genes, colnames(x_data), F)`
 
 We will use `disc_genes` as our list of important variables, and we will use the same values or $\delta$ and $\lambda$ as in our run of `plainER()`. 
 
@@ -250,6 +250,7 @@ initial_run_prior <- priorER(y = y_data,
 Iterative Variable Selection (IVS) is a variable selection used for linear regression that is designed to combat collinearity with high-dimensional data. 
 EXPAND THIS SECTION!!!!!!!!!!
 
+-----
 
 ### Cross-Validation {.tabset .tabset-fade .tabset-pills}
 
@@ -284,7 +285,8 @@ For one replicate of `essregCV()`:
   + Standardize the training and validation sets
   + For each method in the method list (any of 1-6 listed above), train a model on the training set and evaluate the fit with the validation set using either MSE, AUC, or Spearman correlation
 - Average the performance over all folds
-----
+
+-----
 
 ### Pipeline {.tabset .tabset-fade .tabset-pills}
 
@@ -325,7 +327,7 @@ Step 4:
   
 After running both `pipeline1()` and `pipeline2()`, a user will have boxplots that provide insight into the optimal values to use for $\delta$ and $\lambda$. 
   
-
+-----
 
 
 

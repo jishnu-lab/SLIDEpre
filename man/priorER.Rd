@@ -20,7 +20,6 @@ priorER(
   merge = F,
   equal_var = F,
   alpha_level = 0.05,
-  thresh = 0.001,
   estim = "HPM",
   support = NULL,
   correction = T,
@@ -59,8 +58,6 @@ control the false discovery rate, default is 0.2}
 \item{equal_var}{a boolean indicating whether there is equal variance ??}
 
 \item{alpha_level}{\eqn{\alpha}, a numerical constant used in confidence interval calculation}
-
-\item{thresh}{a numerical constant used as the threshold for convergence in Variational Bayes}
 
 \item{estim}{the type of estimator to use for BMA.
 Highest Probability Model = "HPM", Bayesian Model Averaging Model = "BMA", Median Probability Model = "MPM".}
