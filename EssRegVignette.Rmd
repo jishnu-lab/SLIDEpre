@@ -11,11 +11,11 @@ output:
 ```{r setup, echo = F, warning = F, message = F}
 knitr::opts_chunk$set(echo = TRUE)
 ## REMOVE IN FINAL VERSION!!!!!!!!
-devtools::install_github("aerosengart/EssReg", auth_token = "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")
+#devtools::install_github("aerosengart/EssReg", auth_token = "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")
 ```
 
 Before beginning, please ensure that the following packages are installed and libraries are loaded:
-```{r setup-pkgs, include = T, warning = F, message = F}
+```{r setup-pkgs, warning = F, message = F}
 library(matrixcalc)
 library(readr)
 library(ROCR)
@@ -36,7 +36,7 @@ The Essential Regression package is available for downloading using the followin
 `devtools::install_github("aerosengart/EssReg", auth_token = "TOKEN_HERE")`
 
 We also recommend running some of these function in parallel. We prepare the environment for this using the following code:
-```{r setup-par, include = T, warning = F, message = F}
+```{r setup-par, warning = F, message = F}
 cores <- detectCores()
 registerDoParallel(cores)
 ```
@@ -126,7 +126,7 @@ initial_run$opt_delta
 ```
 
 We can also use the `makeHeatmap()` function, a wrapper for the `pheatmap()` function from `pheatmap`, to view the thresholded $\hat{\Sigma}$ matrix:
-```{r init-sigma-hmap, warning = F, message = F}
+```{r init-sigma-hmap, warning = F, message = F, cache = T}
 makeHeatmap(mat = initial_run$thresh_sigma, ## matrix
             title = "Thresholded Sigma Matrix",  ## plot title
             cluster = T, ## boolean for clustering
@@ -142,8 +142,10 @@ For more information on the clustering of the variables, we can use the `readER(
 ```{r init-read, warning = F, message = F, cache = T}
 initial_read <- readER(initial_run)
 ```
-First 10 pure variables: `r initial_read$pure_vars[1:10]`
-First 10 mixed variables: `r initial_read$pure_vars[1:10]`
+
+First 10 pure variables: `r indName(initial_read$pure_vars[1:10], colnames(x_data), F)`
+
+First 10 mixed variables: `r indName(initial_read$mix_vars[1:10], colnames(x_data), F)`
 
 -----
 
@@ -234,14 +236,60 @@ initial_run_prior <- priorER(y = y_data,
 - `sample_sigma`: $\hat{\Sigma}$, the correlation matrix used for `plainER_results`.
 - `prior_knowledge_sigma`: $\Delta$, the correlation matrix that has been adjusted to include prior knowledge.
 - `priorER_sigma`: A list containing the results of the correlation matrix shrinkage estimation of Gray et al. (2014):
-  + `adj_mat` : The correlation matrix used for `priorER_results` (this is a weighted average of $\Delta$ and $\hat{\Sigma}$)
+  + `adj_mat` : The correlation matrix used for `priorER_results` (this is a weighted average of $\Delta$ and $\hat{\Sigma}$).
   + `marg_logliks`: A matrix of the marginal log-likelihoods calculated in the estimation algorithm.
   + `marg_plot`: A plot of `marg_logliks` with the maximum indicated by a vertical line. 
   + `optim_alpha`: $\alpha$, the optimal weight used in balancing $\Delta$ and $\hat{\Sigma}$ (`adj_mat` = $\alpha\Delta + (1-\alpha)\hat{\Sigma}$).
 - `beta_bma`: A list containing the new estimates of $\beta$ using Bayesian model averaging as well as a vector of the indices of the components of $\mathbf{Z}$ that were considered significant during the re-estimation process. 
 
 #### Inspection of Results
+First, we will check that the variables discarded by `plainER()` were actually rescued.
 
+```{r check-rescue, warning = F, message = F, cache = T}
+prior_read <- readER(initial_run_prior$priorER_results) ## read results from priorER()
+incl_genes <- unlist(prior_read$clusters) %>% unique ## get list of included variables
+intersect_incl_disc <- intersect(incl_genes, disc_genes)
+```
+
+Discarded genes: `r indName(disc_genes, colnames(x_data), F)`
+
+Rescued genes: `r indName(intersect_incl_disc, colnames(x_data), F)`
+
+##### $\Sigma$ Exploration
+Let's look at the three different $\Sigma$'s used in `priorER()`.
+
+First, look at $\hat{\Sigma}$: 
+
+```{r plain-sigma, warning = F, message = F, cache = T}
+makeHeatmap(mat = as.matrix(initial_run_prior$plainER_results$thresh_sigma), ## sigma hat matrix
+            title = "PlainER Sigma Matrix",  ## plot title
+            cluster = F, ## boolean for clustering
+            names = F) ## boolean for displaying column/row names
+```
+
+Then $\Delta$:
+
+```{r delta-hmap, warning = F, message = F, cache = T}
+makeHeatmap(mat = initial_run_prior$prior_knowledge_sigma, ## delta matrix
+            title = "Prior Knowledge Sigma Matrix (Delta)",  ## plot title
+            cluster = F, ## boolean for clustering
+            names = F) ## boolean for displaying column/row names
+```
+
+We can see the variables whose correlations were increased according to the prior information. Finally, $\hat{\Sigma}_{prior}$:
+
+```{r prior-sigma, warning = F, message = F, cache = T}
+makeHeatmap(mat = as.matrix(initial_run_prior$priorER_results$thresh_sigma), ## sigma hat (prior) matrix
+            title = "PriorER Sigma Matrix",  ## plot title
+            cluster = F, ## boolean for clustering
+            names = F) ## boolean for displaying column/row names
+```
+
+$\hat{\Sigma}_{prior}$ is a weighted average of $\hat{\Sigma}$ and $\Delta$.`priorER()` uses a function, `makeDelta()`, which implements the correlation matrix shrinkage estimation procedure mentioned above. This algorithm uses maximum likelihood to find the optimal weight, $\alpha$. In this case, the algorithm identified $\alpha$ to be `r initial_run_prior$priorER_sigma$optim_alpha`, and we can visualize the process with `marg_plot` from the `priorER()` output:
+
+```{r marg-plot, warning = F, message = F}
+initial_run_prior$priorER_sigma$marg_plot
+```
 
 -----
 
@@ -269,8 +317,8 @@ We also provide a cross-validation regime based upon `K-CV()` in the original Es
 `essregCV()` compares several different linear models in order to provide a comprehensive view of Essential Regression's performance.
 The models include:
 
-1. linear regression with variables selected by LASSO
-2. linear regression with variables selected by IVS
+1. Linear regression with variables selected by LASSO
+2. Linear regression with variables selected by IVS
 3. Essential Regression using all estimated latent clusters
 4. Essential Regression using a subset of latent clusters determined by coefficient weight
 5. Essential Regression using a subset of latent clusters determined by IVS
@@ -309,23 +357,57 @@ Step 2:
 - Plot the model performance for user inspection
   + This step creates a boxplot of the average MSE/AUC/Spearman correlations by $\delta$. Separate boxes for no permutations and $y$ permutations are created if permutations of $y$ are conducted. 
   
-`pipeline1()` also supports the specification of steps to run using the parameter `steps`. This parameter can be set to `1`, `2`, or `all`. 
+`pipeline1()` also supports the specification of steps to run using the parameter `steps`. This parameter can be set to `1`, `2`, or `all`. For the sake of this example, we run all steps. 
+
 #### `pipeline2()`
 
 The second half of the Essential Regression pipeline requires the user to specify a range over which to conduct a fine search for $\delta$. Alternatively, the user can supply a single value, and the function will create its own fine grid around the provided value. 
 
 Step 3: 
 
-- Run `plainER()` on the provided (or generated) fine $\delta$ grid
+- Run `plainER()` on the provided (or generated) fine $\delta$ grid.
 
 Step 4:
 
 - For each value of $\lambda$ in the vector provided by the user:
-  + Run `essregCV()` for $r$ replicates
-- Plot the model performance for user inspection
-  + This step creates a boxplot of the average MSE/AUC/Spearman correlations by $\lambda$. Separate boxes for no permutations and $y$ permutations are created if permutations of $y$ are conducted. 
+  + Run `essregCV()` for $r$ replicates.
+- Plot the model performance for user inspection.
+  + This step creates a boxplot of the average MSE/AUC/Spearman correlations by $\lambda$. Separate boxes for no permutations and $y$ permutations are created if permutations of $y$ are conducted.
   
 After running both `pipeline1()` and `pipeline2()`, a user will have boxplots that provide insight into the optimal values to use for $\delta$ and $\lambda$. 
+
+#### Running The ER Pipeline
+Both pipeline functions require `steps` and a path to a .yaml file (`yaml_path`) that contains all of the other parameter values. We organize the functions in this way to facilitate scripting. 
+
+Below is an example .yaml file for `pipelineER1()` to show the correct formatting: 
+
+```{r yaml1, warning = F, message = F, eval = F}
+---
+x_path: /path/to/x_data   # path to .csv file for data matrix
+y_path: /path/to/y_data   # path to .csv file for response vector
+out_path: /output/path    # path to directory for saving results
+k: 5                      # number of folds for cross-validation
+priors: NULL              # list of important variables for priorER()
+beta_est: LS              # type of beta estimation - can be LS or NULL
+conf_int: TRUE            # find confidence intervals for betas?
+pred: TRUE                # estimate responses (do prediction)?
+rep_cv: 50                # number of replicates for cross-validation for delta
+nreps: 10                 # number of replicates for cross-validation in step 2
+diagonal: FALSE           # diagonal structure of data matrix?
+merge: FALSE              # use intersection (FALSE) or union (TRUE) for merging
+equal_var: FALSE          # do columns of data matrix have equal variance?
+alpha_level: 0.05         # alpha level for confidence intervals
+support: NULL             # literally no idea what this is
+correction: T             # do multiple testing correction?
+verbose: TRUE             # include print statements?
+thresh_fdr: 0.2           # false discovery rate thresholding p-value cutoff
+change_all: FALSE         # change entire row/column for important variables?
+```
+
+```{r pipeline1, warning = F, message = F, eval = F}
+pipe1_run <- pipelineER1(yaml_path = "/Users/aerosengart/Documents/Das Lab/EssReg/data/pipeline1.yaml", steps = "all")
+```
+
   
 -----
 

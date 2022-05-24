@@ -1,0 +1,22 @@
+---
+x_path: /Users/aerosengart/Documents/Das Lab/EssReg/inst/extdata/Var50df.csv      # path to .csv file for data matrix
+y_path: /Users/aerosengart/Documents/Das Lab/EssReg/inst/extdata/vardf_mrss_col.csv      # path to .csv file for response vector
+out_path: /Users/aerosengart/Documents/Das Lab/EssReg/EssRegVignette_files/output/  # path to directory for saving results
+process_input: TRUE       # z-score data?
+k: 5                      # number of folds for cross-validation
+y_factor: FALSE           # is y categorical?
+priors: NULL              # list of important variables for prior ER
+beta_est: LS              # type of beta estimation - can be LS or NULL
+conf_int: TRUE            # find confidence intervals for betas?
+pred: TRUE                # estimate responses (do prediction)?
+rep_cv: 50                # number of replicates for cross-validation for delta
+nreps: 10                 # number of replicates for cross-validation in step 2
+diagonal: FALSE           # diagonal structure of data matrix?
+merge: FALSE              # use intersection (FALSE) or union (TRUE) for merging
+equal_var: FALSE          # do columns of data matrix have equal variance?
+alpha_level: 0.05         # alpha level for confidence intervals
+support: NULL             # literally no idea what this is
+correction: T             # do multiple testing correction?
+verbose: TRUE             # include print statements?
+thresh_fdr: 0.2           # false discovery rate thresholding p-value cutoff
+change_all: FALSE         # change entire row/column for important variables?
