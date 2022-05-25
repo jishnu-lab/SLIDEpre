@@ -14,6 +14,6 @@ predZ <- function(x, er_res) {
   Gamma_hat <- ifelse(Gamma_hat == 0, 1e-10, Gamma_hat)
   Gamma_hat_inv <- diag(Gamma_hat ** (-1))
   G_hat <- crossprod(A_hat, Gamma_hat_inv) %*% A_hat + solve(C_hat)
-  Z_hat <- x %*% Gamma_hat_inv %*% A_hat %*% matlib::Ginv(G_hat) #MASS::ginv(G_hat)
+  Z_hat <- x %*% Gamma_hat_inv %*% A_hat %*% MASS::ginv(G_hat)
   return (Z_hat)
 }
