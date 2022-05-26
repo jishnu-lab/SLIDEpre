@@ -145,7 +145,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                            out_path = paste0(er_input$out_path, "delta_", magnitude, "/"),
                            rep = j)
         } -> delta_rep
-        saveRDS(delta_rep, file = paste0(er_input$out_path, "pipeline2/delta_", mag_delta, ".rds"))
+        saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                        "result" = delta_rep)
