@@ -343,6 +343,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
     res_df <- res_df %>%
       as.data.frame() %>%
       dplyr::mutate(spearman_corr = as.numeric(as.character(spearman_corr)))
+    saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
     return (res_df)
   } else {
     if (eval_type == "mse") {
@@ -360,6 +361,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                          mean_tpr = mean(as.numeric(tpr)),
                          mean_fpr = mean(as.numeric(fpr)))
     }
+    saveRDS(results, file = paste0(new_dir, "output_table.rds"))
     return (results)
   }
 }
