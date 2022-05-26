@@ -26,8 +26,10 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
 
   ## Step 1: Important Clusters
   ## create initial probabilities vector
-  z_imp <- prior_z[, imps_z]
-  loadings <- er_res$A[, imps_z]
+  z_imp <- prior_z[, imps_z] %>%
+    as.data.frame()
+  loadings <- er_res$A[, imps_z] %>%
+    as.data.frame()
   z_imp_probs <- rep(0, ncol(z_imp))
 
   ## make initial inclusion probabilities
