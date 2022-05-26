@@ -60,24 +60,28 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        temp <- essregCV(k = er_input$k,
-                         x = x,
-                         y = y,
-                         delta = best_delta,
-                         perm_option = er_input$perm_option,
-                         beta_est = er_input$beta_est,
-                         sel_corr = er_input$sel_corr,
-                         y_factor = er_input$y_factor,
-                         lambda = lambda,
-                         rep_cv = er_input$rep_cv,
-                         diagonal = er_input$diagonal,
-                         merge = er_input$merge,
-                         equal_var = er_input$equal_var,
-                         alpha_level = er_input$alpha_level,
-                         support = er_input$support,
-                         change_all = er_input$change_all,
-                         correction = er_input$correction,
-                         thresh_fdr = er_input$thresh_fdr)
+        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
+        } else {
+          temp <- essregCV(k = er_input$k,
+                           x = x,
+                           y = y,
+                           delta = best_delta,
+                           perm_option = er_input$perm_option,
+                           beta_est = er_input$beta_est,
+                           sel_corr = er_input$sel_corr,
+                           y_factor = er_input$y_factor,
+                           lambda = lambda,
+                           rep_cv = er_input$rep_cv,
+                           diagonal = er_input$diagonal,
+                           merge = er_input$merge,
+                           equal_var = er_input$equal_var,
+                           alpha_level = er_input$alpha_level,
+                           support = er_input$support,
+                           change_all = er_input$change_all,
+                           correction = er_input$correction,
+                           thresh_fdr = er_input$thresh_fdr)
+        }
       } -> lambda_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)
@@ -117,24 +121,28 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        temp <- essregCV(k = er_input$k,
-                         x = x,
-                         y = y,
-                         delta = best_delta,
-                         perm_option = er_input$perm_option,
-                         beta_est = er_input$beta_est,
-                         sel_corr = er_input$sel_corr,
-                         y_factor = er_input$y_factor,
-                         lambda = lambda,
-                         rep_cv = er_input$rep_cv,
-                         diagonal = er_input$diagonal,
-                         merge = er_input$merge,
-                         equal_var = er_input$equal_var,
-                         alpha_level = er_input$alpha_level,
-                         support = er_input$support,
-                         change_all = er_input$change_all,
-                         correction = er_input$correction,
-                         thresh_fdr = er_input$thresh_fdr)
+        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
+        } else {
+          temp <- essregCV(k = er_input$k,
+                           x = x,
+                           y = y,
+                           delta = best_delta,
+                           perm_option = er_input$perm_option,
+                           beta_est = er_input$beta_est,
+                           sel_corr = er_input$sel_corr,
+                           y_factor = er_input$y_factor,
+                           lambda = lambda,
+                           rep_cv = er_input$rep_cv,
+                           diagonal = er_input$diagonal,
+                           merge = er_input$merge,
+                           equal_var = er_input$equal_var,
+                           alpha_level = er_input$alpha_level,
+                           support = er_input$support,
+                           change_all = er_input$change_all,
+                           correction = er_input$correction,
+                           thresh_fdr = er_input$thresh_fdr)
+        }
       } -> lambda_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)

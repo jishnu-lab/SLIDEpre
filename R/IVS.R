@@ -59,7 +59,7 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
     }
 
     while (abs(Ad_new - AdR_old) > 0.01 && length(y) > (length(S) + 1) && length(S) < ncol(z)) {
-      Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
+      Obj <- NULL ## objective function = adjusted R^2 - collinearity R^2
       for (i in c(1:ncol(z))[-S]) {
         r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
         colinear   <- summary(lm(z[, i] ~ z[, S]))$r.squared
