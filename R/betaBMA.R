@@ -48,7 +48,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   }
 
   ## do BMA
-  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp - 1,
+  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp, ## INTERCEPT
                                prior = "g-prior",
                                alpha = 1,
                                modelprior = BAS::beta.binomial(alpha = 1, beta = 1),
@@ -61,6 +61,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   imp_betas <- imp_betas$postmean ## get posterior means
 
   ## Step 2: Non-Important Clusters
+  z_imp_inter <- cbind(1, z_imp) ## add column for intercept
   new_y <- scale_y - z_imp %*% imp_betas
   new_A <- er_res$A[, -imps_z]
   new_C <- er_res$C[-imps_z, -imps_z]
@@ -83,8 +84,9 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   nonimp_beta <- nonimp_betas$beta_hat
 
   ## concatenate the nonimportant and important beta estimates
-  all_betas <- rep(0, ncol(prior_z))
+  all_betas <- rep(0, ncol(as.matrix(prior_z)))
+  imp_betas_nointer <- imp_betas[-1]
   all_betas[imps_z] <- unlist(imp_betas)
   all_betas[-imps_z] <- unlist(nonimp_beta)
-  return(all_betas)
+  return(c(all_betas, imp_betas[1]))
 }
