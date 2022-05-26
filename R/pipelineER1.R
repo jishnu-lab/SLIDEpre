@@ -123,7 +123,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       mag_delta <- coarse_res[[i]]$opt_delta
       magnitude <- deltas[[i]][1]
       cat("DELTA = ", mag_delta, " . . . \n")
-      if (file.exists(paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds")) {
+      if (file.exists(paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))) {
         delta_rep <- readRDS(paste0(er_input$out_path, "pipeline2/delta_", mag_delta, ".rds"))
       } else {
         foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
