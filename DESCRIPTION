@@ -22,7 +22,6 @@ Imports:
     magrittr,
     MASS,
     matlib,
-    Matrix,
     matrixcalc,
     methods,
     pheatmap,
