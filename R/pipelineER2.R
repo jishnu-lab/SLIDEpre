@@ -121,8 +121,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        if (file.exists(file = paste0(er_input$out_path, "replicate", j, "/output_table.rds"))) {
-          temp <- readRDS(paste0(er_input$out_path, "replicate", j, "/output_table.rds"))
+        if (file.exists(file = paste0(er_input$out_path, "lambda_", lambda, "/replicate", j, "/output_table.rds"))) {
+          temp <- readRDS(paste0(er_input$out_path, "lambda_", lambda, "/replicate", j, "/output_table.rds"))
         } else {
           temp <- essregCV(k = er_input$k,
                            x = x,
