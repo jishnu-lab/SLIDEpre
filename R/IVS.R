@@ -39,7 +39,7 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
   }
 
   ii <- unique(ii)
-  z <- z[, ii]
+  z <- as.matrix(z[, ii])
 
   ## Select the first variable
   minPvalI <- which.min(pvalueVec[ii])
