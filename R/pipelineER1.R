@@ -91,13 +91,13 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       } -> delta_rep
       saveRDS(delta_rep, file = paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))
 
+      ## make CV plot
       sel_corr_res <- delta_rep %>%
-        dplyr::mutate(delta = as.factor(delta),
-                      method = as.factor(method))
+        dplyr::mutate(method = as.factor(method))
       pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
       delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                       ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
+                                       ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
         ggplot2::geom_boxplot()
       ggplot2::ggsave(pdf_file, delta_boxplot)
     }
@@ -164,25 +164,16 @@ pipelineER1 <- function(yaml_path, steps = "all") {
           }
         } -> delta_rep
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
-
-        sel_corr_res <- NULL
-        for (i in 1:length(corr_bp_data)) {
-          bp_data <- corr_bp_data[[i]]
-          bp_delta <- bp_data$delta
-          bp_df <- bp_data$result %>%
-            dplyr::mutate(delta = bp_delta)
-          sel_corr_res <- rbind(sel_corr_res, bp_df)
-        }
-        sel_corr_res <- sel_corr_res %>%
-          dplyr::mutate(delta = as.factor(delta),
-                        method = as.factor(method))
-        pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
-        dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-        delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                         ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
-          ggplot2::geom_boxplot()
-        ggplot2::ggsave(pdf_file, delta_boxplot)
       }
+      ## make CV plot
+      sel_corr_res <- delta_rep %>%
+        dplyr::mutate(method = as.factor(method))
+      pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
+      dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
+      delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
+                                       ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
+        ggplot2::geom_boxplot()
+      ggplot2::ggsave(pdf_file, delta_boxplot)
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                        "result" = delta_rep)
     }
