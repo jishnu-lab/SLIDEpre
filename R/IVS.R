@@ -44,6 +44,7 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
   ## Select the first variable
   minPvalI <- which.min(pvalueVec[ii])
   S <- minPvalI
+  a <- length(S)
   AdR_old <- 0
   Ad_new  <- 1
 
