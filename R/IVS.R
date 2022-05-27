@@ -58,7 +58,7 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
       z_imp_probs[i] <- 1 + (num_nonzero / length(which(column != 0))) ## 1 + proportion of nonzero features are imp
     }
 
-    while (abs(Ad_new - AdR_old) > 0.01 && length(y) > (length(S) + 1) && length(S) < ncol(z)) {
+    while (abs((abs(Ad_new) - abs(AdR_old)) > 0.01) && (length(y) > (length(S) + 1)) && (length(S) < ncol(z))) {
       Obj <- NULL ## objective function = adjusted R^2 - collinearity R^2
       for (i in c(1:ncol(z))[-S]) {
         r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
@@ -79,7 +79,7 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
       }
     }
   } else {
-    while (abs(Ad_new - AdR_old) > 0.01 && length(y) > (length(S) + 1) && length(S) < ncol(z)) {
+    while (abs((abs(Ad_new) - abs(AdR_old)) > 0.01) && (length(y) > (length(S) + 1)) && (length(S) < ncol(z))) {
       Obj <- NULL ## objective function = adjusted R^2 - colinearity R^2
       for (i in c(1:ncol(z))[-S]) {
         r_adjusted <- summary(lm(y ~ z[, cbind(S, i)]))$adj.r.squared
