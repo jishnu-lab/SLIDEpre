@@ -38,9 +38,9 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
     ii <- which(pvalueVec < 0.1)
   }
 
-  if (length(ii) == 0) { ## no sig p-values
+  if (length(ii) < 3) { ## if too few sig variables
     ii <- sort(pvalueVec, decreasing = FALSE, index.return=TRUE)
-    ii <- ii$ix[1:5] ## use lowest 5
+    ii <- ii$ix[1:3] ## use lowest 3
   }
   ii <- unique(ii)
   z <- as.matrix(z[, ii])
