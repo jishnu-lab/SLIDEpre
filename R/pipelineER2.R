@@ -28,16 +28,18 @@ pipelineER2 <- function(yaml_path, steps = "all") {
 
   if (steps == 3) {
     ## Step 3: Fine Delta Search ###############################################
-    if (length(er_input$best_delta) == 1) {
-      d_lbd <- best_delta - best_delta / 2
-      d_ubd <- best_delta + best_delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, best_delta / 100)
+    if (length(er_input$delta) == 1) {
+      d_lbd <- delta - delta / 2
+      d_ubd <- delta + delta / 2
+      delta_grid <- seq(d_lbd, d_ubd, delta / 100)
+    } else {
+      delta_grid <- er_input$delta
     }
 
     fine_delta_er <- plainER(y = y,
                              x = x,
                              sigma = cor(x),
-                             delta = er_input$best_delta,
+                             delta = delta_grid,
                              beta_est = er_input$beta_est,
                              lambda = 0.5,
                              rep_cv = er_input$rep_cv,
@@ -55,7 +57,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
   } else if (steps == 4) {
     ## Step 4: Lambda Search ###################################################
     corr_bp_data <- NULL
-    best_delta <- er_input$delta
+    delta <- er_input$delta
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
@@ -66,7 +68,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
           temp <- essregCV(k = er_input$k,
                            x = x,
                            y = y,
-                           delta = best_delta,
+                           delta = delta,
                            perm_option = er_input$perm_option,
                            beta_est = er_input$beta_est,
                            sel_corr = er_input$sel_corr,
@@ -89,16 +91,18 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step4.rds"))
   } else {
     ## Step 3: Fine Delta Search ###############################################
-    if (length(er_input$best_delta) == 1) {
-      d_lbd <- best_delta - best_delta / 2
-      d_ubd <- best_delta + best_delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, best_delta / 100)
+    if (length(er_input$delta) == 1) {
+      d_lbd <- delta - delta / 2
+      d_ubd <- delta + delta / 2
+      delta_grid <- seq(d_lbd, d_ubd, delta / 100)
+    } else {
+      delta_grid <- er_input$delta
     }
 
     fine_delta_er <- plainER(y = y,
                              x = x,
                              sigma = cor(x),
-                             delta = er_input$best_delta,
+                             delta = delta_grid,
                              beta_est = er_input$beta_est,
                              lambda = 0.5,
                              rep_cv = er_input$rep_cv,
