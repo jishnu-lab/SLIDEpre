@@ -38,6 +38,10 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
     ii <- which(pvalueVec < 0.1)
   }
 
+  if (length(ii) == 0) { ## no sig p-values
+    ii <- sort(pvalueVec, decreasing = FALSE, index.return=TRUE)
+    ii <- ii$ix[1:5] ## use lowest 5
+  }
   ii <- unique(ii)
   z <- as.matrix(z[, ii])
 
