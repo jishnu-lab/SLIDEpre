@@ -86,7 +86,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            support = er_input$support,
                            change_all = er_input$change_all,
                            correction = er_input$correction,
-                           thresh_fdr = er_input$thresh_fdr)
+                           thresh_fdr = er_input$thresh_fdr,
+                           rep = j)
         }
       } -> lambda_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
@@ -151,7 +152,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            change_all = er_input$change_all,
                            correction = er_input$correction,
                            thresh_fdr = er_input$thresh_fdr,
-                           out_path = er_input$out_path)
+                           out_path = er_input$out_path,
+                           rep = j)
         }
       } -> lambda_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
