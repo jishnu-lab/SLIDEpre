@@ -29,9 +29,9 @@ pipelineER2 <- function(yaml_path, steps = "all") {
   if (steps == 3) {
     ## Step 3: Fine Delta Search ###############################################
     if (length(er_input$delta) == 1) {
-      d_lbd <- delta - delta / 2
-      d_ubd <- delta + delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, delta / 100)
+      d_lbd <- er_input$delta - er_input$delta / 2
+      d_ubd <- er_input$delta + er_input$delta / 2
+      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
     } else {
       delta_grid <- er_input$delta
     }
@@ -92,9 +92,9 @@ pipelineER2 <- function(yaml_path, steps = "all") {
   } else {
     ## Step 3: Fine Delta Search ###############################################
     if (length(er_input$delta) == 1) {
-      d_lbd <- delta - delta / 2
-      d_ubd <- delta + delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, delta / 100)
+      d_lbd <- er_input$delta - er_input$delta / 2
+      d_ubd <- er_input$delta + er_input$delta / 2
+      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
     } else {
       delta_grid <- er_input$delta
     }
