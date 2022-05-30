@@ -63,10 +63,11 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     delta <- er_input$delta
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
+      out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
       cat("LAMBDA = ", lambda, " . . . \n")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        if (file.exists(file = paste0(er_input$out_path, "replicate", j, "/output_table.rds"))) {
-          temp <- readRDS(paste0(er_input$out_path, "replicate", j, "/output_table.rds"))
+        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
         } else {
           temp <- essregCV(k = er_input$k,
                            x = x,
@@ -130,9 +131,10 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
+      out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
       foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        if (file.exists(file = paste0(er_input$out_path, "lambda_", lambda, "/replicate", j, "/output_table.rds"))) {
-          temp <- readRDS(paste0(er_input$out_path, "lambda_", lambda, "/replicate", j, "/output_table.rds"))
+        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
         } else {
           temp <- essregCV(k = er_input$k,
                            x = x,
@@ -152,7 +154,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            change_all = er_input$change_all,
                            correction = er_input$correction,
                            thresh_fdr = er_input$thresh_fdr,
-                           out_path = er_input$out_path,
+                           out_path = out_path,
                            rep = j)
         }
       } -> lambda_rep
