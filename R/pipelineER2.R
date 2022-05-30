@@ -186,7 +186,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       sel_corr_res <- rbind(sel_corr_res, bp_df)
     }
     sel_corr_res <- sel_corr_res %>%
-      dplyr::mutate(delta = as.factor(lambda),
+      dplyr::mutate(lambda = as.factor(lambda),
                     method = as.factor(method))
     pdf_file <- paste0(er_input$out_path, "lambda_selection_boxplot.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
