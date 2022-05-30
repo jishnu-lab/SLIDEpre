@@ -158,6 +158,18 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            rep = j)
         }
       } -> lambda_rep
+      saveRDS(lambda_rep, file = paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))
+
+      ## make CV plot
+      sel_corr_res <- lambda_rep %>%
+        dplyr::mutate(method = as.factor(method))
+      pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
+      dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
+      delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
+                                       ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
+        ggplot2::geom_boxplot()
+      ggplot2::ggsave(pdf_file, delta_boxplot)
+
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)
     }
