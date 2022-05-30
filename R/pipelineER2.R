@@ -19,6 +19,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1)) ## not standardized
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1)) ## not standardized
 
+  dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
+
   if (er_input$y_factor) {
     y <- toCont(y)
     saveRDS(y, file = paste0(er_input$out_path, "pipeline2_y_mapping.rds"))
