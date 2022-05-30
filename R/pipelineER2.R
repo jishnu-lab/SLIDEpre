@@ -52,7 +52,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                              support = er_input$support,
                              correction = er_input$correction,
                              verbose = er_input$verbose,
-                             thresh_fdr = er_input$thresh_fdr)
+                             thresh_fdr = er_input$thresh_fdr,
+                             out_path = er_input$out_path)
 
     best_delta <- fine_delta_er$opt_delta
     saveRDS(fine_delta_er, file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
@@ -76,6 +77,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            sel_corr = er_input$sel_corr,
                            y_factor = er_input$y_factor,
                            lambda = lambda,
+                           out_path = er_input$out_path,
                            rep_cv = er_input$rep_cv,
                            diagonal = er_input$diagonal,
                            merge = er_input$merge,
@@ -115,7 +117,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                              support = er_input$support,
                              correction = er_input$correction,
                              verbose = er_input$verbose,
-                             thresh_fdr = er_input$thresh_fdr)
+                             thresh_fdr = er_input$thresh_fdr,
+                             out_path = er_input$out_path)
 
     best_delta <- fine_delta_er$opt_delta
 
@@ -147,7 +150,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            support = er_input$support,
                            change_all = er_input$change_all,
                            correction = er_input$correction,
-                           thresh_fdr = er_input$thresh_fdr)
+                           thresh_fdr = er_input$thresh_fdr,
+                           out_path = er_input$out_path)
         }
       } -> lambda_rep
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
