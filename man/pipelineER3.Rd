@@ -15,5 +15,6 @@ nothing is returned, saves boxplot of cross-validation results and final ER outp
 }
 \description{
 Run Essential Regression Pipeline with K-Fold Cross-Validation
-    Step 5 - After selecting optimal \eqn{\delta} and optimal \eqn{\lambda}
+    Step 5 - Run final replicates of K-Fold CV using optimal \eqn{\delta} and optimal \eqn{\lambda}.
+             Create a boxplot and run \code{plainER()} one last time for final results.
 }
