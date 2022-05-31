@@ -14,7 +14,6 @@ essregCV(
   lambda = 0.1,
   rep_cv = 50,
   alpha_level = 0.05,
-  thresh = 0.001,
   perm_option = NULL,
   beta_est = "NULL",
   sel_corr = T,
@@ -51,8 +50,6 @@ control the false discovery rate, default is 0.2}
 \item{rep_cv}{number of replicates for cross-validation}
 
 \item{alpha_level}{\eqn{\alpha}, a numerical constant used in confidence interval calculation}
-
-\item{thresh}{a numerical constant used as the threshold for convergence in Variational Bayes}
 
 \item{perm_option}{a string indicating the type of permutation type do perform
 (can be NULL, "x", "x_y", or "y_before_split")}

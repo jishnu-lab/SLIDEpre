@@ -41,7 +41,6 @@ pipelineER3 <- function(yaml_path) {
                        support = er_input$support,
                        change_all = er_input$change_all,
                        correction = er_input$correction,
-                       verbose = er_input$verbose,
                        thresh_fdr = er_input$thresh_fdr)
     } -> lambda_rep
     corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
@@ -92,7 +91,6 @@ pipelineER3 <- function(yaml_path) {
                          alpha_level = er_input$alpha_level,
                          support = er_input$support,
                          correction = er_input$correction,
-                         verbose = er_input$verbose,
                          thresh_fdr = er_input$thresh_fdr,
                          out_path = er_input$out_path)
 

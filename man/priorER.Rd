@@ -11,7 +11,7 @@ priorER(
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
-  beta_est = "NULL",
+  beta_est = "LS",
   conf_int = F,
   pred = T,
   lambda = 0.1,
@@ -21,10 +21,10 @@ priorER(
   equal_var = F,
   alpha_level = 0.05,
   estim = "HPM",
+  out_path = NULL,
   support = NULL,
   correction = T,
-  change_all = F,
-  verbose = F
+  change_all = F
 )
 }
 \arguments{
