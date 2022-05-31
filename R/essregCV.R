@@ -264,7 +264,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
-                             er_res = res,
+                             er_res = res$priorER_results,
                              priors = priors,
                              priors_z = sig_betas,
                              estim = "HPM")
