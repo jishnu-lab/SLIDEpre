@@ -38,22 +38,43 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       delta_grid <- er_input$delta
     }
 
-    fine_delta_er <- plainER(y = y,
-                             x = x,
-                             sigma = cor(x),
-                             delta = delta_grid,
-                             beta_est = er_input$beta_est,
-                             lambda = 0.5,
-                             rep_cv = er_input$rep_cv,
-                             diagonal = er_input$diagonal,
-                             merge = er_input$merge,
-                             equal_var = er_input$equal_var,
-                             alpha_level = er_input$alpha_level,
-                             support = er_input$support,
-                             correction = er_input$correction,
-                             verbose = er_input$verbose,
-                             thresh_fdr = er_input$thresh_fdr,
-                             out_path = er_input$out_path)
+    if (!is.null(er_input$priors)) {
+      er_result <- priorER(y = y,
+                           x = x,
+                           sigma = NULL,
+                           priors = er_input$priors,
+                           delta = delta_grid,
+                           beta_est = er_input$beta_est,
+                           lambda = 0.5,
+                           rep_cv = er_input$rep_cv,
+                           diagonal = er_input$diagonal,
+                           merge = er_input$merge,
+                           equal_var = er_input$equal_var,
+                           alpha_level = er_input$alpha_level,
+                           support = er_input$support,
+                           correction = er_input$correction,
+                           verbose = er_input$verbose,
+                           thresh_fdr = er_input$thresh_fdr,
+                           out_path = er_input$out_path)
+      fine_delta_er <- er_result$priorER_result
+    } else {
+      fine_delta_er <- plainER(y = y,
+                               x = x,
+                               sigma = cor(x),
+                               delta = delta_grid,
+                               beta_est = er_input$beta_est,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               diagonal = er_input$diagonal,
+                               merge = er_input$merge,
+                               equal_var = er_input$equal_var,
+                               alpha_level = er_input$alpha_level,
+                               support = er_input$support,
+                               correction = er_input$correction,
+                               verbose = er_input$verbose,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+    }
 
     best_delta <- fine_delta_er$opt_delta
     saveRDS(fine_delta_er, file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
@@ -74,6 +95,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            y = y,
                            delta = delta,
                            perm_option = er_input$perm_option,
+                           priors = er_input$priors,
                            beta_est = er_input$beta_est,
                            sel_corr = er_input$sel_corr,
                            y_factor = er_input$y_factor,
@@ -105,22 +127,43 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       delta_grid <- er_input$delta
     }
 
-    fine_delta_er <- plainER(y = y,
-                             x = x,
-                             sigma = cor(x),
-                             delta = delta_grid,
-                             beta_est = er_input$beta_est,
-                             lambda = 0.5,
-                             rep_cv = er_input$rep_cv,
-                             diagonal = er_input$diagonal,
-                             merge = er_input$merge,
-                             equal_var = er_input$equal_var,
-                             alpha_level = er_input$alpha_level,
-                             support = er_input$support,
-                             correction = er_input$correction,
-                             verbose = er_input$verbose,
-                             thresh_fdr = er_input$thresh_fdr,
-                             out_path = er_input$out_path)
+    if (!is.null(er_input$priors)) {
+      er_result <- priorER(y = y,
+                           x = x,
+                           sigma = NULL,
+                           priors = er_input$priors,
+                           delta = delta_grid,
+                           beta_est = er_input$beta_est,
+                           lambda = 0.5,
+                           rep_cv = er_input$rep_cv,
+                           diagonal = er_input$diagonal,
+                           merge = er_input$merge,
+                           equal_var = er_input$equal_var,
+                           alpha_level = er_input$alpha_level,
+                           support = er_input$support,
+                           correction = er_input$correction,
+                           verbose = er_input$verbose,
+                           thresh_fdr = er_input$thresh_fdr,
+                           out_path = er_input$out_path)
+      fine_delta_er <- er_result$priorER_result
+    } else {
+      fine_delta_er <- plainER(y = y,
+                               x = x,
+                               sigma = cor(x),
+                               delta = delta_grid,
+                               beta_est = er_input$beta_est,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               diagonal = er_input$diagonal,
+                               merge = er_input$merge,
+                               equal_var = er_input$equal_var,
+                               alpha_level = er_input$alpha_level,
+                               support = er_input$support,
+                               correction = er_input$correction,
+                               verbose = er_input$verbose,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+    }
 
     best_delta <- fine_delta_er$opt_delta
 
@@ -182,7 +225,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       bp_data <- corr_bp_data[[i]]
       bp_lambda <- bp_data$lambda
       bp_df <- bp_data$result %>%
-        dplyr::filter(method == "plainER" | method == "plainER_y") %>%
+        dplyr::filter(method == "plainER" | method == "plainER_y" | method == "priorER" | method == "priorER_y") %>%
         dplyr::mutate(lambda = bp_lambda)
       sel_corr_res <- rbind(sel_corr_res, bp_df)
     }

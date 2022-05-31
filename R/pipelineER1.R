@@ -37,22 +37,43 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       coarse_res <- readRDS(paste0(er_input$out_path, "pipeline_step1.rds"))
     } else {
       foreach::foreach (i = 1:length(deltas)) %dopar% {
-        plainER(y = y,
-                x = x,
-                sigma = NULL,
-                delta = deltas[[i]],
-                beta_est = er_input$beta_est,
-                lambda = 0.5,
-                rep_cv = er_input$rep_cv,
-                diagonal = er_input$diagonal,
-                merge = er_input$merge,
-                equal_var = er_input$equal_var,
-                alpha_level = er_input$alpha_level,
-                support = er_input$support,
-                correction = er_input$correction,
-                verbose = er_input$verbose,
-                thresh_fdr = er_input$thresh_fdr,
-                out_path = er_input$out_path)
+        if (!is.null(er_input$priors)) {
+          er_result <- priorER(y = y,
+                               x = x,
+                               sigma = NULL,
+                               priors = er_input$priors,
+                               delta = deltas[[i]],
+                               beta_est = er_input$beta_est,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               diagonal = er_input$diagonal,
+                               merge = er_input$merge,
+                               equal_var = er_input$equal_var,
+                               alpha_level = er_input$alpha_level,
+                               support = er_input$support,
+                               correction = er_input$correction,
+                               verbose = er_input$verbose,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+          er_result$priorER_result
+        } else {
+          plainER(y = y,
+                  x = x,
+                  sigma = NULL,
+                  delta = deltas[[i]],
+                  beta_est = er_input$beta_est,
+                  lambda = 0.5,
+                  rep_cv = er_input$rep_cv,
+                  diagonal = er_input$diagonal,
+                  merge = er_input$merge,
+                  equal_var = er_input$equal_var,
+                  alpha_level = er_input$alpha_level,
+                  support = er_input$support,
+                  correction = er_input$correction,
+                  verbose = er_input$verbose,
+                  thresh_fdr = er_input$thresh_fdr,
+                  out_path = er_input$out_path)
+        }
       } -> coarse_res
       saveRDS(coarse_res, file = paste0(er_input$out_path, "pipeline_step1.rds"))
     }
@@ -108,22 +129,43 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       coarse_res <- readRDS(file = paste0(er_input$out_path, "pipeline_step1.rds"))
     } else {
       foreach::foreach (i = 1:length(deltas)) %dopar% {
-        plainER(y = y,
-                x = x,
-                sigma = NULL,
-                delta = deltas[[i]],
-                beta_est = er_input$beta_est,
-                lambda = 0.5,
-                rep_cv = er_input$rep_cv,
-                diagonal = er_input$diagonal,
-                merge = er_input$merge,
-                equal_var = er_input$equal_var,
-                alpha_level = er_input$alpha_level,
-                support = er_input$support,
-                correction = er_input$correction,
-                verbose = er_input$verbose,
-                thresh_fdr = er_input$thresh_fdr,
-                out_path = er_input$out_path)
+        if (!is.null(er_input$priors)) {
+          er_result <- priorER(y = y,
+                               x = x,
+                               sigma = NULL,
+                               priors = er_input$priors,
+                               delta = deltas[[i]],
+                               beta_est = er_input$beta_est,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               diagonal = er_input$diagonal,
+                               merge = er_input$merge,
+                               equal_var = er_input$equal_var,
+                               alpha_level = er_input$alpha_level,
+                               support = er_input$support,
+                               correction = er_input$correction,
+                               verbose = er_input$verbose,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+          er_result$priorER_result
+        } else {
+          plainER(y = y,
+                  x = x,
+                  sigma = NULL,
+                  delta = deltas[[i]],
+                  beta_est = er_input$beta_est,
+                  lambda = 0.5,
+                  rep_cv = er_input$rep_cv,
+                  diagonal = er_input$diagonal,
+                  merge = er_input$merge,
+                  equal_var = er_input$equal_var,
+                  alpha_level = er_input$alpha_level,
+                  support = er_input$support,
+                  correction = er_input$correction,
+                  verbose = er_input$verbose,
+                  thresh_fdr = er_input$thresh_fdr,
+                  out_path = er_input$out_path)
+        }
       } -> coarse_res
       saveRDS(coarse_res, file = paste0(er_input$out_path, "pipeline_step1.rds"))
     }
@@ -147,6 +189,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                              delta = mag_delta,
                              y_factor = er_input$y_factor,
                              perm_option = er_input$perm_option,
+                             priors = er_input$priors,
                              beta_est = er_input$beta_est,
                              sel_corr = er_input$sel_corr,
                              lambda = 0.5,
@@ -187,7 +230,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
     bp_data <- corr_bp_data[[i]]
     bp_delta <- bp_data$delta
     bp_df <- bp_data$result %>%
-      dplyr::filter(method == "plainER" | method == "plainER_y") %>%
+      dplyr::filter(method == "plainER" | method == "plainER_y" | method == "priorER" | method == "priorER_y") %>%
       dplyr::mutate(delta = bp_delta)
     sel_corr_res <- rbind(sel_corr_res, bp_df)
   }
