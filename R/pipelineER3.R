@@ -17,6 +17,8 @@ pipelineER3 <- function(yaml_path) {
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1)) ## not standardized
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1)) ## not standardized
 
+  dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
+
   ##  Step 5: K-Fold Cross-Validation With Optimal Delta and Lambda  ###########
   foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
     temp <- essregCV(k = er_input$k,
