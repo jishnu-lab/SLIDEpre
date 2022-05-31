@@ -212,7 +212,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                              change_all = er_input$change_all,
                              correction = er_input$correction,
                              thresh_fdr = er_input$thresh_fdr,
-                             out_path = paste0(er_input$out_path, "delta_", magnitude, "/"),
+                             out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
                              rep = j)
           }
         } -> delta_rep
