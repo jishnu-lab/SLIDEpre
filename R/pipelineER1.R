@@ -75,6 +75,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                            beta_est = er_input$beta_est,
                            sel_corr = er_input$sel_corr,
                            lambda = 0.5,
+                           priors = er_input$priors,
                            svm = F,
                            rep_cv = er_input$rep_cv,
                            diagonal = er_input$diagonal,

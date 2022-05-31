@@ -4,7 +4,7 @@
 \alias{siNetwork}
 \title{Generate Node Network}
 \usage{
-siNetwork(x, sigma, er_res, filename, equal_var = F, merge = F)
+siNetwork(x, sigma, er_res, clust_num, equal_var = F, merge = F)
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
@@ -14,12 +14,12 @@ siNetwork(x, sigma, er_res, filename, equal_var = F, merge = F)
 \item{er_res}{the results from running Essential Regression with either
 \link[priorER]{priorER()} or \link[plainER]{plainER()}}
 
-\item{filename}{the output file name}
+\item{clust_num}{an integer indicating the cluster number}
 
 \item{equal_var}{a boolean flag indicating whether the columns of \code{x} have equal variance}
 
 \item{merge}{a boolean flag indicating merge type}
 }
 \description{
-Create a pdf of the node network by cluster. EXPAND THIS.
+Create an interactive node network of correlation structure.
 }

@@ -4,12 +4,12 @@
 \alias{transSigHat}
 \title{Transform \eqn{\hat{\Sigma}} NOT USED ANYMORE}
 \usage{
-transSigHat(x, imp, r)
+transSigHat(x, priors, r)
 }
 \arguments{
 \item{x}{data matrix of dimensions \eqn{n \times p}}
 
-\item{imp}{vector of indices of important features}
+\item{priors}{vector of indices of important features}
 
 \item{r}{replacement value}
 }

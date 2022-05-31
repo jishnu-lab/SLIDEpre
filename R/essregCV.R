@@ -161,8 +161,8 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
                              er_res = res,
-                             imps = NULL,
-                             imps_z = ivs,
+                             priors = NULL,
+                             priors_z = ivs,
                              estim = "HPM")
         beta_train <- cbind(train_z, 1) %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
@@ -180,8 +180,8 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
                              er_res = res,
-                             imps = priors,
-                             imps_z = ivs,
+                             priors = priors,
+                             priors_z = ivs,
                              estim = "HPM")
         beta_train <- cbind(train_z, 1) %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
@@ -230,8 +230,8 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
                              er_res = res,
-                             imps = NULL,
-                             imps_z = sig_betas,
+                             priors = NULL,
+                             priors_z = sig_betas,
                              estim = "HPM")
         beta_train <- cbind(train_z, 1) %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas
@@ -240,7 +240,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
         res <- priorER(y = train_y,
                        x = train_x,
-                       imps = priors,
+                       priors = priors,
                        sigma = NULL,
                        delta = delta,
                        lambda = lambda,
@@ -267,8 +267,8 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         new_betas <- betaBMA(x = train_x,
                              y = train_y,
                              er_res = res,
-                             imps = priors,
-                             imps_z = sig_betas,
+                             priors = priors,
+                             priors_z = sig_betas,
                              estim = "HPM")
         beta_train <- cbind(train_z, 1) %*% new_betas
         #beta_valid <- valid_z[, ivs] %*% new_betas

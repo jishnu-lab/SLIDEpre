@@ -7,7 +7,7 @@
 priorER(
   y,
   x,
-  imps,
+  priors,
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
@@ -32,7 +32,7 @@ priorER(
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{imps}{a vector of important feature indices/names}
+\item{priors}{a vector of important feature indices/names}
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 

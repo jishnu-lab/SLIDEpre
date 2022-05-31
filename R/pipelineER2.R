@@ -143,6 +143,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            perm_option = er_input$perm_option,
                            beta_est = er_input$beta_est,
                            sel_corr = er_input$sel_corr,
+                           priors = er_input$priors,
                            y_factor = er_input$y_factor,
                            lambda = lambda,
                            rep_cv = er_input$rep_cv,

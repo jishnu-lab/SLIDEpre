@@ -6,7 +6,7 @@
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
-#' @param imps a vector of important feature indices/names
+#' @param priors a vector of important feature indices/names
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
@@ -33,7 +33,7 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
+priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, estim = "HPM",
                     support = NULL, correction = T, change_all = F, verbose = F) {
@@ -62,13 +62,13 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
 
   #### at this point, we have fully run LOVE/done cross-validation and can now
   #### begin to incorporate the prior information
-  #### adjust sigma matrix to reflect prior information found in imps
+  #### adjust sigma matrix to reflect prior information found in priors
   feats <- readER(plain_er)
   incl_feats <- unlist(feats$clusters) %>% unique()
   excl_feats <- setdiff(seq(1, ncol(sigma)), incl_feats)
-  imp_inds <- imps
-  if (typeof(imps) == "character") {
-    imp_inds <- indName(imps, colnames(x), to_ind = T)
+  imp_inds <- priors
+  if (typeof(priors) == "character") {
+    imp_inds <- indName(priors, colnames(x), to_ind = T)
   }
   excl_imp <- intersect(imp_inds, excl_feats)
 
@@ -77,7 +77,7 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
     #### construct the expert knowledge matrix
     prior_sigma <- makeDelta(x = x,
                              sigma = sigma,
-                             imps = excl_imp,
+                             priors = excl_imp,
                              er_res = plain_er,
                              change_all = change_all,
                              equal_var = equal_var)
@@ -113,17 +113,17 @@ priorER <- function(y, x, imps, sigma = NULL, delta, thresh_fdr = 0.2, beta_est 
   #### subset Zs using IVS
   zs <- predZ(x = x,
               er_res = prior_er)
-  imps_z <- IVS(y = y,
-                z = zs,
-                imps = imps,
-                er_res = prior_er)
+  priors_z <- IVS(y = y,
+                  z = zs,
+                  priors = priors,
+                  er_res = prior_er)
 
   #### re-estimate betas
   new_betas <- betaBMA(x = x,
                        y = y,
                        er_res = prior_er,
-                       imps = imps,
-                       imps_z = imps_z,
+                       priors = priors,
+                       priors_z = priors_z,
                        estim = estim)
 
   #### Essential Regression with Prior Information Part III ####################

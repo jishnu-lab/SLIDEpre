@@ -8,15 +8,15 @@
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param y a response vector of dimension \eqn{n}
 #' @param er_res the result of \link{plainER} or \link{priorER}
-#' @param imps a vector of important variables
-#' @param imps_z a vector of important \eqn{Z}s
+#' @param priors a vector of important variables
+#' @param priors_z a vector of important \eqn{Z}s
 #' @param estim the type of estimator used for Bayesian Model Averaging. options include
 #' "BMA" = Bayesian Model Averaging Model, "HPM" = Highest Probability Model,
 #' "MPM" = Median Probability Model
 #' @return a vector of \eqn{\beta} estimates
 #' @export
 
-betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
+betaBMA <- function(x, y, er_res, priors, priors_z, estim = "HPM") {
   ## scale y
   scale_y <- scale(y, T, T)
   ## scale x
@@ -26,18 +26,18 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
 
   ## Step 1: Important Clusters
   ## create initial probabilities vector
-  z_imp <- prior_z[, imps_z] %>%
+  z_imp <- prior_z[, priors_z] %>%
     as.matrix()
-  loadings <- er_res$A[, imps_z] %>%
+  loadings <- er_res$A[, priors_z] %>%
     as.matrix()
   z_imp_probs <- rep(0, ncol(z_imp))
 
   ## make initial inclusion probabilities
-  if (!is.null(imps)) {
+  if (!is.null(priors)) {
     for (i in 1:ncol(loadings)) {
       column <- loadings[, i] ## get one column of loadings matrix A
       abs_col <- abs(column) ## take absolute value
-      abs_col <- abs_col[imps] ## get just rows of important features
+      abs_col <- abs_col[priors] ## get just rows of important features
       num_nonzero <- length(which(abs_col > 0)) ## get number of nonzero entries
       z_imp_probs[i] <- num_nonzero / length(which(column != 0)) ## divide by total number of nonzero entries
     }
@@ -63,9 +63,9 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   ## Step 2: Non-Important Clusters
   z_imp_inter <- cbind(1, z_imp) ## add column for intercept
   new_y <- scale_y - z_imp_inter %*% imp_betas
-  new_A <- er_res$A[, -imps_z]
-  new_C <- er_res$C[-imps_z, -imps_z]
-  new_I_clust <- er_res$I_clust[-imps_z]
+  new_A <- er_res$A[, -priors_z]
+  new_C <- er_res$C[-priors_z, -priors_z]
+  new_I_clust <- er_res$I_clust[-priors_z]
   new_I <- unlist(new_I_clust)
   ## re-estimate betas for the non-important features
   nonimp_betas <- estBeta(y = new_y,
@@ -86,7 +86,7 @@ betaBMA <- function(x, y, er_res, imps, imps_z, estim = "HPM") {
   ## concatenate the nonimportant and important beta estimates
   all_betas <- rep(0, ncol(as.matrix(prior_z)))
   imp_betas_nointer <- imp_betas[-1]
-  all_betas[imps_z] <- unlist(imp_betas_nointer)
-  all_betas[-imps_z] <- unlist(nonimp_beta)
+  all_betas[priors_z] <- unlist(imp_betas_nointer)
+  all_betas[-priors_z] <- unlist(nonimp_beta)
   return(c(all_betas, imp_betas[1]))
 }

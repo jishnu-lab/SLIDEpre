@@ -16,7 +16,7 @@
 #'
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
-#' @param imps a vector of indices of the important feature
+#' @param priors a vector of indices of the important feature
 #' @param er_res the output of a run of \link[EssReg]{plainER}
 #' @param change_all a boolean flag indicating whether to adjust all correlations or just those that are smaller
 #' in absolute value than the value to change to
@@ -24,7 +24,7 @@
 #' @return the expert knowledge matrix, \eqn{\Delta}, of dimensions \eqn{p \times p}
 #' @export
 
-makeDelta <- function(x, sigma, imps, er_res, change_all = F, equal_var = F) {
+makeDelta <- function(x, sigma, priors, er_res, change_all = F, equal_var = F) {
   ## must do an initial run of plain Essential Regression in order to get information about
   ## the data structure. use this for running ER with prior knowledge
   n <- nrow(x)
@@ -50,31 +50,31 @@ makeDelta <- function(x, sigma, imps, er_res, change_all = F, equal_var = F) {
   pure_vars <- er_results$pure_vars
   mix_vars <- er_results$mix_vars
 
-  new_imps <- matrix(0, nrow = length(imps), ncol = p)
+  new_priors <- matrix(0, nrow = length(priors), ncol = p)
   for (i in 1:nrow(abs_sc)) {
     row_i <- abs_sc[i,]
     max_ind <- max_inds[i]
-    cutoffs <- rep(2 * delta, length(imps)) #(delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[imps]
+    cutoffs <- rep(2 * delta, length(priors)) #(delta * se_est[i] * se_est[max_ind] + delta * se_est[i] * se_est)[priors]
     replacements <- max_vals[i] - cutoffs - 1e-10
     ## adjust sign to match original correlation, or set to 0 if cutoffs > max_vals[i]
     replacements <- ifelse(replacements < 0, 0, sign(sigma[i, max_ind]) * replacements)
     if (change_all) { ## if changing entire row/column
-      new_imps[, i] <- replacements
+      new_priors[, i] <- replacements
     } else { ## if only changing row/column entries that are smaller than replacements
-      replacements <- ifelse(abs(replacements) > abs(sigma[i, imps]), replacements, sigma[i, imps])
-      new_imps[, i] <- replacements
+      replacements <- ifelse(abs(replacements) > abs(sigma[i, priors]), replacements, sigma[i, priors])
+      new_priors[, i] <- replacements
     }
   }
 
   if (change_all) { ## if changing entire row/column
-    min_new_imps <- apply(new_imps, 1, min)
-    new_imps <- matrix(min_new_imps, nrow = length(min_new_imps), ncol = p, byrow = FALSE)
+    min_new_priors <- apply(new_priors, 1, min)
+    new_priors <- matrix(min_new_priors, nrow = length(min_new_priors), ncol = p, byrow = FALSE)
   }
 
   Delta <- sigma
-  for (i in 1:nrow(new_imps)) { ## replace values
-    replace_row <- new_imps[i, ]
-    imp <- imps[i]
+  for (i in 1:nrow(new_priors)) { ## replace values
+    replace_row <- new_priors[i, ]
+    imp <- priors[i]
     Delta[imp, ] <- replace_row
     Delta[, imp] <- replace_row
     Delta[imp, imp] <- sigma[1, 1] ## replace diagonal elements

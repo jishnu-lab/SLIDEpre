@@ -5,7 +5,7 @@
 #'
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param y a response vector of dimension \eqn{n}
-#' @param imp_clusts a vector of cluster indices to keep
+#' @param prior_clusts a vector of cluster indices to keep
 #' @param er_res a list output by the function link[EssReg]{plainER} or \link[EssReg]{priorER}
 #' @param thresh a numeric constant used in determining convergence
 #' @return a list including the clusters, pure variables, mixed variables, the significant
@@ -13,7 +13,7 @@
 #' found by ER
 #' @export
 
-bayesVarSel <- function(z, y, imp_clusts, er_res, thresh = 0.01) {
+bayesVarSel <- function(z, y, prior_clusts, er_res, thresh = 0.01) {
   n <- length(y)
   z <- scale(z, center = T, scale = T)
   #### get number of clusters
@@ -28,7 +28,7 @@ bayesVarSel <- function(z, y, imp_clusts, er_res, thresh = 0.01) {
 
   #### initialize vectors of phis, mus, sig_sqs, sigma_hat_sq
   phis <- rep(0.5, K)
-  phis[imp_clusts] <- 1
+  phis[prior_clusts] <- 1
   mus <- betas / phis
   sig_sqs <- beta_vars
   sig_hat_sq <- 0.1

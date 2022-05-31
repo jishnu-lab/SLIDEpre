@@ -1,17 +1,17 @@
 #' Generate Node Network
 #'
-#' Create a pdf of the node network by cluster. EXPAND THIS.
+#' Create an interactive node network of correlation structure.
 #'
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param er_res the results from running Essential Regression with either
 #' \link[priorER]{priorER()} or \link[plainER]{plainER()}
-#' @param filename the output file name
+#' @param clust_num an integer indicating the cluster number
 #' @param equal_var a boolean flag indicating whether the columns of \code{x} have equal variance
 #' @param merge a boolean flag indicating merge type
 #' @export
 
-siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
+siNetwork <- function(x, sigma, er_res, clust_num, equal_var = F, merge = F) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions
   if (equal_var) {
     se_est <- rep(1, p)
@@ -33,13 +33,10 @@ siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   #### get feature lists from er_res
   feats <- readER(er_res)
   clusters <- feats$clusters
-  clust_unlist <- list()
-  for (i in 1:length(clusters)) {
-    clust <- clusters[[i]]
-    clust_nodes <- unlist(clust)
-    clust_nodes <- node_names[node_names$position %in% clust_nodes, 1]
-    clust_unlist[[length(clust_unlist) + 1]] <- clust_nodes
-  }
+  cluster <- clusters[[clust_num]]
+  clust_nodes <- unlist(cluster)
+  clust_nodes <- node_names[node_names$position %in% clust_nodes, 1]
+
   pures <- feats$pure_vars
   pures <- node_names[node_names$position %in% pures, 1]
   mixeds <- feats$mix_vars

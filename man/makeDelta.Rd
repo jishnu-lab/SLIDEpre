@@ -4,14 +4,14 @@
 \alias{makeDelta}
 \title{Construct \eqn{\Delta}}
 \usage{
-makeDelta(x, sigma, imps, er_res, change_all = F, equal_var = F)
+makeDelta(x, sigma, priors, er_res, change_all = F, equal_var = F)
 }
 \arguments{
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
-\item{imps}{a vector of indices of the important feature}
+\item{priors}{a vector of indices of the important feature}
 
 \item{er_res}{the output of a run of \link[EssReg]{plainER}}
 

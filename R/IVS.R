@@ -5,12 +5,12 @@
 #' @importFrom magrittr '%>%'
 #' @param y a response vector of dimension \eqn{n}
 #' @param z a matrix of dimensions \eqn{p \times K}
-#' @param imps a vector of indices indicating the important features
+#' @param priors a vector of indices indicating the important features
 #' @param er_res an object returned by \code{plainER} or \code{priorER}
 #' @return a vector of selected variable indices
 #' @export
 
-IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
+IVS <- function(y, z, priors = NULL, er_res = NULL, verbose = F) {
   if (is.null(y) | is.null(z)) {
     stop("y and z must be given")
   }
@@ -20,14 +20,14 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
     pvalueVec <- rbind(pvalueVec, summary(lm(y ~ z[, i]))$coef[2, "Pr(>|t|)"])
   }
 
-  if (!is.null(imps)) {
+  if (!is.null(priors)) {
     #### find important features in each cluster
     er_read <- readER(er_res)
     clust_feats <- list()
     imp_clusts <- NULL
     for (i in 1:er_res$K) {
       cluster <- unlist(er_read$clusters[[i]])
-      imp_feats_cluster <- intersect(cluster, imps)
+      imp_feats_cluster <- intersect(cluster, priors)
       clust_feats[[length(clust_feats) + 1]] <- imp_feats_cluster
       if (length(imp_feats_cluster) > 0) {
         imp_clusts <- c(imp_clusts, i)
@@ -52,13 +52,13 @@ IVS <- function(y, z, imps = NULL, er_res = NULL, verbose = F) {
   AdR_old <- 0
   Ad_new  <- 1
 
-  if (!is.null(imps)) {
+  if (!is.null(priors)) {
     ## make weight for R^2
     loadings <- er_res$A
     z_imp_probs <- rep(0, ncol(z))
     for (i in 1:length(ii)) {
       column <- loadings[, ii[i]] ## get one column of loadings matrix A
-      imp_col <- column[imps] ## get just rows of important features
+      imp_col <- column[priors] ## get just rows of important features
       num_nonzero <- length(which(imp_col > 0)) ## get number of nonzero important features
       z_imp_probs[i] <- 1 + (num_nonzero / length(which(column != 0))) ## 1 + proportion of nonzero features are imp
     }
