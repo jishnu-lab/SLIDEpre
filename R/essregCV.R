@@ -171,9 +171,9 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
 
         ## calculate predicted values
-        train_z <- predZ(x = train_x_std, er_res = res)
+        train_z <- predZ(x = train_x_std, er_res = res$priorER_results)
         ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res)
+        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results)
 
 
         new_betas <- betaBMA(x = train_x,
