@@ -112,12 +112,23 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       saveRDS(delta_rep, file = paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))
 
       ## make CV plot
-      sel_corr_res <- delta_rep %>%
-        dplyr::mutate(method = as.factor(method))
+      if (!is.null(er_input$perm_option)) {
+        sel_corr_res <- delta_rep %>%
+          dplyr::mutate(perm = sub(".*_", "", method)) %>%
+          dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
+          dplyr::mutate(method = as.factor(method),
+                        perm = as.factor(perm))
+      } else {
+        sel_corr_res <- delta_rep %>%
+          dplyr::mutate(method = as.factor(method))
+      }
+
       pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
       delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                       ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
+                                       ggplot2::aes(x = method, y = spearman_corr, fill = ifelse(!is.null(er_input$perm_option),
+                                                                                                 perm,
+                                                                                                 method))) +
         ggplot2::geom_boxplot()
       ggplot2::ggsave(pdf_file, delta_boxplot)
     }
@@ -206,14 +217,25 @@ pipelineER1 <- function(yaml_path, steps = "all") {
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
       ## make CV plot
-      sel_corr_res <- delta_rep %>%
-        dplyr::mutate(method = as.factor(method))
+      if (!is.null(er_input$perm_option)) {
+        sel_corr_res <- delta_rep %>%
+          dplyr::mutate(perm = sub(".*_", "", method)) %>%
+          dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
+          dplyr::mutate(method = as.factor(method),
+                        perm = as.factor(perm))
+      } else {
+        sel_corr_res <- delta_rep %>%
+          dplyr::mutate(method = as.factor(method))
+      }
+
       pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
       delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                       ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
+                                       ggplot2::aes(x = method, y = spearman_corr, fill = ifelse(!is.null(er_input$perm_option),
+                                                                                                 perm,
+                                                                                                 method))) +
         ggplot2::geom_boxplot()
-      ggplot2::ggsave(pdf_file, delta_boxplot)
+      ggplot2::ggsave(pdf_file, delta_boxplot, width = 20, height = 15, units = "cm")
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("delta" = mag_delta,
                                                        "result" = delta_rep)
     }
@@ -238,5 +260,5 @@ pipelineER1 <- function(yaml_path, steps = "all") {
   delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
                                    ggplot2::aes(x = delta, y = spearman_corr, fill = method)) +
     ggplot2::geom_boxplot()
-  ggplot2::ggsave(pdf_file, delta_boxplot)
+  ggplot2::ggsave(pdf_file, delta_boxplot, width = 20, height = 15, units = "cm")
 }
