@@ -5,10 +5,11 @@
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}
 #' @param er_res the results from running Essential Regression with either
-#' \link[priorER]{priorER()} or \link[plainER]{plainer()}
+#' \link[priorER]{priorER()} or \link[plainER]{plainER()}
 #' @param filename the output file name
 #' @param equal_var a boolean flag indicating whether the columns of \code{x} have equal variance
 #' @param merge a boolean flag indicating merge type
+#' @export
 
 siNetwork <- function(x, sigma, er_res, filename, equal_var = F, merge = F) {
   n <- nrow(x);  p <- ncol(x) #### feature matrix dimensions

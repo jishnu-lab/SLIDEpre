@@ -12,7 +12,7 @@ siNetwork(x, sigma, er_res, filename, equal_var = F, merge = F)
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
 \item{er_res}{the results from running Essential Regression with either
-\link[priorER]{priorER()} or \link[plainER]{plainer()}}
+\link[priorER]{priorER()} or \link[plainER]{plainER()}}
 
 \item{filename}{the output file name}
 
