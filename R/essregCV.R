@@ -24,7 +24,6 @@
 #' @param merge a boolean indicating the merge type
 #' @param equal_var a boolean indicating whether there is equal variance ??
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
-#' @param thresh a numerical constant used as the threshold for convergence in Variational Bayes
 #' @param support a boolean ???
 #' @param svm a boolean flag indicating whether to fit svm/svr and use that for prediction
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
@@ -36,7 +35,7 @@
 #' @export
 
 essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
-                     rep_cv = 50, alpha_level = 0.05, thresh = 0.001, perm_option = NULL,
+                     rep_cv = 50, alpha_level = 0.05, perm_option = NULL,
                      beta_est = "NULL", sel_corr = T, svm = F, y_factor = F, out_path,
                      diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
                      change_all = F, delta_grid = NULL, rep) {
@@ -245,7 +244,6 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                        delta = delta,
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,
-                       thresh = thresh,
                        rep_cv = rep_cv,
                        alpha_level = alpha_level,
                        beta_est = beta_est,

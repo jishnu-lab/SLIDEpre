@@ -33,10 +33,10 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
+priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "LS",
                     conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
-                    merge = F, equal_var = F, alpha_level = 0.05, estim = "HPM",
-                    support = NULL, correction = T, change_all = F, verbose = F) {
+                    merge = F, equal_var = F, alpha_level = 0.05, estim = "HPM", out_path = NULL,
+                    support = NULL, correction = T, change_all = F) {
   #### run plainER() first
   plain_er <- plainER(y = y,
                       x = x,
@@ -102,7 +102,7 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
                         alpha_level = alpha_level,
                         support = support,
                         correction = correction,
-                        verbose = verbose)
+                        out_path = out_path)
   } else { ## if all of the important features were in clusters, then don't need to do Part I
     prior_er <- plain_er
     prior_sigma <- NULL

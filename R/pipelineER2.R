@@ -53,7 +53,6 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            alpha_level = er_input$alpha_level,
                            support = er_input$support,
                            correction = er_input$correction,
-                           verbose = er_input$verbose,
                            thresh_fdr = er_input$thresh_fdr,
                            out_path = er_input$out_path)
       fine_delta_er <- er_result$priorER_result
@@ -71,7 +70,6 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                alpha_level = er_input$alpha_level,
                                support = er_input$support,
                                correction = er_input$correction,
-                               verbose = er_input$verbose,
                                thresh_fdr = er_input$thresh_fdr,
                                out_path = er_input$out_path)
     }
@@ -142,7 +140,6 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                            alpha_level = er_input$alpha_level,
                            support = er_input$support,
                            correction = er_input$correction,
-                           verbose = er_input$verbose,
                            thresh_fdr = er_input$thresh_fdr,
                            out_path = er_input$out_path)
       fine_delta_er <- er_result$priorER_result
@@ -160,7 +157,6 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                alpha_level = er_input$alpha_level,
                                support = er_input$support,
                                correction = er_input$correction,
-                               verbose = er_input$verbose,
                                thresh_fdr = er_input$thresh_fdr,
                                out_path = er_input$out_path)
     }
