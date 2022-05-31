@@ -168,7 +168,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         beta_valid <- cbind(valid_z, 1) %*% new_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)) { ## prior essential regression with IVS
-        load(paste0(new_dir, methods[2], "_fold", i, ".rda")) ## load in the priorER results from other loop
+        load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
 
         ## calculate predicted values
         train_z <- predZ(x = train_x_std, er_res = res)
@@ -195,7 +195,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
         beta_valid <- valid_x_std %*% pred_all_betas
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER_allZs", fixed = TRUE)) { ## prior essential regression with all Zs
-        load(paste0(new_dir, methods[2], "_fold", i, ".rda")) ## load in the priorER results from other loop
+        load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
 
         ## get things for svm
         pred_all_betas <- res$priorER_results$pred$er_predictor
