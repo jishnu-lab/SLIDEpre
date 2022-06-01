@@ -3,6 +3,7 @@
 #' A feature selection method using Model X Knockoffs
 #'
 #' @importFrom magrittr '%>%'
+#' @importFrom foreach '%dopar%'
 #' @param y a response vector of dimension \eqn{n}, standardized
 #' @param z a matrix of dimensions \eqn{p \times K}
 #' @param statistic a statistic to use for variable selection
@@ -21,7 +22,7 @@ gaussKOs <- function(z, y, statistic = knockoff::stat.glmnet_lambdasmax, fdr = 0
   selected_list <- list()
   knockoff_list <- list()
 
-  selected_list <- foreach(i = 1:iters) %dopar% {
+  selected_list <- foreach::foreach(i = 1:iters) %dopar% {
     result <- knockoff::knockoff.filter(z, y, knockoffs = gauss_kos, statistic = statistic, offset = 0, fdr = fdr)
     result$selected
   }
