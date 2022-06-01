@@ -98,7 +98,7 @@ hierER <- function(y, x, delta, thresh_fdr = 0.2, beta_est = "LS",
   for (i in 2:dim(z_marg)[2]) {
     z_int <- cbind(z_int, diag(z_int[, i]) %*% as.matrix(zs))
   }
-  colnames(z_i) <- inter_colnames
+  colnames(z_int) <- inter_colnames
   z_interact_list <- list(z_marginal = z_marg, z_interaction = z_int)
 
   ## Do Final Knockoffs ########################################################
