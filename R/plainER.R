@@ -20,7 +20,6 @@
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
 #' @param support a boolean ???
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
-#' @param verbose a boolean indicating whether to include printing
 #' @param out_path a string path to where to save output
 #' @return a list of results from the Essential Regression framework including: \eqn{K} = number of clusters,
 #' \eqn{\hat{A}}, \eqn{\hat{C}}, \eqn{\hat{I}}, the indices of the pure variables, \eqn{\hat{\Gamma}},
@@ -29,8 +28,8 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "NULL",
-                    conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
+plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "LS",
+                    conf_int = T, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
                     merge = F, equal_var = F, alpha_level = 0.05, support = NULL,
                     correction = T, verbose = F, out_path = NULL) {
   ## Data Housekeeping #########################################################

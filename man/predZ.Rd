@@ -7,7 +7,7 @@
 predZ(x, er_res)
 }
 \arguments{
-\item{x}{data matrix}
+\item{x}{data matrix, standardized}
 
 \item{er_res}{the results of a run of \code{plainER()} or \code{priorER()}}
 }

@@ -18,6 +18,7 @@ Imports:
     graphics,
     gtools,
     igraph,
+    knockoff,
     linprog,
     magrittr,
     MASS,

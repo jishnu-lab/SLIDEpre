@@ -24,4 +24,3 @@ makePosDef <- function(samp_corr) {
     return (samp_corr)
   }
 }
-

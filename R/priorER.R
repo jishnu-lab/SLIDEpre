@@ -53,8 +53,7 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
                       equal_var = equal_var,
                       alpha_level = alpha_level,
                       support = support,
-                      correction = correction,
-                      verbose = verbose)
+                      correction = correction)
   opt_delta <- plain_er$opt_delta
   opt_lambda <- plain_er$opt_lambda
   sigma <- plain_er$thresh_sigma
@@ -75,14 +74,14 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
   #### Essential Regression with Prior Information Part I ######################
   if (length(excl_imp) > 0) {
     #### construct the expert knowledge matrix
-    prior_sigma <- makeDelta(x = x,
+    prior_sigma <- makeDelta(x = scale(x, T, T),
                              sigma = sigma,
                              priors = excl_imp,
                              er_res = plain_er,
                              change_all = change_all,
                              equal_var = equal_var)
     #### balance the prior_sigma with the sample correlation matrix
-    bal_sigma <- findAlpha(x = x,
+    bal_sigma <- findAlpha(x = scale(x, T, T),
                            Delta = prior_sigma,
                            alpha_range = seq(0.01, 0.99, 0.01))
     #### run plainER with sigma = bal_sigma
@@ -111,7 +110,7 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
 
   #### Essential Regression with Prior Information Part II #####################
   #### subset Zs using IVS
-  zs <- predZ(x = x,
+  zs <- predZ(x = scale(x, T, T),
               er_res = prior_er)
   priors_z <- IVS(y = y,
                   z = zs,

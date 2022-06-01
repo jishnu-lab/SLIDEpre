@@ -2,7 +2,7 @@
 #'
 #' Additional prediction function using the support of \eqn{\beta}.
 #'
-#' @param x data matrix
+#' @param x data matrix, standardized
 #' @param er_res the results of a run of \code{plainER()} or \code{priorER()}
 #' @return estimates for \eqn{Z}
 #' @export
