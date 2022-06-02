@@ -68,9 +68,9 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   group_inds <- extract
 
   ## methods list
-  methods <- c("plainER", "plainER_allZs", "plainER_IVS", "lasso", "IVS")
+  methods <- c("plainER", "plainER_allZs", "lasso", "IVS") #"plainER_IVS",
   if (!is.null(priors)) {
-    methods <- c(methods, "priorER", "priorER_allZs", "priorER_IVS")
+    methods <- c(methods, "priorER", "priorER_allZs") #"priorER_IVS"
   }
 
   if (!is.null(perm_option)) {
@@ -162,10 +162,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              er_res = res,
                              priors = NULL,
                              priors_z = ivs,
-                             estim = "HPM")
-        beta_train <- cbind(train_z, 1) %*% new_betas
-        #beta_valid <- valid_z[, ivs] %*% new_betas
-        beta_valid <- cbind(valid_z, 1) %*% new_betas
+                             estim = "BMA")
+
+        sig_z <- new_betas$sig_z
+        sig_beta <- new_betas$sig_beta
+        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
+        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)) { ## prior essential regression with IVS
         load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
@@ -181,10 +183,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              er_res = res$priorER_results,
                              priors = priors,
                              priors_z = ivs,
-                             estim = "HPM")
-        beta_train <- cbind(train_z, 1) %*% new_betas
-        #beta_valid <- valid_z[, ivs] %*% new_betas
-        beta_valid <- cbind(valid_z, 1) %*% new_betas
+                             estim = "BMA")
+
+        sig_z <- new_betas$sig_z
+        sig_beta <- new_betas$sig_beta
+        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
+        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "plainER_allZs", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         load(paste0(new_dir, methods[1], "_fold", i, ".rda")) ## load in the plainER results from other loop
@@ -231,10 +235,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              er_res = res,
                              priors = NULL,
                              priors_z = sig_betas,
-                             estim = "HPM")
-        beta_train <- cbind(train_z, 1) %*% new_betas
-        #beta_valid <- valid_z[, ivs] %*% new_betas
-        beta_valid <- cbind(valid_z, 1) %*% new_betas
+                             estim = "BMA")
+
+        sig_z <- new_betas$sig_z
+        sig_beta <- new_betas$sig_beta
+        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
+        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
         res <- priorER(y = train_y,
@@ -250,6 +256,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                        conf_int = T,
                        pred = T,
                        diagonal = diagonal,
+                       ivs = F,
                        merge = merge,
                        equal_var = equal_var,
                        support = support,
@@ -267,10 +274,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                              er_res = res$priorER_results,
                              priors = priors,
                              priors_z = sig_betas,
-                             estim = "HPM")
-        beta_train <- cbind(train_z, 1) %*% new_betas
-        #beta_valid <- valid_z[, ivs] %*% new_betas
-        beta_valid <- cbind(valid_z, 1) %*% new_betas
+                             estim = "BMA")
+
+        sig_z <- new_betas$sig_z
+        sig_beta <- new_betas$sig_beta
+        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
+        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
         pred_vals <- beta_valid
       } else if (grepl(x = method_j, pattern = "IVS", fixed = TRUE)) { ## just IVS
         ivs <- IVS(train_y_std, train_x_std)

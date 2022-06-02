@@ -20,6 +20,8 @@
 #' @param equal_var a boolean indicating whether there is equal variance ??
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
 #' @param support a boolean ???
+#' @param ivs a boolean flag indicating whether to use \code{IVS()} to select significant \eqn{\mathbf{Z}} (TRUE) or
+#' to use \code{sigBetas()} (FALSE)
 #' @param estim the type of estimator to use for BMA.
 #' Highest Probability Model = "HPM", Bayesian Model Averaging Model = "BMA", Median Probability Model = "MPM".
 #' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
@@ -34,7 +36,7 @@
 #' @export
 
 priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_est = "LS",
-                    conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F,
+                    conf_int = F, pred = T, lambda = 0.1, rep_cv = 50, diagonal = F, ivs = F,
                     merge = F, equal_var = F, alpha_level = 0.05, estim = "HPM", out_path = NULL,
                     support = NULL, correction = T, change_all = F) {
   #### run plainER() first
@@ -57,7 +59,6 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
   opt_delta <- plain_er$opt_delta
   opt_lambda <- plain_er$opt_lambda
   sigma <- plain_er$thresh_sigma
-  plain_betas <- sigBetas(betas = plain_er$beta, cutoff = alpha_level * 2)
 
   #### at this point, we have fully run LOVE/done cross-validation and can now
   #### begin to incorporate the prior information
@@ -109,13 +110,20 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
   }
 
   #### Essential Regression with Prior Information Part II #####################
-  #### subset Zs using IVS
+  #### subset Zs
   zs <- predZ(x = scale(x, T, T),
               er_res = prior_er)
-  priors_z <- IVS(y = y,
-                  z = zs,
-                  priors = priors,
-                  er_res = prior_er)
+  if (ivs) {
+    priors_z <- IVS(y = y,
+                    z = zs,
+                    priors = priors,
+                    er_res = prior_er)
+  } else {
+    prop <- as.numeric(20 / ncol(zs)) ## find what proportion = 20 Zs
+    priors_z <- sigBetas(betas = prior_er$beta,
+                         cutoff = prop) ## get significant betas
+    priors_z <- c(unlist(priors_z$pos_sig), unlist(priors_z$neg_sig)) ## 20 Zs with largest weights
+  }
 
   #### re-estimate betas
   new_betas <- betaBMA(x = x,
@@ -125,6 +133,11 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
                        priors_z = priors_z,
                        estim = estim)
 
+  #### predict response using only significant Zs and intercept
+  sig_z <- new_betas$sig_z
+  sig_beta <- new_betas$sig_beta
+  y_hat <- cbind(1, zs[, sig_z]) %*% new_betas$beta[c(1, sig_beta)] ## add 1 for intercept
+
   #### Essential Regression with Prior Information Part III ####################
   #### compile results
   results <- list("plainER_results" = plain_er, ## plainER - no prior info
@@ -132,7 +145,8 @@ priorER <- function(y, x, priors, sigma = NULL, delta, thresh_fdr = 0.2, beta_es
                   "sample_sigma" = sigma, ## sigma used in plainER
                   "prior_knowledge_sigma" = prior_sigma, ## Delta used to represent prior knowledge
                   "priorER_sigma" = bal_sigma, ## sigma used in priorER
-                  "beta_bma" = new_betas) ## new betas (BMA, MPM, HPM)
+                  "y_hat" = y_hat, ## predicted values
+                  "bma_results" = new_betas) ## new betas (BMA, MPM, HPM)
 
   return (results)
 }

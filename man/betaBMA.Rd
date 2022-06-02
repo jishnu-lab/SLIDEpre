@@ -22,7 +22,9 @@ betaBMA(x, y, er_res, priors, priors_z, estim = "HPM")
 "MPM" = Median Probability Model}
 }
 \value{
-a vector of \eqn{\beta} estimates
+a list containing: beta, a vector of \eqn{\beta} estimates;
+sig_z, the top 10 zs according to posterior probability; BMA_results,
+an object returned by \code{BAS::bas.lm()}
 }
 \description{
 Find new estimates for \eqn{\beta}s using Bayesian Adaptive

@@ -13,7 +13,9 @@
 #' @param estim the type of estimator used for Bayesian Model Averaging. options include
 #' "BMA" = Bayesian Model Averaging Model, "HPM" = Highest Probability Model,
 #' "MPM" = Median Probability Model
-#' @return a vector of \eqn{\beta} estimates
+#' @return a list containing: beta, a vector of \eqn{\beta} estimates;
+#' sig_z, the top 10 zs according to posterior probability; BMA_results,
+#' an object returned by \code{BAS::bas.lm()}
 #' @export
 
 betaBMA <- function(x, y, er_res, priors, priors_z, estim = "HPM") {
@@ -48,45 +50,30 @@ betaBMA <- function(x, y, er_res, priors, priors_z, estim = "HPM") {
   }
 
   ## do BMA
-  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp, ## INTERCEPT
+  imp_betas_bas <- BAS::bas.lm(scale_y ~ z_imp,
                                prior = "g-prior",
                                alpha = 1,
                                modelprior = BAS::beta.binomial(alpha = 1, beta = 1),
                                force.heredity = FALSE,
                                pivot = TRUE,
-                               method = "BAS",
+                               method = "MCMC",
+                               MCMC.iterations = 100000,
+                               thin = 1000,
                                initprobs = z_imp_probs)
 
   imp_betas <- coef(imp_betas_bas, estimator = estim)
-  imp_betas <- imp_betas$postmean ## get posterior means
+  imp_betas <- imp_betas$postmean ## get posterior means as coefficient estimates
+  sig_betas <- sort(imp_betas_bas$probne0, index.return = TRUE, decreasing = TRUE) ## sort posterior probs
+  sig_betas <- sig_betas$ix[1:11] ## select top 11 by posterior probs
+  if (1 %in% sig_betas) { ## if intercept is selected, get rid of it
+    sig_betas <- sig_betas[-which(sig_betas == 1)]
+  } else {
+    sig_betas <- sig_betas[1:10] ## if intercept is not selected, get rid of lowest prob
+  }
+  sig_zs <- priors_z[(sig_betas - 1)] ## get indices of Zs corresponding to top 10 post probs (adjust for intercept index)
 
-  ## Step 2: Non-Important Clusters
-  z_imp_inter <- cbind(1, z_imp) ## add column for intercept
-  new_y <- scale_y - z_imp_inter %*% imp_betas
-  new_A <- er_res$A[, -priors_z]
-  new_C <- er_res$C[-priors_z, -priors_z]
-  new_I_clust <- er_res$I_clust[-priors_z]
-  new_I <- unlist(new_I_clust)
-  ## re-estimate betas for the non-important features
-  nonimp_betas <- estBeta(y = new_y,
-                          x = scale_x,
-                          sigma = cor(scale_x),
-                          A_hat = new_A,
-                          C_hat = new_C,
-                          Gamma_hat = er_res$Gamma,
-                          I_hat = new_I,
-                          I_hat_list = new_I_clust,
-                          conf_int = T,
-                          alpha = 0.05,
-                          correction = TRUE,
-                          support = NULL)
-  ## get beta estimates
-  nonimp_beta <- nonimp_betas$beta_hat
-
-  ## concatenate the nonimportant and important beta estimates
-  all_betas <- rep(0, ncol(as.matrix(prior_z)))
-  imp_betas_nointer <- imp_betas[-1]
-  all_betas[priors_z] <- unlist(imp_betas_nointer)
-  all_betas[-priors_z] <- unlist(nonimp_beta)
-  return(c(all_betas, imp_betas[1]))
+  return(list("beta" = imp_betas, ## beta estimates
+              "sig_beta" = sig_betas, ## significant betas by post probs
+              "sig_z" = sig_zs, ## significant Zs by post probs
+              "BMA_results" = imp_betas_bas)) ## bma results from BAS::bas.lm()
 }

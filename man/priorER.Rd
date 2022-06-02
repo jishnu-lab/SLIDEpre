@@ -17,6 +17,7 @@ priorER(
   lambda = 0.1,
   rep_cv = 50,
   diagonal = F,
+  ivs = F,
   merge = F,
   equal_var = F,
   alpha_level = 0.05,
@@ -52,6 +53,9 @@ control the false discovery rate, default is 0.2}
 \item{rep_cv}{number of replicates for cross-validation}
 
 \item{diagonal}{a boolean indicating the diagonal structure of the data ???}
+
+\item{ivs}{a boolean flag indicating whether to use \code{IVS()} to select significant \eqn{\mathbf{Z}} (TRUE) or
+to use \code{sigBetas()} (FALSE)}
 
 \item{merge}{a boolean indicating the merge type}
 
