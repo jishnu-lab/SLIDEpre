@@ -1,4 +1,4 @@
-#' Test Node Purity
+#' Test Node Purity.
 #'
 #' For given row, check if it is a pure node by iteratively checking the nodes
 #' in \code{Si}. Return TRUE if the given row corresponds to a pure variable.

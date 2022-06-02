@@ -1,4 +1,4 @@
-#' Threshold \eqn{A}
+#' Threshold \eqn{A}.
 #'
 #' Threshold the given matrix \code{A} based on the given \eqn{\mu}. If \code{scale} is true,
 #' then normalize each row of \code{A} such that the \eqn{L_1} norm of each row is not larger than 1.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/predZ.R
 \name{predZ}
 \alias{predZ}
-\title{Estimate \eqn{Z}}
+\title{Estimate \eqn{Z}.}
 \usage{
 predZ(x, er_res)
 }

@@ -1,4 +1,4 @@
-#' Estimate \eqn{Z}
+#' Estimate \eqn{Z}.
 #'
 #' Additional prediction function using the support of \eqn{\beta}.
 #'

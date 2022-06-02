@@ -1,6 +1,6 @@
-#' Significant \eqn{\beta}s
+#' Significant \eqn{\beta}s.
 #'
-#' Find top \eqn{\beta}s according to cutoff percentage
+#' Find top \eqn{\beta}s according to cutoff percentage.
 #'
 #' @importFrom magrittr '%>%'
 #' @param betas a vector of estimates for \eqn{\beta}s

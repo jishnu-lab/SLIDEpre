@@ -1,4 +1,4 @@
-#' Find \eqn{\Sigma} Maximum Indices
+#' Find \eqn{\Sigma} Maximum Indices.
 #'
 #' Calculate indices of each row such that the absolute values of these indices
 #' are within \eqn{2\delta} of the maximal absolute value \code{max_val} of this row.

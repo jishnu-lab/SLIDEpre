@@ -2,7 +2,7 @@
 % Please edit documentation in R/compASV.R
 \name{compASV}
 \alias{compASV}
-\title{compASV}
+\title{compASV.}
 \usage{
 compASV(
   sigma_alt,
@@ -38,5 +38,5 @@ compASV(
 ???
 }
 \description{
-I am not sure what this does
+I am not sure what this does.
 }

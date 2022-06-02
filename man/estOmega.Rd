@@ -2,7 +2,7 @@
 % Please edit documentation in R/estOmega.R
 \name{estOmega}
 \alias{estOmega}
-\title{Estimate \eqn{\Omega}}
+\title{Estimate \eqn{\Omega}.}
 \usage{
 estOmega(lambda, C)
 }

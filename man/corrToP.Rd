@@ -2,7 +2,7 @@
 % Please edit documentation in R/corrToP.R
 \name{corrToP}
 \alias{corrToP}
-\title{Correlation p-values}
+\title{Correlation \eqn{p}-values.}
 \usage{
 corrToP(r, n)
 }

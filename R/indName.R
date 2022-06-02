@@ -1,4 +1,4 @@
-#' Indices To Names
+#' Indices To Names.
 #'
 #' Translate feature indices to feature names and vice versa.
 #'

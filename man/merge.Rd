@@ -2,7 +2,7 @@
 % Please edit documentation in R/merge.R
 \name{merge}
 \alias{merge}
-\title{Merge Nodes (Intersection)}
+\title{Merge Nodes (Intersection). NOT USED ANYMORE}
 \usage{
 merge(clusters, group)
 }

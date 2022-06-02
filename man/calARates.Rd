@@ -2,7 +2,7 @@
 % Please edit documentation in R/calARates.R
 \name{calARates}
 \alias{calARates}
-\title{Calculate Norms}
+\title{Calculate Norms.}
 \usage{
 calARates(A)
 }

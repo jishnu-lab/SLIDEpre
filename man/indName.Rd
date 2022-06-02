@@ -2,7 +2,7 @@
 % Please edit documentation in R/indName.R
 \name{indName}
 \alias{indName}
-\title{Indices To Names}
+\title{Indices To Names.}
 \usage{
 indName(feats, all_names, to_ind = T)
 }

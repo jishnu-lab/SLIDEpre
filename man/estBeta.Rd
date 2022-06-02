@@ -2,7 +2,7 @@
 % Please edit documentation in R/estBeta.R
 \name{estBeta}
 \alias{estBeta}
-\title{Estimate \eqn{\beta}}
+\title{Estimate \eqn{\beta}.}
 \usage{
 estBeta(
   y,
@@ -13,10 +13,7 @@ estBeta(
   Gamma_hat,
   I_hat,
   I_hat_list,
-  conf_int = T,
-  alpha_level = 0.05,
-  correction = TRUE,
-  support = NULL
+  alpha_level = 0.05
 )
 }
 \arguments{
@@ -36,13 +33,7 @@ estBeta(
 
 \item{I_hat_list}{estimated matrix}
 
-\item{conf_int}{boolean indicated whether to calculate confidence intervals}
-
 \item{alpha_level}{value for confidence intervals}
-
-\item{correction}{a boolean flag indicating whether to perform Bonferroni multiple testing correction}
-
-\item{support}{whether to do calculations on support of WHAT}
 }
 \value{
 a list including the estimates for \eqn{\beta} and the confidence intervals (if requested)

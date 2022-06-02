@@ -1,6 +1,6 @@
-#' Check Singletone Node
+#' Check Singletone Node.
 #'
-#' Check if there exists an element of the given list has length equal to 1
+#' Check if there exists an element of the given list has length equal to 1.
 #'
 #' @param pure_list estimated indices of pure nodes
 #' @return true or false depending upon existence of singleton element

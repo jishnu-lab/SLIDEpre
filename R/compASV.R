@@ -1,6 +1,6 @@
-#' compASV
+#' compASV.
 #'
-#' I am not sure what this does
+#' I am not sure what this does.
 #'
 #' @param sigma_alt a matrix computed by \code{\link{estSigmaAlt}}
 #' @param BI estimated matrix:

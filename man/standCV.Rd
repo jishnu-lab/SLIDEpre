@@ -2,7 +2,7 @@
 % Please edit documentation in R/standCV.R
 \name{standCV}
 \alias{standCV}
-\title{Standardization for k-fold cross-validation}
+\title{Standardization for k-fold cross-validation.}
 \usage{
 standCV(valid_x, train_x, valid_y = NULL, train_y = NULL)
 }
@@ -16,5 +16,5 @@ standCV(valid_x, train_x, valid_y = NULL, train_y = NULL)
 \item{train_y}{the training set made from the response vector}
 }
 \description{
-Standardize the training and validation sets for cross-validation
+Standardize the training and validation sets for cross-validation.
 }

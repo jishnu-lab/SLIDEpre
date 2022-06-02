@@ -1,6 +1,6 @@
-#' Find Optimal Permuted Matrix
+#' Find Optimal Permuted Matrix.
 #'
-#' Find \eqn{A_{perm}}, the optimal permutated matrix of \eqn{A}, such that
+#' Find \eqn{A_{perm}}, the optimal permuted matrix of \eqn{A}, such that
 #' \eqn{|A_{perm} - B|_F} is minimized.
 #'
 #' @param A a matrix

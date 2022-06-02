@@ -1,4 +1,4 @@
-#' FDR Thresholding of \eqn{\hat{Sigma}}
+#' FDR Thresholding of \eqn{\hat{Sigma}}.
 #'
 #' Threshold \eqn{\hat{\Sigma}} according to false discovery rate threshold specification \code{thresh}.
 #' For each entry in \eqn{\hat{\Sigma}}, calculate the associated \eqn{t}-test statistic with degrees of freedom \eqn{n-2}:

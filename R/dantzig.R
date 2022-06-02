@@ -1,4 +1,4 @@
-#' Dantzig Estimation
+#' Dantzig Estimation.
 #'
 #' Estimate a vector using a Dantzig-type estimator.
 #'

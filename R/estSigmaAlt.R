@@ -1,4 +1,4 @@
-#' estSigmaAlt
+#' estSigmaAlt.
 #'
 #' I am not sure what this does.
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pureRowInd.R
 \name{pureRowInd}
 \alias{pureRowInd}
-\title{Find Indices Of Pure Nodes}
+\title{Find Indices Of Pure Nodes.}
 \usage{
 pureRowInd(A)
 }

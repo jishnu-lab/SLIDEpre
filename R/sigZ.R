@@ -1,9 +1,9 @@
-#' Get Significant \eqn{Z}s
+#' Get Significant \eqn{Z}s. NOT USED ANYMORE
 #'
-#' Function to find significant \eqn{\beta}s and \eqn{Z}s from Essential Regression results
+#' Function to find significant \eqn{\beta}s and \eqn{Z}s from Essential Regression results.
 #'
 #' @importFrom magrittr '%>%'
-#' @param er_res a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}
+#' @param er_res a list output by the function \link{plainER}
 #' @param y a vector of responses
 #' @param alpha a numeric constant for the p-value threshold
 #' @return a list including the p-values for the \eqn{\beta}s, the significant cluster indices,

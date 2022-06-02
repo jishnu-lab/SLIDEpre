@@ -1,4 +1,4 @@
-#' Essential Regression Prediction
+#' Essential Regression Prediction.
 #'
 #' Perform prediction on the data using the ER predictor.
 #'

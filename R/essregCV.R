@@ -1,44 +1,31 @@
-#' Cross-Validation For Essential Regression
+#' Cross-Validation For Essential Regression.
 #'
-#' Perform k-fold cross-validation for essential regression to select
+#' Perform k-fold cross-validation for essential regression to select.
 #'
 #' @importFrom magrittr '%>%'
 #' @importFrom foreach '%dopar%'
 #' @param k an integer for number of folds to use in cross-validation
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
-#' @param priors a vector of names or indices of important features in data matrix if
-#' using \link{priorER} or \code{NULL} if using \link{plainER}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
 #' @param perm_option a string indicating the type of permutation type do perform
 #' (can be NULL, "x", "x_y", or "y_before_split")
 #' @param y_factor a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})
-#' @param beta_est a string indicating the type of estimation to use for \eqn{\beta}
 #' @param sel_corr a boolean flag indicating whether to perform cross-validation by evaluating the correlation
 #' between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})
 #' @param lambda \eqn{\lambda}, a numerical constant used in thresholding
 #' @param rep_cv number of replicates for cross-validation
-#' @param diagonal a boolean indicating the diagonal structure of the data ???
-#' @param merge a boolean indicating the merge type
-#' @param equal_var a boolean indicating whether there is equal variance ??
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
-#' @param support a boolean ???
-#' @param svm a boolean flag indicating whether to fit svm/svr and use that for prediction
-#' @param correction a boolean flag indicating whether to perform Bonferroni multiple testing correction
-#' @param change_all a boolean indicating whether to change all entries in \eqn{\hat{\Sigma}}
-#' for an important feature (T) or to just change to more extreme values (F)
 #' @param rep an integer indicating the replicate number
 #' @param out_path path for saving output
 #' @return An object of class \sQuote{data.frame}
 #' @export
 
-essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
+essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, perm_option = NULL,
-                     beta_est = "NULL", sel_corr = T, svm = F, y_factor = F, out_path,
-                     diagonal = F, merge = F, equal_var = F, support = NULL, correction = T,
-                     change_all = F, delta_grid = NULL, rep) {
+                     sel_corr = T, y_factor = F, out_path, rep) {
 
   if (y_factor) {
     eval_type <- "auc"
@@ -68,10 +55,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
   group_inds <- extract
 
   ## methods list
-  methods <- c("plainER", "plainER_allZs", "lasso", "IVS") #"plainER_IVS",
-  if (!is.null(priors)) {
-    methods <- c(methods, "priorER", "priorER_allZs") #"priorER_IVS"
-  }
+  methods <- c("plainER", "lasso")
 
   if (!is.null(perm_option)) {
     if (perm_option == "x") { ## permute columns of x
@@ -149,64 +133,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       valid_x_std <- stands$valid_x
       valid_y_std <- stands$valid_y
 
-      if (grepl(x = method_j, pattern = "plainER_IVS", fixed = TRUE)) { ## plain essential regression with IVS
-        load(paste0(new_dir, methods[1], "_fold", i, ".rda")) ## load in the plainER results from other loop
-
-        ## calculate predicted values
-        train_z <- predZ(x = train_x_std, er_res = res)
-        ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res)
-
-        new_betas <- betaBMA(x = train_x,
-                             y = train_y,
-                             er_res = res,
-                             priors = NULL,
-                             priors_z = ivs,
-                             estim = "BMA")
-
-        sig_z <- new_betas$sig_z
-        sig_beta <- new_betas$sig_beta
-        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "priorER_IVS", fixed = TRUE)) { ## prior essential regression with IVS
-        load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
-
-        ## calculate predicted values
-        train_z <- predZ(x = train_x_std, er_res = res$priorER_results)
-        ivs <- IVS(y = train_y_std, z = train_z)
-        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results)
-
-
-        new_betas <- betaBMA(x = train_x,
-                             y = train_y,
-                             er_res = res$priorER_results,
-                             priors = priors,
-                             priors_z = ivs,
-                             estim = "BMA")
-
-        sig_z <- new_betas$sig_z
-        sig_beta <- new_betas$sig_beta
-        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "plainER_allZs", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        load(paste0(new_dir, methods[1], "_fold", i, ".rda")) ## load in the plainER results from other loop
-
-        ## get things for svm
-        pred_all_betas <- res$pred$er_predictor
-        beta_train <- train_x_std %*% pred_all_betas
-        beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "priorER_allZs", fixed = TRUE)) { ## prior essential regression with all Zs
-        load(paste0(new_dir, methods[6], "_fold", i, ".rda")) ## load in the priorER results from other loop
-
-        ## get things for svm
-        pred_all_betas <- res$priorER_results$pred$er_predictor
-        beta_train <- train_x_std %*% pred_all_betas
-        beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression
+      if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         res <- plainER(y = train_y,
                        x = train_x,
                        sigma = NULL,
@@ -214,80 +141,12 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
                        lambda = lambda,
                        thresh_fdr = thresh_fdr,
                        rep_cv = rep_cv,
-                       alpha_level = alpha_level,
-                       beta_est = beta_est,
-                       conf_int = T,
-                       pred = T,
-                       diagonal = diagonal,
-                       merge = merge,
-                       equal_var = equal_var,
-                       support = support,
-                       correction = correction)
+                       alpha_level = alpha_level)
 
-        ## calculate predicted values
-        train_z <- predZ(x = train_x_std, er_res = res)
-        sig_betas <- sigBetas(betas = res$beta, cutoff = 0.1) ## Top 5% positive/negative
-        sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
-        valid_z <- predZ(x = valid_x_std, er_res = res)
-
-        new_betas <- betaBMA(x = train_x,
-                             y = train_y,
-                             er_res = res,
-                             priors = NULL,
-                             priors_z = sig_betas,
-                             estim = "BMA")
-
-        sig_z <- new_betas$sig_z
-        sig_beta <- new_betas$sig_beta
-        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "priorER", fixed = TRUE)) { ## prior essential regression
-        res <- priorER(y = train_y,
-                       x = train_x,
-                       priors = priors,
-                       sigma = NULL,
-                       delta = delta,
-                       lambda = lambda,
-                       thresh_fdr = thresh_fdr,
-                       rep_cv = rep_cv,
-                       alpha_level = alpha_level,
-                       beta_est = beta_est,
-                       conf_int = T,
-                       pred = T,
-                       diagonal = diagonal,
-                       ivs = F,
-                       merge = merge,
-                       equal_var = equal_var,
-                       support = support,
-                       correction = correction,
-                       change_all = change_all)
-
-        ## calculate predicted values
-        train_z <- predZ(x = train_x_std, er_res = res$priorER_results)
-        sig_betas <- sigBetas(betas = res$priorER_results$beta, cutoff = 0.1) ## Top 5% positive/negative
-        sig_betas <- c(unlist(sig_betas$pos_sig), unlist(sig_betas$neg_sig))
-        valid_z <- predZ(x = valid_x_std, er_res = res$priorER_results)
-
-        new_betas <- betaBMA(x = train_x,
-                             y = train_y,
-                             er_res = res$priorER_results,
-                             priors = priors,
-                             priors_z = sig_betas,
-                             estim = "BMA")
-
-        sig_z <- new_betas$sig_z
-        sig_beta <- new_betas$sig_beta
-        beta_train <- cbind(1, train_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        beta_valid <- cbind(1, valid_z[, sig_z]) %*% new_betas$beta[c(1, sig_beta)]
-        pred_vals <- beta_valid
-      } else if (grepl(x = method_j, pattern = "IVS", fixed = TRUE)) { ## just IVS
-        ivs <- IVS(train_y_std, train_x_std)
-        ivs_x <- train_x_std[, ivs]
-        new_betas <- coef(lm(train_y_std ~ ivs_x))
-
-        beta_train <- cbind(1, ivs_x) %*% new_betas
-        beta_valid <- cbind(1, valid_x_std[, ivs]) %*% new_betas
+        ## get things for svm
+        pred_all_betas <- res$pred$er_predictor
+        beta_train <- train_x_std %*% pred_all_betas
+        beta_valid <- valid_x_std %*% pred_all_betas
         pred_vals <- beta_valid
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
@@ -309,13 +168,6 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
 
       save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
 
-      if (svm) { ## if svm flag == TRUE, use svm/svr to get predicted values for validation set
-        ## fit svm
-        res_tune <- e1071::tune.svm(x = beta_train, y = train_y_std, cost = 2 ^ seq(-3, 3, 1)) ## linear kernel
-        ## get predicted values on validation set
-        pred_vals <- stats::predict(object = res_tune$best.model, newdata = beta_valid)
-      }
-
       if (sel_corr) { ## if using correlation to evaluate model fit
         method_res <- results[[method_j]]
         method_res[[length(method_res) + 1]] <- cbind(valid_y_std, pred_vals)
@@ -336,6 +188,7 @@ essregCV <- function(k = 5, y, x, priors = NULL, delta, thresh_fdr = 0.2, lambda
       }
     }
   }
+
   ## set results data frame column names
   if (sel_corr) {
     res_df <- NULL

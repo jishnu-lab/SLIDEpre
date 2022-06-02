@@ -2,7 +2,7 @@
 % Please edit documentation in R/checkElement.R
 \name{checkElement}
 \alias{checkElement}
-\title{Check Element In List}
+\title{Check Element In List.}
 \usage{
 checkElement(element, groupList)
 }

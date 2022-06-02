@@ -1,4 +1,4 @@
-#' Find Group Structure
+#' Find Group Structure.
 #'
 #' Recover group structure given \eqn{p \times K} matrix, \eqn{A} and perform thresholding.
 #'

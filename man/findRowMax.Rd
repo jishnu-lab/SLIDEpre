@@ -2,7 +2,7 @@
 % Please edit documentation in R/findRowMax.R
 \name{findRowMax}
 \alias{findRowMax}
-\title{Find \eqn{\Sigma} Maximums}
+\title{Find \eqn{\Sigma} Maxima.}
 \usage{
 findRowMax(abs_sigma)
 }

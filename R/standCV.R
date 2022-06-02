@@ -1,6 +1,6 @@
-#' Standardization for k-fold cross-validation
+#' Standardization for k-fold cross-validation.
 #'
-#' Standardize the training and validation sets for cross-validation
+#' Standardize the training and validation sets for cross-validation.
 #'
 #' @param valid_y the validation set made from the response vector
 #' @param valid_x the validation set made from the data matrix

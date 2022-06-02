@@ -1,4 +1,4 @@
-#' Find Indices Of Pure Nodes
+#' Find Indices Of Pure Nodes.
 #'
 #' For given matrix \eqn{A}, find the row indices which correspond to pure nodes.
 #'

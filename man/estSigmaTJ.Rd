@@ -2,7 +2,7 @@
 % Please edit documentation in R/estSigmaTJ.R
 \name{estSigmaTJ}
 \alias{estSigmaTJ}
-\title{Estimate \eqn{\Sigma_{\hat{TJ}}}}
+\title{Estimate \eqn{\Sigma_{\hat{TJ}}}.}
 \usage{
 estSigmaTJ(sigma, AI, pure_vec)
 }

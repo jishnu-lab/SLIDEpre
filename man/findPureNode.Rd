@@ -2,9 +2,9 @@
 % Please edit documentation in R/findPureNode.R
 \name{findPureNode}
 \alias{findPureNode}
-\title{Estimate Pure Nodes}
+\title{Estimate Pure Nodes.}
 \usage{
-findPureNode(abs_sigma, delta, max_vals, max_inds, se_est, merge)
+findPureNode(abs_sigma, delta, max_vals, max_inds, se_est)
 }
 \arguments{
 \item{abs_sigma}{a sample correlation matrix of dimensions \eqn{p \times p} with entries
@@ -17,8 +17,6 @@ in absolute value and diagonal of 0}
 \item{max_inds}{vector of column indices at which the values in \code{max_vals} are achieved in \code{abs_sigma}}
 
 \item{se_est}{standard deviations of features (columns of \code{x})}
-
-\item{merge}{boolean indicating merge style}
 }
 \value{
 A list including the list of estimated pure node indices and a vector

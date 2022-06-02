@@ -1,4 +1,4 @@
-#' Create Matrix Heatmap
+#' Create Matrix Heatmap.
 #'
 #' Create a heatmap for the provided matrix. This is essentially just a wrapper for
 #' \code{pheatmap}.
@@ -11,7 +11,9 @@
 #' @export
 
 makeHeatmap <- function(mat, title, cluster = T, names = F) {
-  heatmap <- pheatmap::pheatmap(mat, cluster_rows = cluster, cluster_cols = cluster,
+  heatmap <- pheatmap::pheatmap(mat,
+                                cluster_rows = cluster,
+                                cluster_cols = cluster,
                                 main = title,
                                 grDevices::colorRampPalette(c("navy", "white", "red"))(100),
                                 treeheight_row = 0, treeheight_col = 0,

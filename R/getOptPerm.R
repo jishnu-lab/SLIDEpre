@@ -1,4 +1,4 @@
-#' Find Best Column Permutation Matrices
+#' Find Best Column Permutation Matrices.
 #'
 #' For the given pure node set, find the best column permutation matrix
 #' \eqn{A_{perm}} of \eqn{A} such that \eqn{|A_{perm} - B|_F} is minimal for the target \eqn{B}.

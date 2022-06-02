@@ -2,7 +2,7 @@
 % Please edit documentation in R/findRowMaxInd.R
 \name{findRowMaxInd}
 \alias{findRowMaxInd}
-\title{Find \eqn{\Sigma} Maximum Indices}
+\title{Find \eqn{\Sigma} Maximum Indices.}
 \usage{
 findRowMaxInd(i, max_val, max_ind, row_i, delta, se_est)
 }

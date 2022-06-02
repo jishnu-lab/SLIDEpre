@@ -1,6 +1,6 @@
-#' Off-Diagonal Sum Of Squares
+#' Off-Diagonal Sum Of Squares.
 #'
-#' Calculate the sum of squares of the upper off-diagonal elements of two matrices
+#' Calculate the sum of squares of the upper off-diagonal elements of two matrices.
 #'
 #' @param mat1 a matrix
 #' @param mat2 a matrix of same dimensions as \code{mat1}

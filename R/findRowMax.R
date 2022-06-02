@@ -1,4 +1,4 @@
-#' Find \eqn{\Sigma} Maximums
+#' Find \eqn{\Sigma} Maxima.
 #'
 #' Calculate the maximal absolute value for each row of the given matrix.
 #'

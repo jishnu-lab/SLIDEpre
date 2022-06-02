@@ -2,7 +2,7 @@
 % Please edit documentation in R/mergeUnion.R
 \name{mergeUnion}
 \alias{mergeUnion}
-\title{Merge Nodes (Union)}
+\title{Merge Nodes (Union).}
 \usage{
 mergeUnion(clusters, group)
 }

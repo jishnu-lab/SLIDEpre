@@ -2,9 +2,9 @@
 % Please edit documentation in R/cvDelta.R
 \name{cvDelta}
 \alias{cvDelta}
-\title{\eqn{\delta} Cross-Validation}
+\title{\eqn{\delta} Cross-Validation.}
 \usage{
-cvDelta(raw_x, fdr_entries, deltas_scaled, diagonal, merge)
+cvDelta(raw_x, fdr_entries, deltas_scaled)
 }
 \arguments{
 \item{raw_x}{data matrix of dimensions \eqn{n \times p}, not standardized}
@@ -13,10 +13,6 @@ cvDelta(raw_x, fdr_entries, deltas_scaled, diagonal, merge)
 entry is kept in the thresholded version of \eqn{\hat{\Sigma}} and a 0 if not}
 
 \item{deltas_scaled}{a vector of numerical constants over which to perform the search for the optimal \eqn{\delta}}
-
-\item{diagonal}{a boolean indicating the diagonal structure of \eqn{C}}
-
-\item{merge}{a boolean indicating merge style}
 }
 \value{
 the selected optimal \eqn{\delta}
@@ -25,5 +21,5 @@ the selected optimal \eqn{\delta}
 Cross validation for choosing \eqn{\delta}. For each delta from the given grids,
 first split the data into two data sets. Obtain \eqn{I}, \eqn{A_I} and \eqn{C} from data set 1.
 Then calculate \eqn{A_I \cdot C \cdot A_I^\top} and choose \eqn{\delta} which minimizes the criterion
-\eqn{A_I \cdot C \cdot A_I^\top - \Sigma(\text{data set 2})}
+\eqn{A_I \cdot C \cdot A_I^\top - \Sigma(\text{data set 2})}.
 }

@@ -1,6 +1,6 @@
-#' Categorical To Continuous Data
+#' Categorical To Continuous Data.
 #'
-#' Transform categorical response vector into continuous values
+#' Transform categorical response vector into continuous values.
 #'
 #' @param y a response vector of dimension \eqn{n} of categorical values
 #' @return a list containing the old (categorical) \eqn{y} and the new (continuous) \eqn{y}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/signPerm.R
 \name{signPerm}
 \alias{signPerm}
-\title{Sign Permutation}
+\title{Sign Permutation.}
 \usage{
 signPerm(n)
 }

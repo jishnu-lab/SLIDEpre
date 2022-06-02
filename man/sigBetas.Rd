@@ -2,7 +2,7 @@
 % Please edit documentation in R/sigBetas.R
 \name{sigBetas}
 \alias{sigBetas}
-\title{Significant \eqn{\beta}s}
+\title{Significant \eqn{\beta}s.}
 \usage{
 sigBetas(betas, cutoff)
 }
@@ -15,5 +15,5 @@ sigBetas(betas, cutoff)
 a list of beta indices organized by sign
 }
 \description{
-Find top \eqn{\beta}s according to cutoff percentage
+Find top \eqn{\beta}s according to cutoff percentage.
 }

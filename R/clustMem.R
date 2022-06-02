@@ -1,10 +1,10 @@
-#' Feature Cluster Membership
+#' Feature Cluster Membership.
 #'
-#' Function to find the clusters of which a given feature is a member
+#' Function to find the clusters of which a given feature is a member.
 #'
 #' @importFrom magrittr '%>%'
 #' @param feat a feature index
-#' @param er_res a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}
+#' @param er_res a list output by the function \link{plainER()}
 #' @return a vector of cluster indices
 #' @export
 

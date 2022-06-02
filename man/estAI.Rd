@@ -2,9 +2,9 @@
 % Please edit documentation in R/estAI.R
 \name{estAI}
 \alias{estAI}
-\title{Estimate \eqn{A_I}}
+\title{Estimate \eqn{A_I}.}
 \usage{
-estAI(sigma, delta, se_est, merge)
+estAI(sigma, delta, se_est)
 }
 \arguments{
 \item{sigma}{a correlation matrix of dimensions \eqn{p \times p}}
@@ -12,8 +12,6 @@ estAI(sigma, delta, se_est, merge)
 \item{delta}{\eqn{\delta}, a numerical constant}
 
 \item{se_est}{standard deviations of the columns of the data matrix, \code{x}}
-
-\item{merge}{a boolean indicating merge style}
 }
 \value{
 a list including: \eqn{A_I}, a matrix of dimensions \eqn{p \times K},

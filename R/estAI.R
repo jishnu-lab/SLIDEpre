@@ -1,4 +1,4 @@
-#' Estimate \eqn{A_I}
+#' Estimate \eqn{A_I}.
 #'
 #' Use the given \eqn{\delta} to calculate the fitted \eqn{A_I}, pure variable
 #' indices in list form and vector form. Also return estimated \eqn{Y} and \eqn{C} for
@@ -7,14 +7,13 @@
 #' @param sigma a correlation matrix of dimensions \eqn{p \times p}
 #' @param delta \eqn{\delta}, a numerical constant
 #' @param se_est standard deviations of the columns of the data matrix, \code{x}
-#' @param merge a boolean indicating merge style
 #' @return a list including: \eqn{A_I}, a matrix of dimensions \eqn{p \times K},
 #' a vector of the indices of estimated pure variables, and a list of the indices of
 #' the estimated pure variables
 #' @export
 
 
-estAI <- function(sigma, delta, se_est, merge) {
+estAI <- function(sigma, delta, se_est) {
   #### get absolute value of covariance matrix
   abs_sigma <- abs(sigma)
 
@@ -27,9 +26,11 @@ estAI <- function(sigma, delta, se_est, merge) {
   max_inds <- result_max$max_inds #### first index where max abs values are achieved
 
   #### estimate list of pure node indices for given sigma and delta
-  result_pure <- findPureNode(abs_sigma = abs_sigma, delta = delta,
-                              max_vals = max_vals, max_inds = max_inds,
-                              se_est = se_est, merge = merge)
+  result_pure <- findPureNode(abs_sigma = abs_sigma,
+                              delta = delta,
+                              max_vals = max_vals,
+                              max_inds = max_inds,
+                              se_est = se_est)
   pure_list <- result_pure$pure_list
   pure_vec <- as.vector(unlist(result_pure$pure_vec))
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/dantzig.R
 \name{dantzig}
 \alias{dantzig}
-\title{Dantzig Estimation}
+\title{Dantzig Estimation.}
 \usage{
 dantzig(C_hat, target_vec, lambda)
 }

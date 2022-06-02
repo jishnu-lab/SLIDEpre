@@ -1,4 +1,4 @@
-#' Calculate Norms
+#' Calculate Norms.
 #'
 #' Calculate the scaled matrix \eqn{L_1} and Frobenius norms.
 #'

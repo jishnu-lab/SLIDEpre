@@ -26,25 +26,18 @@ pipelineER3 <- function(yaml_path) {
                      y = y,
                      delta = er_input$best_delta,
                      perm_option = er_input$perm_option,
-                     beta_est = er_input$beta_est,
                      sel_corr = er_input$sel_corr,
                      y_factor = er_input$y_factor,
                      lambda = er_input$lambda,
                      rep_cv = er_input$rep_cv,
-                     diagonal = er_input$diagonal,
-                     merge = er_input$merge,
-                     equal_var = er_input$equal_var,
                      alpha_level = er_input$alpha_level,
-                     support = er_input$support,
-                     change_all = er_input$change_all,
-                     correction = er_input$correction,
                      thresh_fdr = er_input$thresh_fdr)
   } -> lambda_rep
   saveRDS(lambda_rep, paste0(er_input$out_path, "pipeline_step5.RDS"))
 
   ## create boxplot of replicate correlations ##################################
   bp_df <- lambda_rep %>%
-    dplyr::filter(method == "plainER" | method == "plainER_y" | method == "priorER" | method == "priorER_y")
+    dplyr::filter(method == "plainER" | method == "plainER_y")
     dplyr::mutate(method = as.factor(method))
   pdf_file <- paste0(er_input$out_path, "/opt_delta_lambda_boxplot.pdf")
   dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
@@ -58,17 +51,9 @@ pipelineER3 <- function(yaml_path) {
                        y = y,
                        sigma = NULL,
                        delta = er_input$delta,
-                       beta_est = er_input$beta_est,
-                       conf_int = er_input$conf_int,
-                       pred = er_input$pred,
                        lambda = er_input$lambda,
                        rep_cv = er_input$rep_cv,
-                       diagonal = er_input$diagonal,
-                       merge = er_input$merge,
-                       equal_var = er_input$equal_var,
                        alpha_level = er_input$alpha_level,
-                       support = er_input$support,
-                       correction = er_input$correction,
                        thresh_fdr = er_input$thresh_fdr,
                        out_path = er_input$out_path)
 

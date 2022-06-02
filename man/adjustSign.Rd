@@ -2,7 +2,7 @@
 % Please edit documentation in R/adjustSign.R
 \name{adjustSign}
 \alias{adjustSign}
-\title{Adjust Matrix Signs}
+\title{Adjust Matrix Signs.}
 \usage{
 adjustSign(sigma, AI)
 }

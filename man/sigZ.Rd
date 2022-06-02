@@ -2,12 +2,12 @@
 % Please edit documentation in R/sigZ.R
 \name{sigZ}
 \alias{sigZ}
-\title{Get Significant \eqn{Z}s}
+\title{Get Significant \eqn{Z}s. NOT USED ANYMORE}
 \usage{
 sigZ(er_res, y, alpha_level = 0.05)
 }
 \arguments{
-\item{er_res}{a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}}
+\item{er_res}{a list output by the function \link{plainER}}
 
 \item{y}{a vector of responses}
 
@@ -18,5 +18,5 @@ a list including the p-values for the \eqn{\beta}s, the significant cluster indi
 and the features found in the significant clusters
 }
 \description{
-Function to find significant \eqn{\beta}s and \eqn{Z}s from Essential Regression results
+Function to find significant \eqn{\beta}s and \eqn{Z}s from Essential Regression results.
 }

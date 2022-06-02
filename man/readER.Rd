@@ -2,7 +2,7 @@
 % Please edit documentation in R/readER.R
 \name{readER}
 \alias{readER}
-\title{Read Essential Regression Results}
+\title{Read Essential Regression Results.}
 \usage{
 readER(er_res)
 }
@@ -10,8 +10,6 @@ readER(er_res)
 \item{er_res}{a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}}
 
 \item{y}{a vector of responses}
-
-\item{alpha}{a numeric constant for the p-value threshold}
 }
 \value{
 a list including the clusters, pure variables, mixed variables, the significant

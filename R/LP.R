@@ -1,4 +1,4 @@
-#' Linear Program Function
+#' Linear Program Function.
 #'
 #' Solve the following using linear programming:
 #' \deqn{\beta^{+} - \beta^{-} \leq \lambda + y - \beta^{+} + \beta^{-} \leq \lambda - y}

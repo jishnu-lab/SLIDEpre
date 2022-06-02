@@ -2,16 +2,14 @@
 % Please edit documentation in R/estC.R
 \name{estC}
 \alias{estC}
-\title{Estimate \eqn{C}}
+\title{Estimate \eqn{C}.}
 \usage{
-estC(sigma, AI, diagonal = F)
+estC(sigma, AI)
 }
 \arguments{
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}}
 
 \item{AI}{a matrix of dimensions \eqn{p \times K}}
-
-\item{diagonal}{boolean indicating whether to only estimated diagonal elements of \eqn{C} (default = F)}
 }
 \value{
 an estimate of \eqn{C} of dimensions \eqn{K \times K}
@@ -21,5 +19,5 @@ If diagonal = True, estimate only diagonal elements.
 The estimate for \eqn{C}, \eqn{\hat{C}}, is given by the following:
 \deqn{\hat{C}_{aa} = \frac{1}{|\hat{I}_a|(|\hat{I}_a| - 1)} \sum_{i,j \in \hat{I}_a, i \neq j} |\hat{\Sigma}_{ij}|}
 \deqn{\hat{C}_{ab} = \frac{1}{|\hat{I}_a||\hat{I}_b|} \sum_{i \in \hat{I}_a, j \in \hat{I}_b} \hat{A}_{ia}\hat{A}_{ib}\hat{Sigma}_{ij}}
-for each \eqn{a \in [ \hat{K} ]} and \eqn{b \in [ \hat{K} ], b \neq a}
+for each \eqn{a \in [ \hat{K} ]} and \eqn{b \in [ \hat{K} ], b \neq a}.
 }

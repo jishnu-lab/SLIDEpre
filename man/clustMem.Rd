@@ -2,18 +2,18 @@
 % Please edit documentation in R/clustMem.R
 \name{clustMem}
 \alias{clustMem}
-\title{Feature Cluster Membership}
+\title{Feature Cluster Membership.}
 \usage{
 clustMem(feat, er_res)
 }
 \arguments{
 \item{feat}{a feature index}
 
-\item{er_res}{a list output by the function \link[EssReg]{plainER} or \link[EssReg]{priorER}}
+\item{er_res}{a list output by the function \link{plainER()}}
 }
 \value{
 a vector of cluster indices
 }
 \description{
-Function to find the clusters of which a given feature is a member
+Function to find the clusters of which a given feature is a member.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/threshA.R
 \name{threshA}
 \alias{threshA}
-\title{Threshold \eqn{A}}
+\title{Threshold \eqn{A}.}
 \usage{
 threshA(A, mu, scale = FALSE)
 }

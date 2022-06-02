@@ -10,18 +10,9 @@ plainER(
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
-  beta_est = "LS",
-  conf_int = T,
-  pred = T,
   lambda = 0.1,
   rep_cv = 50,
-  diagonal = F,
-  merge = F,
-  equal_var = F,
   alpha_level = 0.05,
-  support = NULL,
-  correction = T,
-  verbose = F,
   out_path = NULL
 )
 }
@@ -32,32 +23,16 @@ plainER(
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}}
 
-\item{delta}{\eqn{\delta}, a numerical constant used for thresholding}
+\item{delta}{\eqn{\delta}, a numerical value used for thresholding, or a vector of values}
 
 \item{thresh_fdr}{a numerical constant used for thresholding the correlation matrix to
 control the false discovery rate, default is 0.2}
-
-\item{beta_est}{a string indicating the type of estimation to use for \eqn{\beta}}
-
-\item{conf_int}{a boolean indicating whether to calculate confidence intervals for the \eqn{\beta} estimates}
-
-\item{pred}{a boolean indicating whether to do prediction}
 
 \item{lambda}{\eqn{\lambda}, a numerical constant used in thresholding}
 
 \item{rep_cv}{number of replicates for cross-validation}
 
-\item{diagonal}{a boolean indicating the diagonal structure of the data ???}
-
-\item{merge}{a boolean indicating the merge type}
-
-\item{equal_var}{a boolean indicating whether there is equal variance ??}
-
 \item{alpha_level}{\eqn{\alpha}, a numerical constant used in confidence interval calculation}
-
-\item{support}{a boolean ???}
-
-\item{correction}{a boolean flag indicating whether to perform Bonferroni multiple testing correction}
 
 \item{out_path}{a string path to where to save output}
 }

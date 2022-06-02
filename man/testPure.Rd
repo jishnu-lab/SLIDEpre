@@ -2,7 +2,7 @@
 % Please edit documentation in R/testPure.R
 \name{testPure}
 \alias{testPure}
-\title{Test Node Purity}
+\title{Test Node Purity.}
 \usage{
 testPure(sigma_row, row_ind, s_i, max_vals, max_inds, delta, se_est)
 }

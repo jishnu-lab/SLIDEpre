@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeHeatmap.R
 \name{makeHeatmap}
 \alias{makeHeatmap}
-\title{Create Matrix Heatmap}
+\title{Create Matrix Heatmap.}
 \usage{
 makeHeatmap(mat, title, cluster = T, names = F)
 }

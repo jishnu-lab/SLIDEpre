@@ -2,7 +2,7 @@
 % Please edit documentation in R/findSignPureNode.R
 \name{findSignPureNode}
 \alias{findSignPureNode}
-\title{Estimate Signed Subpartitions Of Pure Nodes}
+\title{Estimate Signed Subpartitions Of Pure Nodes.}
 \usage{
 findSignPureNode(pure_list, sigma)
 }

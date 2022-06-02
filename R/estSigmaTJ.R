@@ -1,4 +1,4 @@
-#' Estimate \eqn{\Sigma_{\hat{TJ}}}
+#' Estimate \eqn{\Sigma_{\hat{TJ}}}.
 #'
 #' Estimate the matrix, \eqn{\Sigma_{\hat{TJ}}}.
 #'

@@ -1,4 +1,4 @@
-#' Sign Permutation
+#' Sign Permutation.
 #'
 #' For a given integer \eqn{n}, generate its sign permutation.
 #'

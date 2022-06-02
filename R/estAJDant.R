@@ -1,4 +1,4 @@
-#' Estimation \eqn{A_J} (Dantzig)
+#' Estimation \eqn{A_J} (Dantzig).
 #'
 #' Estimate the matrix \eqn{A_J} with a Dantzig-type estimator.
 #'

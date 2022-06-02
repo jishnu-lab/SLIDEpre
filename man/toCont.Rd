@@ -2,7 +2,7 @@
 % Please edit documentation in R/toCont.R
 \name{toCont}
 \alias{toCont}
-\title{Categorical To Continuous Data}
+\title{Categorical To Continuous Data.}
 \usage{
 toCont(y)
 }
@@ -13,5 +13,5 @@ toCont(y)
 a list containing the old (categorical) \eqn{y} and the new (continuous) \eqn{y}
 }
 \description{
-Transform categorical response vector into continuous values
+Transform categorical response vector into continuous values.
 }

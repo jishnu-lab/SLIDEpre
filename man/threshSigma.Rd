@@ -2,7 +2,7 @@
 % Please edit documentation in R/threshSigma.R
 \name{threshSigma}
 \alias{threshSigma}
-\title{FDR Thresholding of \eqn{\hat{Sigma}}}
+\title{FDR Thresholding of \eqn{\hat{Sigma}}.}
 \usage{
 threshSigma(x, sigma, thresh)
 }

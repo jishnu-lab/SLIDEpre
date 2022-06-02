@@ -2,7 +2,7 @@
 % Please edit documentation in R/getOptPerm.R
 \name{getOptPerm}
 \alias{getOptPerm}
-\title{Find Best Column Permutation Matrices}
+\title{Find Best Column Permutation Matrices.}
 \usage{
 getOptPerm(A, B)
 }

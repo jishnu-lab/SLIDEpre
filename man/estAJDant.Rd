@@ -2,7 +2,7 @@
 % Please edit documentation in R/estAJDant.R
 \name{estAJDant}
 \alias{estAJDant}
-\title{Estimation \eqn{A_J} (Dantzig)}
+\title{Estimation \eqn{A_J} (Dantzig).}
 \usage{
 estAJDant(C_hat, sigma_TJ, lambda, se_est_J)
 }

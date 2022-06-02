@@ -1,4 +1,4 @@
-#' Merge Nodes (Intersection)
+#' Merge Nodes (Intersection). NOT USED ANYMORE
 #'
 #' Merge a group with other groups containing common nodes.
 #'

@@ -1,4 +1,4 @@
-#' Correlation p-values
+#' Correlation \eqn{p}-values.
 #'
 #' Compute the corresponding p-value for a given correlation, \eqn{r}, and sample size, \eqn{n}.
 #'

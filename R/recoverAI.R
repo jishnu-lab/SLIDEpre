@@ -1,4 +1,4 @@
-#' Find \eqn{A_I} From Pure Nodes
+#' Find \eqn{A_I} From Pure Nodes.
 #'
 #' Recover the estimated submatrix \eqn{A_I} by given the pure node group.
 #'

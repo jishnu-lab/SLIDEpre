@@ -2,7 +2,7 @@
 % Please edit documentation in R/recoverGroup.R
 \name{recoverGroup}
 \alias{recoverGroup}
-\title{Find Group Structure}
+\title{Find Group Structure.}
 \usage{
 recoverGroup(A)
 }

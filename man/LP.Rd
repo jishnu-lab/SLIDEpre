@@ -2,7 +2,7 @@
 % Please edit documentation in R/LP.R
 \name{LP}
 \alias{LP}
-\title{Linear Program Function}
+\title{Linear Program Function.}
 \usage{
 LP(y, lambda)
 }

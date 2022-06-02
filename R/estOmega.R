@@ -1,4 +1,4 @@
-#' Estimate \eqn{\Omega}
+#' Estimate \eqn{\Omega}.
 #'
 #' For a given \eqn{\lambda} and \eqn{C}, find \eqn{C^{-1}}.
 #'

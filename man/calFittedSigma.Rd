@@ -2,9 +2,9 @@
 % Please edit documentation in R/calFittedSigma.R
 \name{calFittedSigma}
 \alias{calFittedSigma}
-\title{Calculate Fitted Sigma}
+\title{Calculate Fitted Sigma.}
 \usage{
-calFittedSigma(sigma, delta, max_vals, max_inds, se_est, diagonal, merge)
+calFittedSigma(sigma, delta, max_vals, max_inds, se_est)
 }
 \arguments{
 \item{sigma}{a correlation matrix of dimensions \eqn{p \times p}}
@@ -16,10 +16,6 @@ calFittedSigma(sigma, delta, max_vals, max_inds, se_est, diagonal, merge)
 \item{max_inds}{vector of column indices at which the values in \code{max_vals} are achieved in \code{| sigma |}}
 
 \item{se_est}{the estimated standard errors}
-
-\item{diagonal}{a boolean indicating the diagonal structure}
-
-\item{merge}{a boolean indicating the merge style}
 }
 \value{
 a list containing a vector of the indices of the estimated pure variables and
