@@ -1,0 +1,41 @@
+---
+# path to .csv file for data matrix
+x_path: /Users/xiaoh/Desktop/Research/EssReg_Beta/BenchMark_plainER/x_preScale.csv
+# path to .csv file for response vector
+y_path: /Users/xiaoh/Desktop/Research/EssReg_Beta/BenchMark_plainER/check_y.csv
+# path to directory for saving results
+out_path: /Users/xiaoh/Desktop/Research/EssReg_Beta/BenchMark_plainER/
+# is y categorical?
+y_factor: FALSE
+# type of beta estimation - can be LS or NULL          
+beta_est: LS     
+# find confidence intervals for betas?         
+conf_int: TRUE          
+# estimate responses (do prediction)?  
+pred: TRUE
+# number of replicates for delta cross-validation  
+rep_cv: 10        
+# diagonal structure of data matrix?       
+diagonal: FALSE   
+# use intersection (FALSE) or union (TRUE) for merging        
+merge: FALSE   
+# do columns of data matrix have equal variance?           
+equal_var: FALSE   
+# alpha level for confidence intervals      
+alpha_level: 0.05   
+# literally no idea what this is      
+support: NULL    
+# do multiple testing correction?         
+correction: TRUE      
+# include print statements?       
+verbose: TRUE      
+# false discovery rate thresholding p-value cutoff      
+thresh_fdr: 0.2
+# other threshold
+thresh: 0.001
+# lambda
+lambda: 0.1
+# change entire row/column for important variables?          
+change_all: FALSE
+# delta
+delta: 0.01
