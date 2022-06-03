@@ -4,15 +4,10 @@
 \alias{parseRun}
 \title{Parse .yaml file for Essential Regression}
 \usage{
-parseRun(yaml_path, delta, nreps)
+parseRun(yaml_path)
 }
 \arguments{
 \item{yaml_path}{a string path to the .yaml file}
-
-\item{delta}{\eqn{\delta}, a numeric constant or vector of constants used in
-thresholding during node purity testing}
-
-\item{nreps}{number of replicates to do for cross-validation}
 }
 \value{
 none
