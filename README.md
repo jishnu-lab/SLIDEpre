@@ -1,8 +1,8 @@
-# EssReg_Beta
+# EssReg
 This repo is currently for in lab personnel only. 
 ## Installation
 ```R
-devtools::install_github("Hanxi-002/EssReg_Beta"
+devtools::install_github("Hanxi-002/EssReg"
                          ,ref="main"
                          ,auth_token = "tokenstring"
                          )
