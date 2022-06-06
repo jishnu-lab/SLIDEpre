@@ -29,6 +29,7 @@ pipelineER3 <- function(yaml_path) {
                      sel_corr = er_input$sel_corr,
                      y_factor = er_input$y_factor,
                      lambda = er_input$lambda,
+                     out_path = er_input$out_path,
                      rep_cv = er_input$rep_cv,
                      alpha_level = er_input$alpha_level,
                      thresh_fdr = er_input$thresh_fdr)
