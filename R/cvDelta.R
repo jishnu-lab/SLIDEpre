@@ -19,7 +19,8 @@ cvDelta <- function(raw_x, fdr_entries, deltas_scaled) {
   n <- nrow(raw_x); p <- ncol(raw_x)
 
   #### split data into training/validation sets
-  samp_ind <- sample(n, floor(n / 2))
+  samp_ind <- sample(1:n)
+  samp_ind <- samp_ind[1:ceiling(2 * n / 3)]
   x_train <- raw_x[samp_ind, ]
   x_val <- raw_x[-samp_ind, ]
 
