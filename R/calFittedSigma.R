@@ -18,8 +18,7 @@ calFittedSigma <- function(sigma, delta, max_vals, max_inds, se_est) {
                              delta = delta,
                              max_vals = max_vals,
                              max_inds = max_inds,
-                             se_est = se_est,
-                             merge = merge)
+                             se_est = se_est)
   pure_list <- pure_nodes$pure_list
 
   if (singleton(pure_list = pure_list)) {
