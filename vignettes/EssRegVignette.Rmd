@@ -1,5 +1,5 @@
 ---
-title: "Essential Regression Pipeline Vignette"
+title: "Essential Regression Vignette"
 output: 
   html_document:
     toc: true
@@ -8,7 +8,7 @@ output:
     theme: flatly
     highlight: tango
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{EssReg Vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
