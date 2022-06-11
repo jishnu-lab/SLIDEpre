@@ -9,5 +9,5 @@ registerDoParallel(cores)
 cat('number of cores using', cores, '. . .\n')
 
 yaml_path = '/ihome/djishnu/xiaoh/Lafyatis/All_Cell_Type/HER_041422/ER_Config_Step1_2.yml'
-pipelineER1(yaml_path)
+pipelineER1(yaml_path, "all")
 

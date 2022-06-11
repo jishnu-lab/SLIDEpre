@@ -34,8 +34,8 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
 
   ## create output directory
-  new_dir <- paste0(out_path, "replicate", rep, "/")
-  dir.create(file.path(new_dir), showWarnings = F, recursive = T)
+  #new_dir <- paste0(out_path, "replicate", rep, "/")
+  #dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
   ## divide into folds
   ## first part is partition()
@@ -166,7 +166,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
       }
 
-      save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
+      #save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
 
       if (sel_corr) { ## if using correlation to evaluate model fit
         method_res <- results[[method_j]]
@@ -203,7 +203,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     res_df <- res_df %>%
       as.data.frame() %>%
       dplyr::mutate(spearman_corr = as.numeric(as.character(spearman_corr)))
-    saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
+    #saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
     return (res_df)
   } else {
     if (eval_type == "mse") {
@@ -221,7 +221,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                          mean_tpr = mean(as.numeric(tpr)),
                          mean_fpr = mean(as.numeric(fpr)))
     }
-    saveRDS(results, file = paste0(new_dir, "output_table.rds"))
+    #saveRDS(results, file = paste0(new_dir, "output_table.rds"))
     return (results)
   }
 }

@@ -8,6 +8,6 @@ if(is.na(cores)) cores <- detectCores()
 registerDoParallel(cores)
 cat('number of cores using', cores, '. . .\n')
 
-yaml_path = '/ihome/djishnu/xiaoh/Lafyatis/All_Cell_Type/HER_041422/ER_Config_Step3_4.yml'
-pipelineER2(yaml_path)
+yaml_path = '/Users/xiaoh/Desktop/Research/EssReg/ER_Example/pipeline2.yaml'
+pipelineER2(yaml_path, "all")
 

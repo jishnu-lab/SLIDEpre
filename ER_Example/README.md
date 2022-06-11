@@ -15,3 +15,8 @@ Please carefull review the Vigenette before trying this example.
 
 ###Step1 & Step2 (Output Files):
 1. All the output files for Step1 and Step2 is in the results_1 folder. The Vigenette contains information and explanation of what these output files entail. 
+
+###Step3 & Step4 (Scripts):
+
+1. The *pipelineER2* function runs the last **2** steps of the ER Pipeline. To call the pipelineER1 function, please see the `run_ERPipeS2.R`.
+2. *pipelineER2* function takes in a string that is a path to a yml file. See `pipeline2.yaml` for an example of the configuration file. 
