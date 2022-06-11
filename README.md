@@ -5,6 +5,7 @@ This repo is currently for in lab personnel only.
 devtools::install_github("Hanxi-002/EssReg"
                          ,ref="main"
                          ,auth_token = "tokenstring"
+			 ,build_vignettes=TRUE
                          )
 ```
 
