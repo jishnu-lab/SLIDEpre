@@ -58,6 +58,8 @@ This implementation of Essential Regression and its related functions all assume
 
 If using the pipeline, the data should be provided as `.csv` files (alternative file formats coming soon). Column names are encouraged, and row names are optional. However, it is important that the column and row names are, in fact, column and row names rather than an extra column or row in the matrices themselves. If your data has row names as column #1 or column names as row #1, please remove them. 
 
+Finally, `plainER()` takes solely numerical data. If your response is categorical or ordinal, please take the time to transform it into a continuous variable. The `EssReg` package provides the `toCont()` function to assist in the transformation. `toCont()` has two arguments, `y` (the categorical response vector) and `order` (an optional argument that provides the levels of `y` in vector form). The function will return a list including the categorical and continuous versions of `y` as well as the mapping performed. 
+
 As an example, we use a dataset of expression measurements of 892 genes from 24 patients. $\mathbf{Y}$ is the Modified Rodnan Skin Score. This dataset is included in the `priorER` package:
 ```{r data-load}
 data(x_data); data(y_data)
@@ -195,9 +197,7 @@ We also provide a cross-validation regime based upon `K-CV()` in the original Es
 - `k`: The number of folds to use for training/validation set creation.
 - `sel_corr`: A boolean flag indicating whether to evaluate models using the Spearman correlation between $\mathbf{Y}$ and $\hat{\mathbf{Y}}$ or to use MSE/AUC. 
 - `y_factor`: A boolean flag indicating whether `y` is categorical (`TRUE`) or continuous (`FALSE`).
-- `priors`: (For `priorER()`), a vector of the important feature/variable indices.
 - `perm_option`: A string indicating the type of permutation test do perform. Can be `NULL` for no permutations, `x` to permute the columns of `x`, `y` to permute the entries of `y`, `xy` to permute `x` and `y`, or `ybs` to permute the entries of `y` before splitting into training/validation sets. 
-- `change_all`: (For `priorER()`), a boolean flag indicating whether to change $\hat{\Sigma}$ minimally (`FALSE`) or to change all entries (`TRUE`).
 - `rep`: The replicate number. This is only used for saving intermediate output during cross-validation.
 
 -----
@@ -255,7 +255,8 @@ x_path: /path/to/x_data   # path to .csv file for data matrix
 y_path: /path/to/y_data   # path to .csv file for response vector
 out_path: /output/path/   # path to directory for saving results
 k: 5                      # number of folds for cross-validation
-priors: NULL              # list of important variables for priorER()
+y_factor: F               # is y a categorical variable?
+y_order: NULL             # if y is ordinal, provide the levels
 rep_cv: 50                # number of replicates for cross-validation for delta
 sel_corr: TRUE            # perform evaluation using Spearman correlation?
 nreps: 10                 # number of replicates for cross-validation in step 2
@@ -284,7 +285,7 @@ k: 5                       # number of folds for cross-validation
 delta: 0.03                # chosen delta (or delta grid for fine search)
 lambda: [0.1, 0.5, 1, 1.5] # lambda grid
 y_factor: FALSE            # is y categorical?
-priors: NULL               # list of important variables for prior ER
+y_order: NULL              # if y is ordinal, provide the levels
 rep_cv: 50                 # number of replicates for cross-validation for delta
 nreps: 10                  # number of replicates for cross-validation in step 4
 sel_corr: TRUE             # evaluate with Spearman correlation?

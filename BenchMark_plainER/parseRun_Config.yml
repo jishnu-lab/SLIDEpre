@@ -3,6 +3,7 @@ x_path: BenchMark_plainER/x_preScale.csv # path to .csv file for data matrix
 y_path: BenchMark_plainER/check_y.csv    # path to .csv file for response vector\
 out_path: BenchMark_plainER/             # path to directory for saving results
 y_factor: FALSE                          # is y categorical?
+y_order: NULL                            # if y is ordinal, provide the levels
 rep_cv: 10                               # number of replicates for delta cross-validation  
 alpha_level: 0.05                        # alpha level for confidence intervals      
 thresh_fdr: 0.2                          # false discovery rate thresholding p-value cutoff

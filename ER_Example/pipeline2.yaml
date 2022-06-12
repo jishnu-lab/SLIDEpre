@@ -4,6 +4,7 @@ y_path: ER_Example/check_y.csv     # path to .csv file for response vector
 out_path: ER_Example/results/      # path to directory for saving results
 k: 4                               # number of folds for cross-validation   
 y_factor: FALSE                    # is y categorical?
+y_order: NULL                            # if y is ordinal, provide the levels
 rep_cv: 5                          # number of replicates for non-supervised cross-validation  
 nreps: 3                           # number of replicates for supervised cross-validation
 alpha_level: 0.05                  # alpha level for confidence intervals       

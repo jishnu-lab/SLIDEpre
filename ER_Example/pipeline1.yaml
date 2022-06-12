@@ -4,6 +4,7 @@ y_path: ER_Example/check_y.csv         # path to .csv file for response vector
 out_path: EssReg/ER_Example/results/   # path to directory for saving results
 k: 5                                   # number of folds for cross-validation
 y_factor: FALSE                        # is y categorical?
+y_order: NULL                            # if y is ordinal, provide the levels
 rep_cv: 50                             # number of replicates for cross-validation for delta
 nreps: 10                              # number of replicates for cross-validation in step 2
 alpha_level: 0.05                      # alpha level for confidence intervals
