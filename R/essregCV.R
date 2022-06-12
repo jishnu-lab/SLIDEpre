@@ -133,6 +133,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       valid_x_std <- stands$valid_x
       valid_y_std <- stands$valid_y
 
+      centers_y <- attr(train_y_std, "scaled:center")
+      scales_y <- attr(train_y_std, "scaled:scale")
+
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         res <- plainER(y = train_y,
                        x = train_x,
@@ -147,7 +150,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         pred_all_betas <- res$pred$er_predictor
         beta_train <- train_x_std %*% pred_all_betas
         beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- beta_valid
+        pred_vals <- t((t(beta_valid) - centers_y) / scales_y)
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
           res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)
@@ -164,6 +167,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         beta_train <- train_x_std[, sub_beta_hat]
         beta_valid <- valid_x_std[, sub_beta_hat, drop = F]
         pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
+        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       }
 
       #save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
@@ -174,11 +178,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         results[[method_j]] <- method_res
       } else {
         if (eval_type == "auc") {
-          pred_obj <- prediction(pred_vals, valid_y_std)
-          perf_rates <- performance(pred_obj, "tpr", "fpr")
-          perf_auc <- performance(pred_vals, "auc")
+          pred_obj <- ROCR::prediction(pred_vals, valid_y_std)
+          perf_auc <- ROCR::performance(pred_obj, "auc")
           auc <- as.numeric(perf_auc@y.values)
-          iter_res <- c(i, method_j, auc, perf@y.values[[1]], perf@xvalues[[1]])
+          iter_res <- c(i, method_j, auc)
           results <- rbind(results, iter_res)
         } else {
           mse <- mean((valid_y_std - pred_vals)^2)
@@ -213,13 +216,11 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         dplyr::group_by(method) %>%
         dplyr::summarise(mean_mse = mean(as.numeric(mse)))
     } else {
-      colnames(results) <- c("fold", "method", "auc", "tpr", "fpr")
+      colnames(results) <- c("fold", "method", "auc")
       results <- as.data.frame(results)
       results <- results %>%
         dplyr::group_by(method) %>%
-        dplyr::summarise(mean_auc = mean(as.numeric(auc)),
-                         mean_tpr = mean(as.numeric(tpr)),
-                         mean_fpr = mean(as.numeric(fpr)))
+        dplyr::summarise(mean_auc = mean(as.numeric(auc)))
     }
     #saveRDS(results, file = paste0(new_dir, "output_table.rds"))
     return (results)

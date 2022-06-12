@@ -1,19 +1,15 @@
 ---
-x_path: /Users/xiaoh/Desktop/Research/EssReg_Beta/ER_Example/x_preScale.csv  # path to .csv file for data matrix
-y_path: /Users/xiaoh/Desktop/Research/EssReg_Beta/ER_Example/check_y.csv  # path to .csv file for response vector
-out_path: /Users/xiaoh/Desktop/Research/EssReg/ER_Example/results/    # path to directory for saving results
-k: 4                  # number of folds for cross-validation   
-y_factor: FALSE       # is y categorical?
-priors: NULL          # list of important variables for prior ER
-beta_est: LS          # type of beta estimation - can be LS or NULL 
-rep_cv: 5             # number of replicates for non-supervised cross-validation  
-nreps: 3              # number of replicates for supervised cross-validation
-alpha_level: 0.05     # alpha level for confidence intervals      
-correction: T         # do multiple testing correction?
-verbose: TRUE         # include print statements?       
-thresh_fdr: 0.2       # false discovery rate thresholding p-value cutoff      
-sel_corr: TRUE        # select optimal parameter values by correlation?
-perm_option: "y"      # permutation test type
-lambda: [0.1, 0.5, 1] # lambda, should be multiple values for step 4
-delta: 0.001     # The best delta chosen from step 1 and step 2. If running step 3, a fine grid will be constructed.
+x_path: ER_Example/x_preScale.csv  # path to .csv file for data matrix
+y_path: ER_Example/check_y.csv     # path to .csv file for response vector
+out_path: ER_Example/results/      # path to directory for saving results
+k: 4                               # number of folds for cross-validation   
+y_factor: FALSE                    # is y categorical?
+rep_cv: 5                          # number of replicates for non-supervised cross-validation  
+nreps: 3                           # number of replicates for supervised cross-validation
+alpha_level: 0.05                  # alpha level for confidence intervals       
+thresh_fdr: 0.2                    # false discovery rate thresholding p-value cutoff      
+sel_corr: TRUE                     # select optimal parameter values by correlation?
+perm_option: "y"                   # permutation test type
+lambda: [0.1, 0.5, 1]              # lambda, should be multiple values for step 4
+delta: 0.001                       # The best delta chosen from step 1 and step 2. If running step 3, a fine grid will be constructed.
 

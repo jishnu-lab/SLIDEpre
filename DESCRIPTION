@@ -1,6 +1,6 @@
 Package: EssReg
 Type: Package
-Title: R Implementation of Essential Regression
+Title: R Implementation of Essential Regression and the Essential Regression Pipeline
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>

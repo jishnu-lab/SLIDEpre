@@ -1,16 +1,12 @@
 ---
-x_path: /Users/xiaoh/Desktop/Research/EssReg/ER_Example/x_preScale.csv      # path to .csv file for data matrix
-y_path: /Users/xiaoh/Desktop/Research/EssReg/ER_Example/check_y.csv      # path to .csv file for response vector
-out_path: /Users/xiaoh/Desktop/Research/EssReg/ER_Example/results/  # path to directory for saving results
-k: 5                      # number of folds for cross-validation
-y_factor: FALSE           # is y categorical?
-priors: NULL              # list of important variables for prior ER
-beta_est: LS              # type of beta estimation - can be LS or NULL
-rep_cv: 50                # number of replicates for cross-validation for delta
-nreps: 10                 # number of replicates for cross-validation in step 2
-alpha_level: 0.05         # alpha level for confidence intervals
-correction: T             # do multiple testing correction?
-verbose: TRUE             # include print statements?
-thresh_fdr: 0.2           # false discovery rate thresholding p-value cutoff
-sel_corr: TRUE            # select optimal parameter values by correlation?
-perm_option: "y"          # permutation test type
+x_path: ER_Example/x_preScale.csv      # path to .csv file for data matrix
+y_path: ER_Example/check_y.csv         # path to .csv file for response vector
+out_path: EssReg/ER_Example/results/   # path to directory for saving results
+k: 5                                   # number of folds for cross-validation
+y_factor: FALSE                        # is y categorical?
+rep_cv: 50                             # number of replicates for cross-validation for delta
+nreps: 10                              # number of replicates for cross-validation in step 2
+alpha_level: 0.05                      # alpha level for confidence intervals
+thresh_fdr: 0.2                        # false discovery rate thresholding p-value cutoff
+sel_corr: TRUE                         # select optimal parameter values by correlation?
+perm_option: "y"                       # permutation test type
