@@ -3,12 +3,17 @@
 #' Transform categorical response vector into continuous values.
 #'
 #' @param y a response vector of dimension \eqn{n} of categorical values
+#' @param order a vector indicating the level ordering of \eqn{y}
 #' @return a list containing the old (categorical) \eqn{y} and the new (continuous) \eqn{y}
 #' @export
 
-toCont <- function(y) {
+toCont <- function(y, order = NULL) {
   y <- unlist(y)
-  uniq_vals <- unique(y)
+  if (is.null(order)) {
+    uniq_vals <- unique(y)
+  } else {
+    uniq_vals <- order
+  }
   num_uniq <- length(uniq_vals)
   cont_vals <- seq(1, num_uniq)
   corresp_vals <- cbind(uniq_vals, cont_vals)

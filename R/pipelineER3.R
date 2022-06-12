@@ -19,6 +19,13 @@ pipelineER3 <- function(yaml_path) {
 
   dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
 
+  if (er_input$y_factor) {
+    y <- toCont(y, er_input$y_order)
+    saveRDS(y, file = paste0(er_input$out_path, "pipeline2_y_mapping.rds"))
+    orig_y <- y$cat_y
+    y <- y$cont_y
+  }
+
   ##  Step 5: K-Fold Cross-Validation With Optimal Delta and Lambda  ###########
   foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
     temp <- essregCV(k = er_input$k,
