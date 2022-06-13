@@ -5,14 +5,12 @@ This repo is currently for in lab personnel only.
 devtools::install_github("Hanxi-002/EssReg"
                          ,ref="main"
                          ,auth_token = "tokenstring"
-			 ,build_vignettes=TRUE
                          )
 ```
 
 [How to generate an authentification token?](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 ## Vignette
-To view the vignette, first make sure you have installed the package with `build_vignettes=TRUE`. 
-Then, within R or RStudio, enter the command `browseVignettes("EssReg")`. This will pull up a directory in your browser with all of the vignettes for the `EssReg` package (there is currently only one). Click on `HTML`, and the vignette should load in a new tab for your viewing.
+The vignette is available in the main directory of the package as `EssRegVignette.html`. It should open in a browser.
 ## Pipeline Description
 ### Concept
 
