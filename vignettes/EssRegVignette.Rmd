@@ -17,6 +17,12 @@ vignette: >
 
 ```{r setup, echo = F, warning = F, message = F}
 knitr::opts_chunk$set(echo = TRUE)
+package_list <- c("matrixcalc", "readr", "ROCR", "e1071", "dplyr", "doParallel", "foreach",
+                  "scales", "doRNG", "matlib", "BAS", "gmp", "clusterGeneration")
+need_install <- package_list[!(package_list %in% installed.packages()[,"Package"])]
+if (length(need_install) > 0) {
+  install.packages(need_install)
+}
 ```
 
 Before beginning, please ensure that the following packages are installed and libraries are loaded. 
@@ -33,13 +39,11 @@ library(dplyr)
 library(doParallel)
 library(foreach)
 library(scales)
-library(clusterGeneration)
 library(doRNG)
 library(matlib)
 library(BAS)
 library(gmp)
 library(EssReg)
-library(priorER) ## only needed for example dataset
 ```
 
 We also recommend running some of these function in parallel. We prepare the environment for this using the following code:
@@ -58,11 +62,12 @@ This implementation of Essential Regression and its related functions all assume
 
 If using the pipeline, the data should be provided as `.csv` files (alternative file formats coming soon). Column names are encouraged, and row names are optional. However, it is important that the column and row names are, in fact, column and row names rather than an extra column or row in the matrices themselves. If your data has row names as column #1 or column names as row #1, please remove them. 
 
-Finally, `plainER()` takes solely numerical data. If your response is categorical or ordinal, please take the time to transform it into a continuous variable. The `EssReg` package provides the `toCont()` function to assist in the transformation. `toCont()` has two arguments, `y` (the categorical response vector) and `order` (an optional argument that provides the levels of `y` in vector form). The function will return a list including the categorical and continuous versions of `y` as well as the mapping performed. 
+Finally, `plainER()` takes solely numerical data. If your response is categorical or ordinal, please take the time to transform it into a continuous variable. The `EssReg` package provides the `toCont()` function to assist in the transformation. `toCont()` has two arguments, `y` (the categorical response vector) and `order` (an optional argument that provides the levels of `y` in vector form). As an example, if you had injury severity as a response, then you could supply to `order` the vector `c("Mild", "Moderate", "Severe")`. The function will return a list including the categorical and continuous versions of `y` as well as the mapping performed. 
 
-As an example, we use a dataset of expression measurements of 892 genes from 24 patients. $\mathbf{Y}$ is the Modified Rodnan Skin Score. This dataset is included in the `priorER` package:
+As an example, we use a dataset of expression measurements of 892 genes from 24 patients. $\mathbf{Y}$ is the Modified Rodnan Skin Score. This dataset is included in the package:
 ```{r data-load}
-data(x_data); data(y_data)
+x_data <- load("vignette/x_data.rda")
+y_data <- load("vignette/y_data.rda")
 ```
 
 -----
@@ -256,7 +261,7 @@ y_path: /path/to/y_data   # path to .csv file for response vector
 out_path: /output/path/   # path to directory for saving results
 k: 5                      # number of folds for cross-validation
 y_factor: F               # is y a categorical variable?
-y_order: NULL             # if y is ordinal, provide the levels
+y_order: NULL             # if y is ordinal, provide the levels (Ex: ["Mild", "Moderate", "Severe"])
 rep_cv: 50                # number of replicates for cross-validation for delta
 sel_corr: TRUE            # perform evaluation using Spearman correlation?
 nreps: 10                 # number of replicates for cross-validation in step 2
@@ -285,7 +290,7 @@ k: 5                       # number of folds for cross-validation
 delta: 0.03                # chosen delta (or delta grid for fine search)
 lambda: [0.1, 0.5, 1, 1.5] # lambda grid
 y_factor: FALSE            # is y categorical?
-y_order: NULL              # if y is ordinal, provide the levels
+y_order: NULL              # if y is ordinal, provide the levels (Ex: ["Mild", "Moderate", "Severe"])
 rep_cv: 50                 # number of replicates for cross-validation for delta
 nreps: 10                  # number of replicates for cross-validation in step 4
 sel_corr: TRUE             # evaluate with Spearman correlation?
