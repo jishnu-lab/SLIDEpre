@@ -10,7 +10,7 @@ devtools::install_github("Hanxi-002/EssReg"
 
 [How to generate an authentification token?](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 ## Vignette
-The vignette is available in the main directory of the package as `EssRegVignette.html`. It should open in a browser.
+The vignette is available in raw format in the main directory of the package as `EssRegVignette.html`. To view it, go to [this link](https://hanxi-002.github.io/).
 ## Pipeline Description
 ### Concept
 
