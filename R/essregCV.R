@@ -54,6 +54,38 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
   group_inds <- extract
 
+  y_groups <- NULL
+  for (i in 1:length(group_inds)) {
+    y_groups[[length(y_groups) + 1]] <- y[unlist(group_inds[[i]])]
+  }
+  group_vars <- sapply(y_groups, sd) ## get standard deviation of responses
+  zero_in <- 0 %in% group_vars ## see if any are 0
+
+  while (zero_in) { ## if any are 0, redo the fold divisions
+    ## first part is partition()
+    total_num <- nrow(x)
+    num_group <- k
+    remainder <- total_num %% num_group # get the remainder
+    num_per_group <- total_num %/% num_group
+    partition <- rep(num_per_group, num_group) + c(rep(1, remainder), rep(0, num_group - remainder))
+    ## second part is extract()
+    pre_vec <- sample(1:nrow(x))
+    extract <- vector("list", length(partition))
+    extract[[1]] <- pre_vec[1:partition[1]]
+    for (i in 2:length(partition)) {
+      temp_ind <- sum(partition[1:(i - 1)]) + 1
+      extract[[i]] <- pre_vec[temp_ind:(temp_ind + partition[i] - 1)]
+    }
+    group_inds <- extract
+
+    y_groups <- NULL
+    for (i in 1:length(group_inds)) {
+      y_groups[[length(y_groups) + 1]] <- y[unlist(group_inds[[i]])]
+    }
+    group_vars <- sapply(y_groups, sd) ## get standard deviation of responses
+    zero_in <- 0 %in% group_vars ## see if any are 0
+  }
+
   ## methods list
   methods <- c("plainER", "lasso")
 
