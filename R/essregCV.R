@@ -197,9 +197,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         }
         ## get things for svm
         beta_train <- train_x_std[, sub_beta_hat]
-        beta_valid <- valid_x_std[, sub_beta_hat, drop = F]
+        beta_valid <- valid_x_std[, sub_beta_hat]
         pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
         pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+        cat("lasso", pred_vals)
       }
 
       #save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
