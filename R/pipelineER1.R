@@ -75,6 +75,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                            out_path = er_input$out_path,
                            rep = j)
         }
+        temp
       } -> delta_rep
       saveRDS(delta_rep, file = paste0(er_input$out_path, "delta_", mag_delta, "pipeline_step2.rds"))
 
@@ -146,6 +147,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                              out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
                              rep = j)
           }
+          temp
         } -> delta_rep
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
