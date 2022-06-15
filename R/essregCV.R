@@ -224,6 +224,8 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     }
   }
 
+  return(1)
+
   ## set results data frame column names
   if (sel_corr) {
     res_df <- NULL

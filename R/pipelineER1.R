@@ -151,7 +151,6 @@ pipelineER1 <- function(yaml_path, steps = "all") {
         } -> delta_rep
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
-      cat(". . . finished DELTA = ", mag_delta, "\n")
       ## make CV plot
       if (!is.null(er_input$perm_option)) {
         sel_corr_res <- delta_rep %>%
