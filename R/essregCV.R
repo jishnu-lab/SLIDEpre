@@ -204,23 +204,23 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
 
       #save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
 
-      # if (sel_corr) { ## if using correlation to evaluate model fit
-      #   method_res <- results[[method_j]]
-      #   method_res[[length(method_res) + 1]] <- cbind(valid_y_std, pred_vals)
-      #   results[[method_j]] <- method_res
-      # } else {
-      #   if (eval_type == "auc") {
-      #     pred_obj <- ROCR::prediction(pred_vals, valid_y_std)
-      #     perf_auc <- ROCR::performance(pred_obj, "auc")
-      #     auc <- as.numeric(perf_auc@y.values)
-      #     iter_res <- c(i, method_j, auc)
-      #     results <- rbind(results, iter_res)
-      #   } else {
-      #     mse <- mean((valid_y_std - pred_vals)^2)
-      #     iter_res <- c(i, method_j, mse)
-      #     results <- rbind(results, iter_res)
-      #   }
-      # }
+      if (sel_corr) { ## if using correlation to evaluate model fit
+        method_res <- results[[method_j]]
+        method_res[[length(method_res) + 1]] <- cbind(valid_y_std, pred_vals)
+        results[[method_j]] <- method_res
+      } else {
+        if (eval_type == "auc") {
+          pred_obj <- ROCR::prediction(pred_vals, valid_y_std)
+          perf_auc <- ROCR::performance(pred_obj, "auc")
+          auc <- as.numeric(perf_auc@y.values)
+          iter_res <- c(i, method_j, auc)
+          results <- rbind(results, iter_res)
+        } else {
+          mse <- mean((valid_y_std - pred_vals)^2)
+          iter_res <- c(i, method_j, mse)
+          results <- rbind(results, iter_res)
+        }
+      }
     }
   }
 
