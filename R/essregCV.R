@@ -255,10 +255,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       spear_corr <- cor(unlist_method_res[, 1], unlist_method_res[, 2], method = "spearman") ## calc spearman corr
       res_df <- rbind(res_df, c(method, spear_corr))
     }
-    colnames(res_df) <- c("method", "spearman_corr")
+    colnames(res_df) <- c("method", "spear_corr")
     res_df <- res_df %>%
       as.data.frame() %>%
-      dplyr::mutate(spearman_corr = as.numeric(as.character(spear_corr)))
+      dplyr::mutate(spear_corr = as.numeric(as.character(spear_corr)))
     # saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
     return (res_df)
   } else {
