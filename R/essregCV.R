@@ -18,6 +18,9 @@
 #' @param lambda \eqn{\lambda}, a numerical constant used in thresholding
 #' @param rep_cv number of replicates for cross-validation
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
+#' @param lasso a boolean flag indicating whether to test LASSO
+#' @param plsr a boolean flag indicating whether to test PLSR
+#' @param pcr a boolean flag indicating whether to test PCR
 #' @param rep an integer indicating the replicate number
 #' @param out_path path for saving output
 #' @return An object of class \sQuote{data.frame}
@@ -25,6 +28,7 @@
 
 essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, perm_option = NULL,
+                     lasso = T, plsr = T, pcr = T,
                      sel_corr = T, y_factor = F, out_path, rep) {
 
   if (y_factor) {
@@ -105,7 +109,17 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
 
   ## methods list
-  methods <- c("plainER", "lasso")
+  methods <- c("plainER")
+
+  if (lasso) {
+    methods <- c(methods, "lasso")
+  }
+  if (plsr) {
+    methods <- c(methods, "plsr")
+  }
+  if (pcr) {
+    methods <- c(methods, "pcr")
+  }
 
   if (!is.null(perm_option)) {
     if (perm_option == "x") { ## permute columns of x
@@ -198,12 +212,23 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         if (is.null(res)) {
           return (NULL)
         }
-
         ## get things for svm
         pred_all_betas <- res$pred$er_predictor
         beta_train <- train_x_std %*% pred_all_betas
         beta_valid <- valid_x_std %*% pred_all_betas
         pred_vals <- t((t(beta_valid) - centers_y) / scales_y)
+      } else if (grepl(x = method_j, pattern = "plsr", fixed = TRUE)) { ## PLSR
+        res <- pls::plsr(train_y_std ~ train_x_std, validation = "CV", segments = 5)
+        n_comp <- pls::selectNcomp(res, method = "randomization")
+        n_comp <- ifelse(n_comp == 0, 1, n_comp)
+        pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
+        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+      } else if (grepl(x = method_j, pattern = "pcr", fixed = TRUE)) { ## PCR
+        res <- pls::pcr(train_y_std ~ train_x_std, validation = "CV", segments = 5)
+        n_comp <- pls::selectNcomp(res, method = "randomization")
+        n_comp <- ifelse(n_comp == 0, 1, n_comp)
+        pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
+        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
           res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)

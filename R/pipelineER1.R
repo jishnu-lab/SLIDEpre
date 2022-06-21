@@ -80,6 +80,9 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                alpha_level = er_input$alpha_level,
                                thresh_fdr = er_input$thresh_fdr,
                                out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
+                               lasso = er_input$lasso,
+                               pcr = er_input$pcr,
+                               plsr = er_input$plsr,
                                rep = j)
           }
           result
@@ -176,6 +179,9 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
                                  out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
+                                 lasso = er_input$lasso,
+                                 pcr = er_input$pcr,
+                                 plsr = er_input$plsr,
                                  rep = j)
             }
             result

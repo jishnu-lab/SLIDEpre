@@ -41,6 +41,9 @@ pipelineER3 <- function(yaml_path) {
                        out_path = er_input$out_path,
                        rep_cv = er_input$rep_cv,
                        alpha_level = er_input$alpha_level,
+                       lasso = er_input$lasso,
+                       pcr = er_input$pcr,
+                       plsr = er_input$plsr,
                        thresh_fdr = er_input$thresh_fdr)
     }
     temp

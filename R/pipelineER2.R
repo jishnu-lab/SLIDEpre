@@ -87,6 +87,9 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
+                                 lasso = er_input$lasso,
+                                 pcr = er_input$pcr,
+                                 plsr = er_input$plsr,
                                  rep = j)
             }
             result
@@ -194,6 +197,9 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
+                                 lasso = er_input$lasso,
+                                 pcr = er_input$pcr,
+                                 plsr = er_input$plsr,
                                  rep = j)
             }
             result
