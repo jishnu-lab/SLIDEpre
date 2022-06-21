@@ -21,25 +21,29 @@ pipelineER3 <- function(yaml_path) {
 
   if (er_input$y_factor) {
     y <- toCont(y, er_input$y_order)
-    saveRDS(y, file = paste0(er_input$out_path, "pipeline2_y_mapping.rds"))
+    saveRDS(y, file = paste0(er_input$out_path, "pipeline3_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
   }
 
   ##  Step 5: K-Fold Cross-Validation With Optimal Delta and Lambda  ###########
   foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-    temp <- essregCV(k = er_input$k,
-                     x = x,
-                     y = y,
-                     delta = er_input$best_delta,
-                     perm_option = er_input$perm_option,
-                     sel_corr = er_input$sel_corr,
-                     y_factor = er_input$y_factor,
-                     lambda = er_input$lambda,
-                     out_path = er_input$out_path,
-                     rep_cv = er_input$rep_cv,
-                     alpha_level = er_input$alpha_level,
-                     thresh_fdr = er_input$thresh_fdr)
+    temp <- NULL
+    while (is.null(temp)) {
+      temp <- essregCV(k = er_input$k,
+                       x = x,
+                       y = y,
+                       delta = er_input$best_delta,
+                       perm_option = er_input$perm_option,
+                       sel_corr = er_input$sel_corr,
+                       y_factor = er_input$y_factor,
+                       lambda = er_input$lambda,
+                       out_path = er_input$out_path,
+                       rep_cv = er_input$rep_cv,
+                       alpha_level = er_input$alpha_level,
+                       thresh_fdr = er_input$thresh_fdr)
+    }
+    temp
   } -> lambda_rep
   saveRDS(lambda_rep, paste0(er_input$out_path, "pipeline_step5.RDS"))
 
@@ -49,9 +53,21 @@ pipelineER3 <- function(yaml_path) {
     dplyr::mutate(method = as.factor(method))
   pdf_file <- paste0(er_input$out_path, "/opt_delta_lambda_boxplot.pdf")
   dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-  lambda_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                    ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
-    ggplot2::geom_boxplot()
+
+  if (er_input$sel_corr) {
+    lambda_boxplot <- ggplot2::ggplot(data = bp_df,
+                                      ggplot2::aes(x = method, y = spear_corr, fill = method)) +
+      ggplot2::geom_boxplot()
+  } else if (er_input$y_factor) {
+    lambda_boxplot <- ggplot2::ggplot(data = bp_df,
+                                      ggplot2::aes(x = method, y = mean_auc, fill = method)) +
+      ggplot2::geom_boxplot()
+  } else {
+    lambda_boxplot <- ggplot2::ggplot(data = bp_df,
+                                      ggplot2::aes(x = method, y = mean_mse, fill = method)) +
+      ggplot2::geom_boxplot()
+  }
+
   ggplot2::ggsave(pdf_file, lambda_boxplot)
 
   ## Final plainER Run #########################################################
@@ -64,6 +80,11 @@ pipelineER3 <- function(yaml_path) {
                        alpha_level = er_input$alpha_level,
                        thresh_fdr = er_input$thresh_fdr,
                        out_path = er_input$out_path)
+
+  if (is.null(er_output)) {
+    cat("plainER failed --- infeasible linear program \n")
+    return ()
+  }
 
   saveRDS(final_output, paste0(er_input$out_path, "final_delta", er_input$delta, "_lambda", er_input$lambda, ".rds"))
 }

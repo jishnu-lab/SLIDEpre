@@ -145,6 +145,9 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
       AJ <- estAJDant(C_hat = C_hat, sigma_TJ = sigma_TJ,
                       lambda = opt_lambda * opt_delta * sigma_bar_sup,
                       se_est_J = sigma_bar_sup + se_est[-I_hat])
+      if (is.null(AJ)) {
+        return (NULL)
+      }
     } else {
       AJ <- t(solve(C_hat, sigma_TJ))
     }

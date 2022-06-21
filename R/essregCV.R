@@ -34,8 +34,8 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
 
   ## create output directory
-  #new_dir <- paste0(out_path, "replicate", rep, "/")
-  #dir.create(file.path(new_dir), showWarnings = F, recursive = T)
+  # new_dir <- paste0(out_path, "replicate", rep, "/")
+  # dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
   ## divide into folds
   ## first part is partition()
@@ -54,12 +54,21 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
   group_inds <- extract
 
-  y_groups <- NULL
+  y_groups_val <- NULL
+  y_groups_train <- NULL
   for (i in 1:length(group_inds)) {
-    y_groups[[length(y_groups) + 1]] <- y[unlist(group_inds[[i]])]
+    y_groups_val[[length(y_groups_val) + 1]] <- y[unlist(group_inds[[i]])]
+    y_groups_train[[length(y_groups_train) + 1]] <- y[-unlist(group_inds[[i]])]
   }
-  group_vars <- sapply(y_groups, sd) ## get standard deviation of responses
-  zero_in <- 0 %in% group_vars ## see if any are 0
+  group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+  group_vars_train <- sapply(y_groups_train, sd) ## get standard deviation of responses (training set)
+  zero_in_val <- 0 %in% group_vars_val ## see if any are 0
+  zero_in_train <- 0 %in% group_vars_train ## see if any are 0
+  if (zero_in_val || zero_in_train) {
+    zero_in <- T
+  } else {
+    zero_in <- F
+  }
 
   while (zero_in) { ## if any are 0, redo the fold divisions
     ## first part is partition()
@@ -78,12 +87,21 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     }
     group_inds <- extract
 
-    y_groups <- NULL
+    y_groups_val <- NULL
+    y_groups_train <- NULL
     for (i in 1:length(group_inds)) {
-      y_groups[[length(y_groups) + 1]] <- y[unlist(group_inds[[i]])]
+      y_groups_val[[length(y_groups_val) + 1]] <- y[unlist(group_inds[[i]])]
+      y_groups_train[[length(y_groups_train) + 1]] <- y[-unlist(group_inds[[i]])]
     }
-    group_vars <- sapply(y_groups, sd) ## get standard deviation of responses
-    zero_in <- 0 %in% group_vars ## see if any are 0
+    group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+    group_vars_train <- sapply(y_groups_train, sd) ## get standard deviation of responses (training set)
+    zero_in_val <- 0 %in% group_vars_val ## see if any are 0
+    zero_in_train <- 0 %in% group_vars_train ## see if any are 0
+    if (zero_in_val || zero_in_train) {
+      zero_in <- T
+    } else {
+      zero_in <- F
+    }
   }
 
   ## methods list
@@ -177,6 +195,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                        thresh_fdr = thresh_fdr,
                        rep_cv = rep_cv,
                        alpha_level = alpha_level)
+        if (is.null(res)) {
+          return (NULL)
+        }
 
         ## get things for svm
         pred_all_betas <- res$pred$er_predictor
@@ -202,7 +223,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       }
 
-      #save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
+      # save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
 
       if (sel_corr) { ## if using correlation to evaluate model fit
         method_res <- results[[method_j]]
@@ -237,8 +258,8 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     colnames(res_df) <- c("method", "spearman_corr")
     res_df <- res_df %>%
       as.data.frame() %>%
-      dplyr::mutate(spearman_corr = as.numeric(as.character(spearman_corr)))
-    #saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
+      dplyr::mutate(spearman_corr = as.numeric(as.character(spear_corr)))
+    # saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
     return (res_df)
   } else {
     if (eval_type == "mse") {

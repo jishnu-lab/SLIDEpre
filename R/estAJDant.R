@@ -12,11 +12,16 @@
 estAJDant <- function(C_hat, sigma_TJ, lambda, se_est_J) {
   AJ <- matrix(0, ncol(sigma_TJ), nrow(sigma_TJ))
   for (i in 1:ncol(sigma_TJ)) { ## loop through cols of sigma_TJ (correspond to rows of AJ)
-    AJ[i, ] <- dantzig(C_hat = C_hat,
-                       target_vec = sigma_TJ[, i],
-                       lambda = lambda * se_est_J[i])
-    if (sum(abs(AJ[i, ])) > 1)
+    dantzig_sol <- dantzig(C_hat = C_hat,
+                           target_vec = sigma_TJ[, i],
+                           lambda = lambda * se_est_J[i])
+    if (is.null(dantzig_sol)) {
+      return (NULL)
+    }
+    AJ[i, ] <- dantzig_sol
+    if (sum(abs(AJ[i, ])) > 1) {
       AJ[i, ] <- AJ[i, ] / sum(abs(AJ[i, ]))
+    }
   }
   return(AJ)
 }

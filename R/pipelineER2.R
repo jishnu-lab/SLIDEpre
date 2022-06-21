@@ -30,75 +30,105 @@ pipelineER2 <- function(yaml_path, steps = "all") {
 
   if (steps == 3) {
     ## Step 3: Fine Delta Search ###############################################
-    if (length(er_input$delta) == 1) {
-      d_lbd <- er_input$delta - er_input$delta / 2
-      d_ubd <- er_input$delta + er_input$delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+    if (file.exists(paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))) {
+      fine_delta_er <- readRDS(file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
     } else {
-      delta_grid <- er_input$delta
+      if (length(er_input$delta) == 1) {
+        d_lbd <- er_input$delta - er_input$delta / 2
+        d_ubd <- er_input$delta + er_input$delta / 2
+        delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+      } else {
+        delta_grid <- er_input$delta
+      }
+
+      fine_delta_er <- plainER(y = y,
+                               x = x,
+                               sigma = cor(x),
+                               delta = delta_grid,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               alpha_level = er_input$alpha_level,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+      if (is.null(fine_delta_er)) {
+        cat("plainER failed --- infeasible linear program \n")
+        return ()
+      }
+      saveRDS(fine_delta_er, file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
     }
 
-    fine_delta_er <- plainER(y = y,
-                             x = x,
-                             sigma = cor(x),
-                             delta = delta_grid,
-                             lambda = 0.5,
-                             rep_cv = er_input$rep_cv,
-                             alpha_level = er_input$alpha_level,
-                             thresh_fdr = er_input$thresh_fdr,
-                             out_path = er_input$out_path)
-
     best_delta <- fine_delta_er$opt_delta
-    saveRDS(fine_delta_er, file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
   } else if (steps == 4) {
     ## Step 4: Lambda Search ###################################################
     corr_bp_data <- NULL
-    delta <- er_input$delta
+    best_delta <- er_input$delta
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
       out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
       cat("LAMBDA = ", lambda, " . . . \n")
-      foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
-          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
-        } else {
-          temp <- essregCV(k = er_input$k,
-                           x = x,
-                           y = y,
-                           delta = delta,
-                           perm_option = er_input$perm_option,
-                           sel_corr = er_input$sel_corr,
-                           y_factor = er_input$y_factor,
-                           lambda = lambda,
-                           out_path = er_input$out_path,
-                           rep_cv = er_input$rep_cv,
-                           alpha_level = er_input$alpha_level,
-                           thresh_fdr = er_input$thresh_fdr,
-                           rep = j)
-        }
-      } -> lambda_rep
+      if (file.exists(paste0(er_input$out_path, "essregCV_lambda_", mag_lambda, ".rds"))) {
+        lambda_rep <- readRDS(paste0(er_input$out_path, "essregCV_lambda_", mag_lambda, ".rds"))
+      } else {
+        foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
+          if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+            readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
+          } else {
+            result <- NULL
+            while (is.null(result)) {
+              result <- essregCV(k = er_input$k,
+                                 x = x,
+                                 y = y,
+                                 delta = best_delta,
+                                 perm_option = er_input$perm_option,
+                                 sel_corr = er_input$sel_corr,
+                                 y_factor = er_input$y_factor,
+                                 lambda = lambda,
+                                 out_path = paste0(er_input$out_path, "lambda_", lambda, "/"),
+                                 rep_cv = er_input$rep_cv,
+                                 alpha_level = er_input$alpha_level,
+                                 thresh_fdr = er_input$thresh_fdr,
+                                 rep = j)
+            }
+            result
+          }
+        } -> lambda_rep
+      }
 
       ## make CV plot
       if (!is.null(er_input$perm_option)) {
-        sel_corr_res <- lambda_rep %>%
+        final_res <- lambda_rep %>%
           dplyr::mutate(perm = sub(".*_", "", method)) %>%
           dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
           dplyr::mutate(method = as.factor(method),
                         perm = as.factor(perm))
       } else {
-        sel_corr_res <- lambda_rep %>%
+        final_res <- lambda_rep %>%
           dplyr::mutate(method = as.factor(method))
       }
 
       pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-      delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                       ggplot2::aes(x = method,
-                                                    y = spearman_corr, fill =
-                                                      ifelse(!is.null(er_input$perm_option),
-                                                             perm, method))) +
-        ggplot2::geom_boxplot()
-      ggplot2::ggsave(pdf_file, delta_boxplot, width = 20, height = 15, units = "in")
+      if (er_input$sel_corr) {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                         ggplot2::aes(x = method,
+                                                      y = spear_corr,
+                                                      fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
+          ggplot2::geom_boxplot()
+      } else if (er_input$y_factor) {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                          ggplot2::aes(x = method,
+                                                       y = mean_auc,
+                                                       fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
+          ggplot2::geom_boxplot()
+      } else {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                          ggplot2::aes(x = method,
+                                                       y = mean_mse,
+                                                       fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
+          ggplot2::geom_boxplot()
+      }
+
+      ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
 
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)
@@ -109,77 +139,115 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step4.rds"))
   } else {
     ## Step 3: Fine Delta Search ###############################################
-    if (length(er_input$delta) == 1) {
-      d_lbd <- er_input$delta - er_input$delta / 2
-      d_ubd <- er_input$delta + er_input$delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+    if (file.exists(paste0(er_input$out_path, "pipeline_step3.rds"))) {
+      fine_delta_er <- readRDS(paste0(er_input$out_path, "pipeline_step3.rds"))
     } else {
-      delta_grid <- er_input$delta
+      if (length(er_input$delta) == 1) {
+        d_lbd <- er_input$delta - er_input$delta / 2
+        d_ubd <- er_input$delta + er_input$delta / 2
+        delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+      } else {
+        delta_grid <- er_input$delta
+      }
+
+      fine_delta_er <- plainER(y = y,
+                               x = x,
+                               sigma = cor(x),
+                               delta = delta_grid,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               alpha_level = er_input$alpha_level,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+      if (is.null(fine_delta_er)) {
+        cat("plainER failed --- infeasible linear program \n")
+        return ()
+      }
+      saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
     }
 
-    fine_delta_er <- plainER(y = y,
-                             x = x,
-                             sigma = cor(x),
-                             delta = delta_grid,
-                             lambda = 0.5,
-                             rep_cv = er_input$rep_cv,
-                             alpha_level = er_input$alpha_level,
-                             thresh_fdr = er_input$thresh_fdr,
-                             out_path = er_input$out_path)
     best_delta <- fine_delta_er$opt_delta
-
-    saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
-
     ## Step 4: Lambda Search ###################################################
     corr_bp_data <- NULL
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
       out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
-      foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-        if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
-          temp <- readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
-        } else {
-          temp <- essregCV(k = er_input$k,
-                           x = x,
-                           y = y,
-                           delta = best_delta,
-                           perm_option = er_input$perm_option,
-                           sel_corr = er_input$sel_corr,
-                           y_factor = er_input$y_factor,
-                           lambda = lambda,
-                           rep_cv = er_input$rep_cv,
-                           alpha_level = er_input$alpha_level,
-                           thresh_fdr = er_input$thresh_fdr,
-                           out_path = out_path,
-                           rep = j)
-        }
-      } -> lambda_rep
-      saveRDS(lambda_rep, file = paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))
+      if (file.exists(paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))) {
+        lambda_rep <- readRDS(paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))
+      } else {
+        foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
+          if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
+            readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
+          } else {
+            result <- NULL
+            while (is.null(result)) {
+              result <- essregCV(k = er_input$k,
+                                 x = x,
+                                 y = y,
+                                 delta = best_delta,
+                                 perm_option = er_input$perm_option,
+                                 sel_corr = er_input$sel_corr,
+                                 y_factor = er_input$y_factor,
+                                 lambda = lambda,
+                                 out_path = paste0(er_input$out_path, "lambda_", lambda, "/"),
+                                 rep_cv = er_input$rep_cv,
+                                 alpha_level = er_input$alpha_level,
+                                 thresh_fdr = er_input$thresh_fdr,
+                                 rep = j)
+            }
+            result
+          }
+        } -> lambda_rep
+        saveRDS(lambda_rep, file = paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))
+      }
 
       ## make CV plot
       if (!is.null(er_input$perm_option)) {
-        sel_corr_res <- lambda_rep %>%
+        final_res <- lambda_rep %>%
           dplyr::mutate(perm = sub(".*_", "", method)) %>%
           dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
           dplyr::mutate(method = as.factor(method),
                         perm = as.factor(perm))
         pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
         dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-        delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                         ggplot2::aes(x = method, y = spearman_corr, fill = perm)) +
-          ggplot2::geom_boxplot()
-        ggplot2::ggsave(pdf_file, delta_boxplot, width = 20, height = 15, units = "in")
+
+        if (er_input$sel_corr) {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = spear_corr, fill = perm)) +
+            ggplot2::geom_boxplot()
+        } else if (er_input$y_factor) {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = mean_auc, fill = perm)) +
+            ggplot2::geom_boxplot()
+        } else {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = mean_mse, fill = perm)) +
+            ggplot2::geom_boxplot()
+        }
+
+        ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
       } else {
-        sel_corr_res <- lambda_rep %>%
+        final_res <- lambda_rep %>%
           dplyr::mutate(method = as.factor(method))
 
         pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
         dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-        delta_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                         ggplot2::aes(x = method, y = spearman_corr, fill = method)) +
-          ggplot2::geom_boxplot()
-        ggplot2::ggsave(pdf_file, delta_boxplot, width = 20, height = 15, units = "in")
+
+        if (er_input$sel_corr) {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = spear_corr, fill = method)) +
+            ggplot2::geom_boxplot()
+        } else if (er_input$y_factor) {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = mean_auc, fill = method)) +
+            ggplot2::geom_boxplot()
+        } else {
+          lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                            ggplot2::aes(x = method, y = mean_mse, fill = method)) +
+            ggplot2::geom_boxplot()
+        }
+        ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
       }
 
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
@@ -188,23 +256,35 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step4.rds"))
 
     ## create boxplot of replicate correlations ################################
-    sel_corr_res <- NULL
+    final_res <- NULL
     for (i in 1:length(corr_bp_data)) {
       bp_data <- corr_bp_data[[i]]
       bp_lambda <- bp_data$lambda
       bp_df <- bp_data$result %>%
         dplyr::filter(method == "plainER" | method == "plainER_y") %>%
         dplyr::mutate(lambda = bp_lambda)
-      sel_corr_res <- rbind(sel_corr_res, bp_df)
+      final_res <- rbind(final_res, bp_df)
     }
-    sel_corr_res <- sel_corr_res %>%
+    final_res <- final_res %>%
       dplyr::mutate(lambda = as.factor(lambda),
                     method = as.factor(method))
     pdf_file <- paste0(er_input$out_path, "lambda_selection_boxplot.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-    lambda_boxplot <- ggplot2::ggplot(data = sel_corr_res,
-                                      ggplot2::aes(x = lambda, y = spearman_corr, fill = method)) +
-      ggplot2::geom_boxplot()
+
+    if (er_input$sel_corr) {
+      lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                        ggplot2::aes(x = lambda, y = spear_corr, fill = method)) +
+        ggplot2::geom_boxplot()
+    } else if (er_input$y_factor) {
+      lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                        ggplot2::aes(x = lambda, y = mean_auc, fill = method)) +
+        ggplot2::geom_boxplot()
+    } else {
+      lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                        ggplot2::aes(x = lambda, y = mean_mse, fill = method)) +
+        ggplot2::geom_boxplot()
+    }
+
     ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
   }
 }

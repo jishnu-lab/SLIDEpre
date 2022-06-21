@@ -18,7 +18,10 @@ dantzig <- function(C_hat, target_vec, lambda) {
   }
   A_mat <- rbind(new_C_hat, -new_C_hat, diag(-1, nrow = 2 * K))
   ## minimize c_vec'x subject to A_mat %*% x ≤ b_vec and x ≥ 0
-  LP_sol <- linprog::solveLP(c_vec, b_vec, A_mat, lpSolve = T)$solution
+  LP_sol <- linprog::solveLP(c_vec, b_vec, A_mat, lpSolve = T, maxiter = 1000000)$solution
+  if (is.null(LP_sol)) {
+    return (NULL)
+  }
   AJ_row <- LP_sol[1:K] - LP_sol[(K + 1):(2 * K)] ## split up positive and negative portions of beta
   return (AJ_row)
 }
