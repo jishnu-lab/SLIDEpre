@@ -219,7 +219,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
         pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
         dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
         if (er_input$sel_corr) {
-          delta_boxplot <- ggplot2::ggplot(data = evall_res,
+          delta_boxplot <- ggplot2::ggplot(data = eval_res,
                                            ggplot2::aes(x = method, y = spear_corr, fill = perm)) +
             ggplot2::geom_boxplot()
         } else if (er_input$y_factor) {
