@@ -1,7 +1,7 @@
 ---
 x_path: ER_Example/x_preScale.csv      # path to .csv file for data matrix
 y_path: ER_Example/check_y.csv         # path to .csv file for response vector
-out_path: EssReg/ER_Example/results/   # path to directory for saving results
+out_path: ER_Example/results/   # path to directory for saving results
 k: 5                                   # number of folds for cross-validation
 y_factor: FALSE                        # is y categorical?
 y_order: NULL                            # if y is ordinal, provide the levels
@@ -10,4 +10,7 @@ nreps: 10                              # number of replicates for cross-validati
 alpha_level: 0.05                      # alpha level for confidence intervals
 thresh_fdr: 0.2                        # false discovery rate thresholding p-value cutoff
 sel_corr: TRUE                         # select optimal parameter values by correlation?
+lasso: TRUE
+plsr: FALSE
+pcr: FALSE
 perm_option: "y"                       # permutation test type
