@@ -32,7 +32,10 @@ ER Step 5, after confirming for the optimal delta and optimal lambda, re-run KCV
 
 ### Implementation
 **Data Format**: Please make sure both x AND y have row names and column names (see vignettes for more information).
+
 All of these functions can be run locally (may be prohibitively slow), in an interactive session onDemand, or using a bash script on the cluster. Below we provide the R function calls, which you can type into RStudio or whatever IDE you are using. If using bash, then you will need to create an R script that contains the function calls below. 
+
+The templates can be found in the `data/` folder.
 
 Summary: <br>
 1. For ER Steps 1 & 2, edit `config_template1.yaml`, which is the configuration file for the function `pipelineER1`:
