@@ -53,3 +53,11 @@ pipelineER3(yaml_path = "config_template3.yaml") ## change path
 		
 ## References
 [Essential Regression - a generalizable framework for inferring causal latent factors from multi-omic human datasets](https://www.biorxiv.org/content/10.1101/2021.05.03.442513v2)
+
+## FAQ
+
+**I tried re-installing the package, but I am still getting the same errors I was seeing before the re-installation**
+- If you are using RStudio, you will want to restart your R session. This can be done by going to `Session -> Restart R`. Be aware that you will need to reload your data/objects/libraries after restarting. 
+
+**I wanted to try some new parameters so I re-ran the code, but my results are not appearing/not different from the last run**
+- First, make sure you are working in the correct directory and that your output pathway is correctly specified. If you are sure that you are looking in the correct directory, then it may be that you already had output created from a prior run. To avoid re-doing time-consuming calculations, Essential Regression performs file existence checks and does not recompute costly steps if they have been previously done. However, changing parameter values does not override these checks. If you want to re-run code fully, you will need to do one of the following: delete the old output directory, rename the old output directory, use a different output pathway.
