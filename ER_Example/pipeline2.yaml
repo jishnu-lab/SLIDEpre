@@ -9,7 +9,10 @@ rep_cv: 5                          # number of replicates for non-supervised cro
 nreps: 3                           # number of replicates for supervised cross-validation
 alpha_level: 0.05                  # alpha level for confidence intervals       
 thresh_fdr: 0.2                    # false discovery rate thresholding p-value cutoff      
-sel_corr: TRUE                     # select optimal parameter values by correlation?
+sel_corr: TRUE
+lasso: TRUE
+plsr: FALSE
+pcr: FALSE                     # select optimal parameter values by correlation?
 perm_option: "y"                   # permutation test type
 lambda: [0.1, 0.5, 1]              # lambda, should be multiple values for step 4
 delta: 0.001                       # The best delta chosen from step 1 and step 2. If running step 3, a fine grid will be constructed.
