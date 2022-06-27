@@ -12,10 +12,10 @@ devtools::install_github("Hanxi-002/EssReg"
 
 ## Introductory Example
 Make sure you can repeat the example in [EssRegVignette_plainER.pdf](https://github.com/Hanxi-002/EssReg/blob/main/EssRegVignette_plainER.pdf) first. 
-Example data: `x` is myeloid and fibroblasts from scRNA-seq from Bob Lafyatis. `y` vector is MRSS skin score. This data is linked within the vignette pdfs, but we also provide links here: [x](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/x.csv?d=wcf04e38daa894022b0c2179e4569a141&csf=1&web=1&e=Z0ZcDC), [y](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/y.csv?d=w60482b81ce7e4676b471582c9345ef5a&csf=1&web=1&e=PvgNsP). This example can be run locally. <br>
+Example data: `x` is myeloid and fibroblasts from scRNA-seq from Bob Lafyatis. `y` vector is MRSS skin score. (There are links embedded into the document. Download and open the pdf on your machine to enable interactive links.) This data is linked within the vignette pdfs, but we also provide links here: [x](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/x.csv?d=wcf04e38daa894022b0c2179e4569a141&csf=1&web=1&e=Z0ZcDC), [y](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/y.csv?d=w60482b81ce7e4676b471582c9345ef5a&csf=1&web=1&e=PvgNsP). This example can be run locally. <br>
 
 ## Pipeline Example
-Once you have reproduced the results in the introductory example, try to run the pipeline using the tutorial found in [EssRegVignette_pipeline.pdf](https://github.com/Hanxi-002/EssReg/blob/main/EssRegVignette_plainER.pdf). 
+Once you have reproduced the results in the introductory example, try to run the pipeline using the tutorial found in [EssRegVignette_pipeline.pdf](https://github.com/Hanxi-002/EssReg/blob/main/EssRegVignette_plainER.pdf). (There are links embedded into the document. Download and open the pdf on your machine to enable interactive links.)
 The data used here is the same as that in the introductory example. This example can be run locally. <br>
 
 ## Detailed Vignette
