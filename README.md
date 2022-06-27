@@ -10,16 +10,16 @@ devtools::install_github("Hanxi-002/EssReg"
 
 [How to generate an authentification token?](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
-## Detailed Vignette
-A comprehensive vignette is available in raw format in the main directory of the package as `EssRegVignette.html`. To view it, go to [this link](https://hanxi-002.github.io/).
-
 ## Introductory Example
 Make sure you can repeat the example in `EssRegVignette_plainER.pdf` first. 
-Example data: `x` is myeloid and fibroblasts from scRNA-seq from Bob Lafyatis. `y` vector is MRSS skin score. This data is linked within the vignette pdfs, but we also provide links here: [x](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/x.csv?d=wcf04e38daa894022b0c2179e4569a141&csf=1&web=1&e=Z0ZcDC), [y](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/y.csv?d=w60482b81ce7e4676b471582c9345ef5a&csf=1&web=1&e=PvgNsP)<br>
+Example data: `x` is myeloid and fibroblasts from scRNA-seq from Bob Lafyatis. `y` vector is MRSS skin score. This data is linked within the vignette pdfs, but we also provide links here: [x](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/x.csv?d=wcf04e38daa894022b0c2179e4569a141&csf=1&web=1&e=Z0ZcDC), [y](https://pitt-my.sharepoint.com/:x:/r/personal/xiaoh_pitt_edu/Documents/Research_Files/EssReg/y.csv?d=w60482b81ce7e4676b471582c9345ef5a&csf=1&web=1&e=PvgNsP). This example can be run locally. <br>
 
 ## Pipeline Example
 Once you have reproduced the results in the introductory example, try to run the pipeline using the tutorial found in `EssRegVignette_pipeline.pdf`. 
-The data used here is the same as that in the introductory example.
+The data used here is the same as that in the introductory example. This example can be run locally. <br>
+
+## Detailed Vignette
+A comprehensive vignette is available in raw format in the main directory of the package as `EssRegVignette.html`. To view it, go to [this link](https://hanxi-002.github.io/). Because of the size of the data, we do not recommend trying to replicate these results as you will most likely need to submit a job to the cluster. For now, we leave the data in the `data/` folder, but THIS FEATURE MAY BE REMOVED IN THE NEAR FUTURE. In all honestly, being able to reproduce the pipeline example above is sufficient to check your understanding and familiarize yourself with the methods.
 
 ## Pipeline Description
 ### Concept
