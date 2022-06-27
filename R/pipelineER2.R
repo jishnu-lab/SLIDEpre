@@ -28,149 +28,37 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     y <- y$cont_y
   }
 
-  if (steps == 3) {
-    ## Step 3: Fine Delta Search ###############################################
-    if (file.exists(paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))) {
-      fine_delta_er <- readRDS(file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
-    } else {
-      if (length(er_input$delta) == 1) {
-        d_lbd <- er_input$delta - er_input$delta / 2
-        d_ubd <- er_input$delta + er_input$delta / 2
-        delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
-      } else {
-        delta_grid <- er_input$delta
-      }
-
-      fine_delta_er <- plainER(y = y,
-                               x = x,
-                               sigma = cor(x),
-                               delta = delta_grid,
-                               lambda = 0.5,
-                               rep_cv = er_input$rep_cv,
-                               alpha_level = er_input$alpha_level,
-                               thresh_fdr = er_input$thresh_fdr,
-                               out_path = er_input$out_path)
-      if (is.null(fine_delta_er)) {
-        cat("plainER failed --- infeasible linear program \n")
-        return ()
-      }
-      saveRDS(fine_delta_er, file = paste0(er_input$out_path, "delta", best_delta, "_pipeline_step3.rds"))
-    }
-
-    best_delta <- fine_delta_er$opt_delta
-  } else if (steps == 4) {
-    ## Step 4: Lambda Search ###################################################
-    corr_bp_data <- NULL
-    best_delta <- er_input$delta
-    for (i in 1:length(er_input$lambda)) {
-      lambda <- er_input$lambda[[i]]
-      out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
-      cat("LAMBDA = ", lambda, " . . . \n")
-      if (file.exists(paste0(er_input$out_path, "essregCV_lambda_", mag_lambda, ".rds"))) {
-        lambda_rep <- readRDS(paste0(er_input$out_path, "essregCV_lambda_", mag_lambda, ".rds"))
-      } else {
-        foreach::foreach (j = 1:er_input$nreps, .combine = rbind) %dopar% {
-          if (file.exists(file = paste0(out_path, "replicate", j, "/output_table.rds"))) {
-            readRDS(paste0(out_path, "replicate", j, "/output_table.rds"))
-          } else {
-            result <- NULL
-            while (is.null(result)) {
-              result <- essregCV(k = er_input$k,
-                                 x = x,
-                                 y = y,
-                                 delta = best_delta,
-                                 perm_option = er_input$perm_option,
-                                 sel_corr = er_input$sel_corr,
-                                 y_factor = er_input$y_factor,
-                                 lambda = lambda,
-                                 out_path = paste0(er_input$out_path, "lambda_", lambda, "/"),
-                                 rep_cv = er_input$rep_cv,
-                                 alpha_level = er_input$alpha_level,
-                                 thresh_fdr = er_input$thresh_fdr,
-                                 lasso = er_input$lasso,
-                                 pcr = er_input$pcr,
-                                 plsr = er_input$plsr,
-                                 rep = j)
-            }
-            result
-          }
-        } -> lambda_rep
-      }
-
-      ## make CV plot
-      if (!is.null(er_input$perm_option)) {
-        final_res <- lambda_rep %>%
-          dplyr::mutate(perm = sub(".*_", "", method)) %>%
-          dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
-          dplyr::mutate(method = as.factor(method),
-                        perm = as.factor(perm))
-      } else {
-        final_res <- lambda_rep %>%
-          dplyr::mutate(method = as.factor(method))
-      }
-
-      pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
-      dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-      if (er_input$sel_corr) {
-        lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                         ggplot2::aes(x = method,
-                                                      y = spear_corr,
-                                                      fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
-          ggplot2::geom_boxplot()
-      } else if (er_input$y_factor) {
-        lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                          ggplot2::aes(x = method,
-                                                       y = mean_auc,
-                                                       fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
-          ggplot2::geom_boxplot()
-      } else {
-        lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                          ggplot2::aes(x = method,
-                                                       y = mean_mse,
-                                                       fill = ifelse(!is.null(er_input$perm_option), perm, method))) +
-          ggplot2::geom_boxplot()
-      }
-
-      ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
-
-      corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
-                                                       "result" = lambda_rep)
-
-      corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
-                                                       "result" = lambda_rep)
-    }
-    saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step4.rds"))
+  ## Step 3: Fine Delta Search ###############################################
+  if (file.exists(paste0(er_input$out_path, "pipeline_step3.rds"))) {
+    fine_delta_er <- readRDS(file = paste0(er_input$out_path, "pipeline_step3.rds"))
   } else {
-    ## Step 3: Fine Delta Search ###############################################
-    if (file.exists(paste0(er_input$out_path, "pipeline_step3.rds"))) {
-      fine_delta_er <- readRDS(paste0(er_input$out_path, "pipeline_step3.rds"))
+    if (length(er_input$delta) == 1) {
+      d_lbd <- er_input$delta - er_input$delta / 2
+      d_ubd <- er_input$delta + er_input$delta / 2
+      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
     } else {
-      if (length(er_input$delta) == 1) {
-        d_lbd <- er_input$delta - er_input$delta / 2
-        d_ubd <- er_input$delta + er_input$delta / 2
-        delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
-      } else {
-        delta_grid <- er_input$delta
-      }
-
-      fine_delta_er <- plainER(y = y,
-                               x = x,
-                               sigma = cor(x),
-                               delta = delta_grid,
-                               lambda = 0.5,
-                               rep_cv = er_input$rep_cv,
-                               alpha_level = er_input$alpha_level,
-                               thresh_fdr = er_input$thresh_fdr,
-                               out_path = er_input$out_path)
-      if (is.null(fine_delta_er)) {
-        cat("plainER failed --- infeasible linear program \n")
-        return ()
-      }
-      saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
+      delta_grid <- er_input$delta
     }
 
-    best_delta <- fine_delta_er$opt_delta
-    ## Step 4: Lambda Search ###################################################
+    fine_delta_er <- plainER(y = y,
+                             x = x,
+                             sigma = cor(x),
+                             delta = delta_grid,
+                             lambda = 0.5,
+                             rep_cv = er_input$rep_cv,
+                             alpha_level = er_input$alpha_level,
+                             thresh_fdr = er_input$thresh_fdr,
+                             out_path = er_input$out_path)
+    if (is.null(fine_delta_er)) {
+      cat("plainER failed --- infeasible linear program \n")
+      return ()
+    }
+    saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
+  }
+
+  best_delta <- fine_delta_er$opt_delta
+  ## Step 4: Lambda Search ###################################################
+  if (steps == "all") {
     corr_bp_data <- NULL
     for (i in 1:length(er_input$lambda)) {
       lambda <- er_input$lambda[[i]]
@@ -212,49 +100,51 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       if (!is.null(er_input$perm_option)) {
         final_res <- lambda_rep %>%
           dplyr::mutate(perm = sub(".*_", "", method)) %>%
-          dplyr::mutate(perm = ifelse(perm == er_input$perm_option, perm, "no_perm")) %>%
+          dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
+          dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
           dplyr::mutate(method = as.factor(method),
-                        perm = as.factor(perm))
-        pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
-        dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-
-        if (er_input$sel_corr) {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = spear_corr, fill = perm)) +
-            ggplot2::geom_boxplot()
-        } else if (er_input$y_factor) {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = mean_auc, fill = perm)) +
-            ggplot2::geom_boxplot()
-        } else {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = mean_mse, fill = perm)) +
-            ggplot2::geom_boxplot()
-        }
-
-        ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
+                        perm = as.factor(perm)) %>%
+          dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
       } else {
         final_res <- lambda_rep %>%
-          dplyr::mutate(method = as.factor(method))
-
-        pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
-        dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-
-        if (er_input$sel_corr) {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = spear_corr, fill = method)) +
-            ggplot2::geom_boxplot()
-        } else if (er_input$y_factor) {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = mean_auc, fill = method)) +
-            ggplot2::geom_boxplot()
-        } else {
-          lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                            ggplot2::aes(x = method, y = mean_mse, fill = method)) +
-            ggplot2::geom_boxplot()
-        }
-        ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
+          dplyr::mutate(method = as.factor(method),
+                        method_perm = as.factor(method),
+                        alpha = 1)
       }
+
+
+      pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
+      dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
+
+      if (er_input$sel_corr) {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                          ggplot2::aes(x = method,
+                                                       y = spear_corr,
+                                                       fill = method_perm,
+                                                       alpha = alpha)) +
+          ggplot2::geom_boxplot() +
+          ggplot2::labs(fill = "Method") +
+          ggplot2::scale_alpha(guide = 'none')
+      } else if (er_input$y_factor) {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                          ggplot2::aes(x = method,
+                                                       y = mean_auc,
+                                                       fill = method_perm,
+                                                       alpha = alpha)) +
+          ggplot2::geom_boxplot() +
+          ggplot2::labs(fill = "Method") +
+          ggplot2::scale_alpha(guide = 'none')
+      } else {
+        lambda_boxplot <- ggplot2::ggplot(data = final_res,
+                                          ggplot2::aes(x = method,
+                                                       y = mean_mse,
+                                                       fill = method_perm,
+                                                       alpha = alpha)) +
+          ggplot2::geom_boxplot() +
+          ggplot2::labs(fill = "Method") +
+          ggplot2::scale_alpha(guide = 'none')
+      }
+      ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
 
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)
@@ -279,16 +169,25 @@ pipelineER2 <- function(yaml_path, steps = "all") {
 
     if (er_input$sel_corr) {
       lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                        ggplot2::aes(x = lambda, y = spear_corr, fill = method)) +
-        ggplot2::geom_boxplot()
+                                        ggplot2::aes(x = lambda,
+                                                     y = spear_corr,
+                                                     fill = method)) +
+        ggplot2::geom_boxplot() +
+        ggplot2::labs(fill = "Method")
     } else if (er_input$y_factor) {
       lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                        ggplot2::aes(x = lambda, y = mean_auc, fill = method)) +
-        ggplot2::geom_boxplot()
+                                        ggplot2::aes(x = lambda,
+                                                     y = mean_auc,
+                                                     fill = method)) +
+        ggplot2::geom_boxplot() +
+        ggplot2::labs(fill = "Method")
     } else {
       lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                        ggplot2::aes(x = lambda, y = mean_mse, fill = method)) +
-        ggplot2::geom_boxplot()
+                                        ggplot2::aes(x = lambda,
+                                                     y = mean_mse,
+                                                     fill = method)) +
+        ggplot2::geom_boxplot() +
+        ggplot2::labs(fill = "Method")
     }
 
     ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")

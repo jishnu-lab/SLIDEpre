@@ -33,7 +33,7 @@ pipelineER3 <- function(yaml_path) {
       temp <- essregCV(k = er_input$k,
                        x = x,
                        y = y,
-                       delta = er_input$best_delta,
+                       delta = er_input$delta,
                        perm_option = er_input$perm_option,
                        sel_corr = er_input$sel_corr,
                        y_factor = er_input$y_factor,
@@ -44,7 +44,8 @@ pipelineER3 <- function(yaml_path) {
                        lasso = er_input$lasso,
                        pcr = er_input$pcr,
                        plsr = er_input$plsr,
-                       thresh_fdr = er_input$thresh_fdr)
+                       thresh_fdr = er_input$thresh_fdr,
+                       rep = j)
     }
     temp
   } -> lambda_rep
@@ -52,26 +53,56 @@ pipelineER3 <- function(yaml_path) {
 
   ## create boxplot of replicate correlations ##################################
   bp_df <- lambda_rep %>%
-    dplyr::filter(method == "plainER" | method == "plainER_y")
     dplyr::mutate(method = as.factor(method))
+
+  if (!is.null(er_input$perm_option)) {
+    bp_df <- bp_df %>%
+      dplyr::mutate(perm = sub(".*_", "", method)) %>%
+      dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
+      dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
+      dplyr::mutate(method = as.factor(method),
+                    perm = as.factor(perm)) %>%
+      dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
+  } else {
+    bp_df <- bp_df %>%
+      dplyr::mutate(method = as.factor(method),
+                    method_perm = as.factor(method),
+                    alpha = 1)
+  }
+
   pdf_file <- paste0(er_input$out_path, "/opt_delta_lambda_boxplot.pdf")
   dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
 
   if (er_input$sel_corr) {
     lambda_boxplot <- ggplot2::ggplot(data = bp_df,
-                                      ggplot2::aes(x = method, y = spear_corr, fill = method)) +
-      ggplot2::geom_boxplot()
+                                      ggplot2::aes(x = method,
+                                                   y = spear_corr,
+                                                   fill = method_perm,
+                                                   alpha = alpha)) +
+      ggplot2::geom_boxplot() +
+      ggplot2::labs(fill = "Method") +
+      ggplot2::scale_alpha(guide = 'none')
   } else if (er_input$y_factor) {
     lambda_boxplot <- ggplot2::ggplot(data = bp_df,
-                                      ggplot2::aes(x = method, y = mean_auc, fill = method)) +
-      ggplot2::geom_boxplot()
+                                      ggplot2::aes(x = method,
+                                                   y = mean_auc,
+                                                   fill = method_perm,
+                                                   alpha = alpha)) +
+      ggplot2::geom_boxplot() +
+      ggplot2::labs(fill = "Method") +
+      ggplot2::scale_alpha(guide = 'none')
   } else {
     lambda_boxplot <- ggplot2::ggplot(data = bp_df,
-                                      ggplot2::aes(x = method, y = mean_mse, fill = method)) +
-      ggplot2::geom_boxplot()
+                                      ggplot2::aes(x = method,
+                                                   y = mean_mse,
+                                                   fill = method_perm,
+                                                   alpha = alpha)) +
+      ggplot2::geom_boxplot() +
+      ggplot2::labs(fill = "Method") +
+      ggplot2::scale_alpha(guide = 'none')
   }
 
-  ggplot2::ggsave(pdf_file, lambda_boxplot)
+  ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
 
   ## Final plainER Run #########################################################
   er_output <- plainER(x = x,
@@ -89,6 +120,6 @@ pipelineER3 <- function(yaml_path) {
     return ()
   }
 
-  saveRDS(final_output, paste0(er_input$out_path, "final_delta", er_input$delta, "_lambda", er_input$lambda, ".rds"))
+  saveRDS(er_output, paste0(er_input$out_path, "final_delta_", er_input$delta, "_lambda_", er_input$lambda, ".rds"))
 }
 
