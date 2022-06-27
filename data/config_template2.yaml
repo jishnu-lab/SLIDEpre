@@ -1,0 +1,18 @@
+---
+x_path: STRING_PATH         # path to .csv file for data matrix
+y_path: STRING_PATH         # path to .csv file for response vector
+out_path: STRING_PATH       # path to directory for saving results
+k: INTEGER                  # number of folds for cross-validation
+y_factor: TRUE_OR_FALSE     # is y categorical?
+y_order: NULL_OR_[VECTOR]   # if y is ordinal, provide the levels
+rep_cv: INTEGER             # number of replicates for cross-validation for delta
+nreps: INTEGER              # number of replicates for cross-validation in step 2
+alpha_level: FLOAT          # alpha level for confidence intervals (0 to 1)
+thresh_fdr: FLOAT           # false discovery rate thresholding p-value cutoff (0 to 1)
+sel_corr: TRUE_OR_FALSE     # select optimal parameter values by correlation?
+perm_option: STRING         # permutation test type (NULL, "y", "x", "x_y", or "y_before_split")
+lambda: [VECTOR_OF_FLOATS]  # lambda, should be multiple values for step 4
+delta: FLOAT_OR_[VECTOR]    # The best delta chosen from step 1 and step 2. If running step 3, a fine grid will be constructed.
+lasso: TRUE_OR_FALSE        # do lasso?
+plsr: TRUE_OR_FALSE         # do plsr?
+pcr: TRUE_OR_FALSE          # do pcr?

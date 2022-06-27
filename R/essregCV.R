@@ -11,7 +11,7 @@
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
 #' @param perm_option a string indicating the type of permutation type do perform
-#' (can be NULL, "x", "x_y", or "y_before_split")
+#' (can be "NULL", "y", "x", "x_y", or "y_before_split")
 #' @param y_factor a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})
 #' @param sel_corr a boolean flag indicating whether to perform cross-validation by evaluating the correlation
 #' between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})

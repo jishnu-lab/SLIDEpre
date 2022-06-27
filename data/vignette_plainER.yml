@@ -9,3 +9,4 @@ alpha_level: 0.05                        # alpha level for confidence intervals
 thresh_fdr: 0.2                          # false discovery rate thresholding p-value cutoff
 lambda: 0.1                              # lambda
 delta: 0.01                              # delta
+nreps: 10
