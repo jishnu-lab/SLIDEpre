@@ -8,9 +8,9 @@
 #' @importFrom foreach '%dopar%'
 #' @param yaml_path the path to a .yaml file containing all necessary parameters/arguments
 #' for Essential Regression
-#' @param steps an integer or string indicating which steps of the pipeline to perform: 1, 2, "all"
+#' @param steps an integer or string indicating which steps of the pipeline to perform: "1" or "all"
 #' @return nothing is returned, saves boxplot of cross-validation results for user to use
-#' in selecting optimal \eqn{\delta}
+#' in selecting optimal \eqn{\delta} if \code{steps} is "all"
 #' @export
 
 pipelineER1 <- function(yaml_path, steps = "all") {
