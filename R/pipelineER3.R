@@ -79,7 +79,7 @@ pipelineER3 <- function(yaml_path) {
                                                    y = spear_corr,
                                                    fill = method_perm,
                                                    alpha = alpha)) +
-      ggplot2::geom_boxplot() +
+      ggplot2::geom_violin() +
       ggplot2::labs(fill = "Method") +
       ggplot2::scale_alpha(guide = 'none')
   } else if (er_input$y_factor) {
@@ -88,7 +88,7 @@ pipelineER3 <- function(yaml_path) {
                                                    y = mean_auc,
                                                    fill = method_perm,
                                                    alpha = alpha)) +
-      ggplot2::geom_boxplot() +
+      ggplot2::geom_violin() +
       ggplot2::labs(fill = "Method") +
       ggplot2::scale_alpha(guide = 'none')
   } else {
@@ -97,7 +97,7 @@ pipelineER3 <- function(yaml_path) {
                                                    y = mean_mse,
                                                    fill = method_perm,
                                                    alpha = alpha)) +
-      ggplot2::geom_boxplot() +
+      ggplot2::geom_violint() +
       ggplot2::labs(fill = "Method") +
       ggplot2::scale_alpha(guide = 'none')
   }
