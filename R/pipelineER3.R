@@ -70,7 +70,7 @@ pipelineER3 <- function(yaml_path) {
                     alpha = 1)
   }
 
-  pdf_file <- paste0(er_input$out_path, "/opt_delta_lambda_boxplot.pdf")
+  pdf_file <- paste0(er_input$out_path, "/opt_delta_lambda_violinplot.pdf")
   dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
 
   if (er_input$sel_corr) {
