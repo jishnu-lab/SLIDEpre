@@ -79,7 +79,6 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                  delta = best_delta,
                                  permute = er_input$permute,
                                  eval_type = er_input$eval_type,
-                                 y_factor = er_input$y_factor,
                                  lambda = lambda,
                                  out_path = paste0(er_input$out_path, "lambda_", lambda, "/"),
                                  rep_cv = er_input$rep_cv,
