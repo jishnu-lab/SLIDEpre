@@ -10,70 +10,35 @@
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
-#' @param perm_option a string indicating the type of permutation type do perform
-#' (can be "NULL", "y", "x", "x_y", or "y_before_split")
-#' @param y_factor a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})
-#' @param sel_corr a boolean flag indicating whether to perform cross-validation by evaluating the correlation
-#' between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})
+#' @param permute a boolean flag indicating whether to permute the response (\eqn{y}) during training
+#' @param eval_type a string indicating what metric to use for evaluating model performance
+#' (can be "auc" - area under ROC curve, or "corr" - for spearman correlation)
 #' @param lambda \eqn{\lambda}, a numerical constant used in thresholding
 #' @param rep_cv number of replicates for cross-validation
 #' @param alpha_level \eqn{\alpha}, a numerical constant used in confidence interval calculation
-#' @param lasso a boolean flag indicating whether to test LASSO
-#' @param plsr a boolean flag indicating whether to test PLSR
-#' @param pcr a boolean flag indicating whether to test PCR
 #' @param rep an integer indicating the replicate number
 #' @param out_path path for saving output
 #' @return An object of class \sQuote{data.frame}
 #' @export
 
 essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
-                     rep_cv = 50, alpha_level = 0.05, perm_option = NULL,
-                     lasso = T, plsr = T, pcr = T,
-                     sel_corr = T, y_factor = F, out_path, rep) {
+                     rep_cv = 50, alpha_level = 0.05, permute = T,
+                     eval_type, out_path, rep) {
 
-  if (y_factor) {
-    eval_type <- "auc"
-  } else {
-    eval_type <- "mse"
+  if (eval_type == "auc") {
+    lasso_fam <- "binomial"
+    y_factor <- T
+  } else { ## if evaluating with correlation, treat y as continuous (regardless of truth)
+    lasso_fam <- "gaussian"
+    y_factor <- F
   }
 
   ## create output directory
-  # new_dir <- paste0(out_path, "replicate", rep, "/")
-  # dir.create(file.path(new_dir), showWarnings = F, recursive = T)
+  new_dir <- paste0(out_path, "replicate", rep, "/")
+  dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
   ## divide into folds
-  ## first part is partition()
-  total_num <- nrow(x)
-  num_group <- k
-  remainder <- total_num %% num_group # get the remainder
-  num_per_group <- total_num %/% num_group
-  partition <- rep(num_per_group, num_group) + c(rep(1, remainder), rep(0, num_group - remainder))
-  ## second part is extract()
-  pre_vec <- sample(1:nrow(x))
-  extract <- vector("list", length(partition))
-  extract[[1]] <- pre_vec[1:partition[1]]
-  for (i in 2:length(partition)) {
-    temp_ind <- sum(partition[1:(i - 1)]) + 1
-    extract[[i]] <- pre_vec[temp_ind:(temp_ind + partition[i] - 1)]
-  }
-  group_inds <- extract
-
-  y_groups_val <- NULL
-  y_groups_train <- NULL
-  for (i in 1:length(group_inds)) {
-    y_groups_val[[length(y_groups_val) + 1]] <- y[unlist(group_inds[[i]])]
-    y_groups_train[[length(y_groups_train) + 1]] <- y[-unlist(group_inds[[i]])]
-  }
-  group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
-  group_vars_train <- sapply(y_groups_train, sd) ## get standard deviation of responses (training set)
-  zero_in_val <- 0 %in% group_vars_val ## see if any are 0
-  zero_in_train <- 0 %in% group_vars_train ## see if any are 0
-  if (zero_in_val || zero_in_train) {
-    zero_in <- T
-  } else {
-    zero_in <- F
-  }
-
+  zero_in <- TRUE
   while (zero_in) { ## if any are 0, redo the fold divisions
     ## first part is partition()
     total_num <- nrow(x)
@@ -109,43 +74,22 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   }
 
   ## methods list
-  methods <- c("plainER")
+  methods <- c("plainER", "lasso")
 
-  if (lasso) {
-    methods <- c(methods, "lasso")
-  }
-  if (plsr) {
-    methods <- c(methods, "plsr")
-  }
-  if (pcr) {
-    methods <- c(methods, "pcr")
+  if (y_factor) {
+    methods <- c(methods, "plsda", "rf")
+  } else {
+    methods <- c(methods, "plsr", "pcr")
   }
 
-  if (!is.null(perm_option)) {
-    if (perm_option == "x") { ## permute columns of x
-      perm_col_ind <- sample(1:ncol(x))
-      methods <- c(methods, paste0(methods, "_x"))
-    } else if (perm_option == "y_before_split") { ## permute y before splitting into train/valid
-      perm_row_ind <- sample(1:nrow(x))
-      methods <- c(methods, paste0(methods, "_ybs"))
-    } else if (perm_option == "x_y") {
-      perm_col_ind <- sample(1:ncol(x))
-      perm_row_ind <- sample(1:nrow(x))
-      methods <- c(methods, paste0(methods, "_xy"))
-    } else {
-      methods <- c(methods, paste0(methods, "_y"))
-    }
+  if (permute) {
+    methods <- c(methods, paste0(methods, "_y"))
   }
 
   ## initialization
   results <- NULL
-  if (sel_corr) {
-    for (h in 1:length(methods)) {
-      method <- methods[h]
-      results[[method]] <- list()
-    }
-  }
 
+  ## begin CV
   for (i in 1:k) { ## loop through folds
     cat("FOLD ", i, ". . . . \n")
     valid_ind <- group_inds[[i]] ## validation indices
@@ -154,54 +98,62 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     train_x <- x[-valid_ind, ] ## training x's
     valid_x <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
 
+    ## standardize sets
+    stands <- standCV(train_y = train_y,
+                      train_x = train_x,
+                      valid_y = valid_y,
+                      valid_x = valid_x)
+
+    train_x_std <- stands$train_x
+    train_y_std <- stands$train_y
+    valid_x_std <- stands$valid_x
+    valid_y_std <- stands$valid_y
+
+    centers_y <- attr(train_y_std, "scaled:center")
+    scales_y <- attr(train_y_std, "scaled:scale")
+
+    ## rename columns
+    colnames(train_x_std) <- colnames(valid_x_std) <- colnames(x)
+
+    ## permute y's
+    perm_ind <- sample(1:nrow(train_x_std))
+    train_y_std_perm <- train_y_std[perm_ind]
+    train_y_perm <- train_y[perm_ind]
+
+    ## get labels if factor
+    if (y_factor) {
+      train_y_labs <- factor(train_y, levels = y_levels)
+      train_y_labs_perm <- factor(train_y_perm, levels = y_levels)
+      valid_y_labs <- factor(valid_y, levels = y_levels)
+    }
+
     for (j in 1:length(methods)) { ## loop through methods
       method_j <- methods[j]
       cat("CV for ", method_j, ". . . \n")
 
-      ## permute and standardize sets
-      if (grepl(x = method_j, pattern = "ybs", fixed = TRUE)) {
-        train_y <- y[perm_row_ind][-valid_ind]
-        stands <- standCV(train_y = train_y,
-                          train_x = train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
-      } else if (grepl(x = method_j, pattern = "x_y", fixed = TRUE)) {
-        train_x <- train_x[, perm_col_ind]
-        train_y <- y[perm_row_ind][-valid_ind]
-        stands <- standCV(train_y = train_y,
-                          train_x = train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
-      } else if (grepl(x = method_j, pattern = "x", fixed = TRUE)) {
-        train_x <- train_x[, perm_col_ind]
-        stands <- standCV(train_y = train_y,
-                          train_x = train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
-      } else if (grepl(x = method_j, pattern = "y", fixed = TRUE)) { ## just permute y
-        perm_ind <- sample(1:nrow(train_x))
-        train_y <- train_y[perm_ind]
-        stands <- standCV(train_y = train_y,
-                          train_x = train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
-      } else {
-        stands <- standCV(train_y = train_y,
-                          train_x = train_x,
-                          valid_y = valid_y,
-                          valid_x = valid_x)
+      ## determine which y to train with
+      if (grepl(x = method_j, pattern = "_y", fixed = TRUE)) { ## if doing y permutation
+        if (y_factor) { ## if y is a factor, use permuted y labels
+          cat("        using permuted y labels \n")
+          use_y_train <- train_y_labs_perm
+        } else { ## if y is not a factor, use permuted y values
+          cat("        using permuted y values \n")
+          use_y_train <- train_y_std_perm
+        }
+        use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
+      } else { ## if not doing y permutation
+        if (y_factor) { ## if y is a factor, use true y labels
+          cat("        using true y labels \n")
+          use_y_train <- train_y_labs
+        } else { ## if y is not a factor, use true y values
+          cat("        using true y values \n")
+          use_y_train <- train_y_std
+        }
+        use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
       }
 
-      train_x_std <- stands$train_x
-      train_y_std <- stands$train_y
-      valid_x_std <- stands$valid_x
-      valid_y_std <- stands$valid_y
-
-      centers_y <- attr(train_y_std, "scaled:center")
-      scales_y <- attr(train_y_std, "scaled:scale")
-
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        res <- plainER(y = train_y,
+        res <- plainER(y = use_y_train_nonstd,
                        x = train_x,
                        sigma = NULL,
                        delta = delta,
@@ -212,95 +164,130 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         if (is.null(res)) {
           return (NULL)
         }
-        ## get things for svm
         pred_all_betas <- res$pred$er_predictor
-        beta_train <- train_x_std %*% pred_all_betas
-        beta_valid <- valid_x_std %*% pred_all_betas
-        pred_vals <- t((t(beta_valid) - centers_y) / scales_y)
+        pred_vals <- valid_x_std %*% pred_all_betas
+        #pred_vals <- t((t(beta_valid) - centers_y) / scales_y)
       } else if (grepl(x = method_j, pattern = "plsr", fixed = TRUE)) { ## PLSR
-        res <- pls::plsr(train_y_std ~ train_x_std, validation = "CV", segments = 5)
+        res <- pls::plsr(use_y_train ~ train_x_std, validation = "CV", segments = 5)
         n_comp <- pls::selectNcomp(res, method = "randomization")
         n_comp <- ifelse(n_comp == 0, 1, n_comp)
         pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
-        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+        #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       } else if (grepl(x = method_j, pattern = "pcr", fixed = TRUE)) { ## PCR
-        res <- pls::pcr(train_y_std ~ train_x_std, validation = "CV", segments = 5)
+        res <- pls::pcr(use_y_train ~ train_x_std, validation = "CV", segments = 5)
         n_comp <- pls::selectNcomp(res, method = "randomization")
         n_comp <- ifelse(n_comp == 0, 1, n_comp)
         pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
-        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+        #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+      } else if (grepl(x = method_j, pattern = "plsda", fixed = TRUE)) { ## PLS-DA
+        ## convert to syntactically valid names
+        use_y_train_syn <- make.names(use_y_train)
+        use_y_valid_syn <- make.names(valid_y_labs)
+        ctrl <- caret::trainControl(method = "repeatedcv",
+                                    classProbs = T,
+                                    savePredictions = T,
+                                    summaryFunction = caret::twoClassSummary)
+        res <- caret::train(y = use_y_train_syn,
+                            x = train_x_std,
+                            trControl = ctrl,
+                            metric = "ROC",
+                            method = "pls")
+
+        pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
+      } else if (grepl(x = method_j, pattern = "rf", fixed = TRUE)) { ## RANDOM FOREST
+        res <- randomForest::randomForest(use_y_train ~ .,
+                                          data = train_x_std)
+        pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
+        #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       } else { ## lasso for comparison
         if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
-          res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 5, standardize = F, grouped = F)
+          res <- glmnet::cv.glmnet(train_x_std,
+                                   use_y_train,
+                                   alpha = 1,
+                                   nfolds = 5,
+                                   standardize = F,
+                                   grouped = F,
+                                   family = lasso_fam)
         } else {
-          res <- glmnet::cv.glmnet(train_x_std, train_y_std, alpha = 1, nfolds = 10, standardize = F, grouped = F)
+          res <- glmnet::cv.glmnet(train_x_std,
+                                   use_y_train,
+                                   alpha = 1,
+                                   nfolds = 10,
+                                   standardize = F,
+                                   grouped = F,
+                                   family = lasso_fam)
         }
         beta_hat <- coef(res, s = res$lambda.min)[-1]
         sub_beta_hat <- which(beta_hat != 0)
-        if (length(sub_beta_hat) == 0) { ## if lasso selects no variable, randomly pick 5 features instead
+        ## if lasso selects no variable, randomly pick 5 features instead
+        if (length(sub_beta_hat) == 0) {
           cat("Lasso selects no features - Randomly selecting 5 features. . . \n")
           sub_beta_hat <- sample(1:ncol(train_x_std), 5)
         }
-        ## get things for svm
-        beta_train <- train_x_std[, sub_beta_hat]
-        beta_valid <- valid_x_std[, sub_beta_hat]
-        pred_vals <- glmnet::predict.glmnet(res$glmnet.fit, valid_x_std, s = res$lambda.min)
-        pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+        ## predict and standardize - use linear model rather than glmnet object
+        lasso_train <- as.data.frame(train_x_std[, sub_beta_hat])
+        lasso_valid <- as.data.frame(valid_x_std[, sub_beta_hat])
+        colnames(lasso_train) <- colnames(lasso_valid) <- paste0("X", sub_beta_hat)
+        if (y_factor) {
+          lasso_lm <- stats::glm(use_y_train ~ ., data = lasso_train, family = lasso_fam)
+        } else {
+          lasso_lm <- stats::lm(use_y_train ~ ., data = lasso_train)
+        }
+        pred_vals <- predict(lasso_lm, lasso_valid, type = "response")
+        # lasso_pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       }
 
-      # save(res, train_x, train_y, valid_x, valid_y, stands, valid_ind, file = paste0(new_dir, method_j, "_fold", i, ".rda"))
-
-      if (sel_corr) { ## if using correlation to evaluate model fit
-        method_res <- results[[method_j]]
-        method_res[[length(method_res) + 1]] <- cbind(valid_y_std, pred_vals)
-        results[[method_j]] <- method_res
-      } else {
-        if (eval_type == "auc") {
-          pred_obj <- ROCR::prediction(pred_vals, valid_y_std)
-          perf_auc <- ROCR::performance(pred_obj, "auc")
-          auc <- as.numeric(perf_auc@y.values)
-          iter_res <- c(i, method_j, auc)
-          results <- rbind(results, iter_res)
-        } else {
-          mse <- mean((valid_y_std - pred_vals)^2)
-          iter_res <- c(i, method_j, mse)
-          results <- rbind(results, iter_res)
+      if (eval_type == "auc") { ## if using area under roc curve to evaluate model fit
+        pred_vals <- as.data.frame(pred_vals)
+        if (ncol(pred_vals) > 1) {
+          pred_vals <- pred_vals[, 1]
         }
+        fold_res <- cbind(method_j, pred_vals, valid_y_labs)
+        colnames(fold_res) <- c("method", "pred_vals", "true_vals")
+        results <- rbind(results, fold_res)
+      } else { ## if using correlation to evaluate model fit
+        fold_res <- cbind(method_j, pred_vals, valid_y_std)
+        colnames(fold_res) <- c("method", "pred_vals", "true_vals")
+        results <- rbind(results, fold_res)
       }
     }
   }
 
   ## set results data frame column names
-  if (sel_corr) {
-    res_df <- NULL
-    for (l in 1:length(methods)) {
-      method <- methods[l]
-      method_res <- results[[method]]
-      unlist_method_res <- as.data.frame(do.call(rbind, method_res))
-      spear_corr <- cor(unlist_method_res[, 1], unlist_method_res[, 2], method = "spearman") ## calc spearman corr
-      res_df <- rbind(res_df, c(method, spear_corr))
+  results <- as.data.frame(results)
+  final_results <- NULL
+  if (eval_type == "auc") {
+    for (i in 1:length(methods)) {
+      method_res <- results %>%
+        dplyr::filter(method == methods[i])
+      predicted <- method_res$pred_vals
+      true <- method_res$true_vals
+      method_roc <- ROCR::prediction(predicted, true)
+      method_auc <- ROCR::performance(method_roc)
+      method_auc <- method_auc@y.values
+      if (method_auc < 0.5) { ## if classifier auc is < 0.5, reverse it to be > 0.5
+        method_auc <- 1 - method_auc
+      }
+      method_res <- c("method" = methods[i],
+                      "auc" = as.numeric(method_auc))
+      final_results <- rbind(final_results, method_res)
     }
-    colnames(res_df) <- c("method", "spear_corr")
-    res_df <- res_df %>%
-      as.data.frame() %>%
-      dplyr::mutate(spear_corr = as.numeric(as.character(spear_corr)))
-    # saveRDS(res_df, file = paste0(new_dir, "output_table.rds"))
-    return (res_df)
   } else {
-    if (eval_type == "mse") {
-      colnames(results) <- c("fold", "method", "mse")
-      results <- as.data.frame(results)
-      results <- results %>%
-        dplyr::group_by(method) %>%
-        dplyr::summarise(mean_mse = mean(as.numeric(mse)))
-    } else {
-      colnames(results) <- c("fold", "method", "auc")
-      results <- as.data.frame(results)
-      results <- results %>%
-        dplyr::group_by(method) %>%
-        dplyr::summarise(mean_auc = mean(as.numeric(auc)))
+    for (i in 1:length(methods)) {
+      method_res <- results %>%
+        dplyr::filter(method == methods[i])
+      predicted <- as.numeric(method_res$pred_vals)
+      true <- as.numeric(method_res$true_vals)
+      method_corr <- cor(predicted, true, method = "spearman")
+      method_res <- c("method" = methods[i],
+                      "corr" = as.numeric(method_corr))
+      final_results <- rbind(final_results, method_res)
     }
-    #saveRDS(results, file = paste0(new_dir, "output_table.rds"))
-    return (results)
   }
+
+  final_results <- as.data.frame(final_results)
+  final_results[, 2] <- as.numeric(final_results[, 2])
+
+  save(final_results, results, file = paste0(new_dir, "results.rda"))
+  return (final_results)
 }

@@ -77,17 +77,13 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                  x = x,
                                  y = y,
                                  delta = mag_delta,
-                                 y_factor = er_input$y_factor,
-                                 perm_option = er_input$perm_option,
-                                 sel_corr = er_input$sel_corr,
+                                 eval_type = er_input$eval_type,
+                                 permute = er_input$permute,
                                  lambda = 0.5,
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
                                  out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
-                                 lasso = er_input$lasso,
-                                 pcr = er_input$pcr,
-                                 plsr = er_input$plsr,
                                  rep = j)
             }
             result
@@ -96,35 +92,19 @@ pipelineER1 <- function(yaml_path, steps = "all") {
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
       ## make CV plot
-      if (!is.null(er_input$perm_option)) {
-        final_res <- delta_rep %>%
-          dplyr::mutate(perm = sub(".*_", "", method)) %>%
-          dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
-          dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
-          dplyr::mutate(method = as.factor(method),
-                        perm = as.factor(perm)) %>%
-          dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
-      } else {
-        final_res <- delta_rep %>%
-          dplyr::mutate(method = as.factor(method),
-                        method_perm = as.factor(method),
-                        alpha = 1)
-      }
+      final_res <- delta_rep %>%
+        dplyr::mutate(perm = sub(".*_", "", method)) %>%
+        dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
+        dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
+        dplyr::mutate(method = as.factor(method),
+                      perm = as.factor(perm)) %>%
+        dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
       pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-      if (er_input$sel_corr) {
+      if (er_input$eval_type == "corr") {
         delta_boxplot <- ggplot2::ggplot(data = final_res,
                                          ggplot2::aes(x = method,
-                                                      y = spear_corr,
-                                                      fill = method_perm,
-                                                      alpha = alpha)) +
-          ggplot2::geom_boxplot() +
-          ggplot2::labs(fill = "Method") +
-          ggplot2::scale_alpha(guide = 'none')
-      } else if (er_input$y_factor) {
-        delta_boxplot <- ggplot2::ggplot(data = final_res,
-                                         ggplot2::aes(x = method,
-                                                      y = mean_auc,
+                                                      y = corr,
                                                       fill = method_perm,
                                                       alpha = alpha)) +
           ggplot2::geom_boxplot() +
@@ -133,7 +113,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       } else {
         delta_boxplot <- ggplot2::ggplot(data = final_res,
                                          ggplot2::aes(x = method,
-                                                      y = mean_mse,
+                                                      y = auc,
                                                       fill = method_perm,
                                                       alpha = alpha)) +
           ggplot2::geom_boxplot() +
@@ -146,7 +126,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
     }
     saveRDS(corr_bp_data, file = paste0(er_input$out_path, "pipeline_step2.rds"))
 
-    ## create boxplot of replicate correlations ##################################
+    ## create boxplot of replicate performance #################################
     final_res <- NULL
     for (i in 1:length(corr_bp_data)) {
       bp_data <- corr_bp_data[[i]]
@@ -161,24 +141,17 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                     method = as.factor(method))
     pdf_file <- paste0(er_input$out_path, "/delta_selection_boxplot.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
-    if (er_input$sel_corr) {
+    if (er_input$eval_type == "corr") {
       delta_boxplot <- ggplot2::ggplot(data = final_res,
                                        ggplot2::aes(x = delta,
-                                                    y = spear_corr,
+                                                    y = corr,
                                                     fill = method)) +
         ggplot2::geom_boxplot() +
         ggplot2::labs(fill = "Method")
-    } else if (er_input$y_factor) {
+    } else (er_input$y_factor) {
       delta_boxplot <- ggplot2::ggplot(data = final_res,
                                        ggplot2::aes(x = delta,
-                                                    y = mean_auc,
-                                                    fill = method)) +
-        ggplot2::geom_boxplot() +
-        ggplot2::labs(fill = "Method")
-    } else {
-      delta_boxplot <- ggplot2::ggplot(data = final_res,
-                                       ggplot2::aes(x = delta,
-                                                    y = mean_mse,
+                                                    y = auc,
                                                     fill = method)) +
         ggplot2::geom_boxplot() +
         ggplot2::labs(fill = "Method")

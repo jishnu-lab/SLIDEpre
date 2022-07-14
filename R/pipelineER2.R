@@ -77,17 +77,14 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                  x = x,
                                  y = y,
                                  delta = best_delta,
-                                 perm_option = er_input$perm_option,
-                                 sel_corr = er_input$sel_corr,
+                                 permute = er_input$permute,
+                                 eval_type = er_input$eval_type,
                                  y_factor = er_input$y_factor,
                                  lambda = lambda,
                                  out_path = paste0(er_input$out_path, "lambda_", lambda, "/"),
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
-                                 lasso = er_input$lasso,
-                                 pcr = er_input$pcr,
-                                 plsr = er_input$plsr,
                                  rep = j)
             }
             result
@@ -97,38 +94,21 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       }
 
       ## make CV plot
-      if (!is.null(er_input$perm_option)) {
-        final_res <- lambda_rep %>%
-          dplyr::mutate(perm = sub(".*_", "", method)) %>%
-          dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
-          dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
-          dplyr::mutate(method = as.factor(method),
-                        perm = as.factor(perm)) %>%
-          dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
-      } else {
-        final_res <- lambda_rep %>%
-          dplyr::mutate(method = as.factor(method),
-                        method_perm = as.factor(method),
-                        alpha = 1)
-      }
-
+      final_res <- lambda_rep %>%
+        dplyr::mutate(perm = sub(".*_", "", method)) %>%
+        dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
+        dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
+        dplyr::mutate(method = as.factor(method),
+                      perm = as.factor(perm)) %>%
+        dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
 
       pdf_file <- paste0(er_input$out_path, "lambda_", lambda, "_boxplot.pdf")
       dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
 
-      if (er_input$sel_corr) {
+      if (er_input$eval_type == "corr") {
         lambda_boxplot <- ggplot2::ggplot(data = final_res,
                                           ggplot2::aes(x = method,
-                                                       y = spear_corr,
-                                                       fill = method_perm,
-                                                       alpha = alpha)) +
-          ggplot2::geom_boxplot() +
-          ggplot2::labs(fill = "Method") +
-          ggplot2::scale_alpha(guide = 'none')
-      } else if (er_input$y_factor) {
-        lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                          ggplot2::aes(x = method,
-                                                       y = mean_auc,
+                                                       y = corr,
                                                        fill = method_perm,
                                                        alpha = alpha)) +
           ggplot2::geom_boxplot() +
@@ -137,15 +117,15 @@ pipelineER2 <- function(yaml_path, steps = "all") {
       } else {
         lambda_boxplot <- ggplot2::ggplot(data = final_res,
                                           ggplot2::aes(x = method,
-                                                       y = mean_mse,
+                                                       y = auc,
                                                        fill = method_perm,
                                                        alpha = alpha)) +
           ggplot2::geom_boxplot() +
           ggplot2::labs(fill = "Method") +
           ggplot2::scale_alpha(guide = 'none')
       }
-      ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
 
+      ggplot2::ggsave(pdf_file, lambda_boxplot, width = 20, height = 15, units = "in")
       corr_bp_data[[length(corr_bp_data) + 1]] <- list("lambda" = lambda,
                                                        "result" = lambda_rep)
     }
@@ -167,24 +147,17 @@ pipelineER2 <- function(yaml_path, steps = "all") {
     pdf_file <- paste0(er_input$out_path, "lambda_selection_boxplot.pdf")
     dir.create(file.path(dirname(pdf_file)), showWarnings = F, recursive = T)
 
-    if (er_input$sel_corr) {
+    if (er_input$eval_type == "corr") {
       lambda_boxplot <- ggplot2::ggplot(data = final_res,
                                         ggplot2::aes(x = lambda,
-                                                     y = spear_corr,
-                                                     fill = method)) +
-        ggplot2::geom_boxplot() +
-        ggplot2::labs(fill = "Method")
-    } else if (er_input$y_factor) {
-      lambda_boxplot <- ggplot2::ggplot(data = final_res,
-                                        ggplot2::aes(x = lambda,
-                                                     y = mean_auc,
+                                                     y = corr,
                                                      fill = method)) +
         ggplot2::geom_boxplot() +
         ggplot2::labs(fill = "Method")
     } else {
       lambda_boxplot <- ggplot2::ggplot(data = final_res,
                                         ggplot2::aes(x = lambda,
-                                                     y = mean_mse,
+                                                     y = auc,
                                                      fill = method)) +
         ggplot2::geom_boxplot() +
         ggplot2::labs(fill = "Method")
