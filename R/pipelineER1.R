@@ -148,7 +148,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                                     fill = method)) +
         ggplot2::geom_boxplot() +
         ggplot2::labs(fill = "Method")
-    } else (er_input$y_factor) {
+    } else {
       delta_boxplot <- ggplot2::ggplot(data = final_res,
                                        ggplot2::aes(x = delta,
                                                     y = auc,
