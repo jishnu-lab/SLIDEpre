@@ -15,7 +15,7 @@ toCont <- function(y, order = NULL) {
     uniq_vals <- order
   }
   num_uniq <- length(uniq_vals)
-  cont_vals <- seq(1, num_uniq)
+  cont_vals <- seq(0, (num_uniq - 1))
   corresp_vals <- cbind(uniq_vals, cont_vals)
   new_y <- plyr::mapvalues(y, from = uniq_vals, to = cont_vals)
   return (list("cat_y" = y,
