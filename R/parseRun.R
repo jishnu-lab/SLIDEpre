@@ -12,6 +12,16 @@ parseRun <- function(yaml_path) {
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1))
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1))
 
+  dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
+
+  ## make continuous if categorical
+  if (er_input$y_factor) {
+    y <- toCont(y, er_input$y_order)
+    saveRDS(y, file = paste0(er_input$out_path, "plainER_y_mapping.rds"))
+    orig_y <- y$cat_y
+    y <- y$cont_y
+  }
+
   ## final output
   er_output <- plainER(x = x,
                        y = y,
