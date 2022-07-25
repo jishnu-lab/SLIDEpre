@@ -462,15 +462,12 @@ div.tocify {
 <h3 class="tabset tabset-fade tabset-pills">Pipeline</h3>
 <div id="cross-validation" class="section level4">
 <h4>Cross-Validation</h4>
-<p>We also provide a cross-validation regime based upon <code>K-CV()</code> in the original Essential Regression package. This regime is implemented in the function <code>essregCV()</code>, which accepts all of the parameters used in <code>plainER()</code> and <code>priorER()</code> in addition to a few others:</p>
+<p>We also provide a cross-validation regime based upon <code>K-CV()</code> in the original Essential Regression package. This regime is implemented in the function <code>essregCV()</code>, which accepts all of the parameters used in <code>plainER()</code> and <code>priorER()</code> in addition to a few others. (you should never need to run <code>essregCV()</code> because it is called within the pipeline, but it is important to understand what its arguments are):</p>
 <ul>
 <li><code>k</code>: The number of folds to use for training/validation set creation.</li>
-<li><code>sel_corr</code>: A boolean flag indicating whether to evaluate models using the Spearman correlation between <span class="math inline">\(\mathbf{Y}\)</span> and <span class="math inline">\(\hat{\mathbf{Y}}\)</span> or to use MSE/AUC.</li>
+<li><code>eval_type</code>: A string indicating the type of evaluation metric to use for the method comparison. Can be “corr” or “auc”. REQUIRED</li>
 <li><code>y_factor</code>: A boolean flag indicating whether <code>y</code> is categorical (<code>TRUE</code>) or continuous (<code>FALSE</code>).</li>
-<li><code>perm_option</code>: A string indicating the type of permutation test do perform. Can be <code>NULL</code> for no permutations, <code>x</code> to permute the columns of <code>x</code>, <code>y</code> to permute the entries of <code>y</code>, <code>xy</code> to permute <code>x</code> and <code>y</code>, or <code>ybs</code> to permute the entries of <code>y</code> before splitting into training/validation sets.</li>
-<li><code>lasso</code>: A boolean flag indicating whether to use LASSO for model comparison. The default value is <code>TRUE</code>.</li>
-<li><code>plsr</code>: A boolean flag indicating whether to use PLSR for model comparison. The default value is <code>FALSE</code>.</li>
-<li><code>pcr</code>: A boolean flag indicating whether to use PCR for model comparison. The default value is <code>FALSE</code>.</li>
+<li><code>permute</code>: A boolean flag indicating whether to permute the response as a baseline comparison. Only LASSO and plainER will be performed with the permuted responses. REQUIRED</li>
 <li><code>rep</code>: The replicate number. This is only used for saving intermediate output during cross-validation.</li>
 </ul>
 <hr />
@@ -530,14 +527,12 @@ div.tocify {
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>k<span class="sc">:</span> <span class="dv">5</span>                      <span class="co"># number of folds for cross-validation</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>y_factor<span class="sc">:</span> F               <span class="co"># is y a categorical variable?</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>y_order<span class="sc">:</span> <span class="cn">NULL</span>             <span class="co"># if y is ordinal, provide the levels (Ex: [&quot;Mild&quot;, &quot;Moderate&quot;, &quot;Severe&quot;])</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>rep_cv<span class="sc">:</span> <span class="dv">50</span>                <span class="co"># number of replicates for cross-validation for delta</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>sel_corr<span class="sc">:</span> <span class="cn">TRUE</span>            <span class="co"># perform evaluation using Spearman correlation?</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>nreps<span class="sc">:</span> <span class="dv">10</span>                 <span class="co"># number of replicates for cross-validation in step 2</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>alpha_level<span class="sc">:</span> <span class="fl">0.05</span>         <span class="co"># alpha level for confidence intervals</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>thresh_fdr<span class="sc">:</span> <span class="fl">0.2</span>           <span class="co"># false discovery rate thresholding p-value cutoff</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>lasso<span class="sc">:</span> <span class="cn">TRUE</span>               <span class="co"># do lasso?</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>pcr<span class="sc">:</span> <span class="cn">FALSE</span>                <span class="co"># do pcr?</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>plsr<span class="sc">:</span> <span class="cn">FALSE</span>               <span class="co"># do plsr?</span></span></code></pre></div>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>eval_type<span class="sc">:</span> <span class="st">&quot;corr&quot;</span>         <span class="co"># evaluation metric for method comparison</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>permute<span class="sc">:</span> <span class="cn">TRUE</span>             <span class="co"># permute y during comparison?</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>rep_cv<span class="sc">:</span> <span class="dv">50</span>                <span class="co"># number of replicates for cross-validation for delta</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>nreps<span class="sc">:</span> <span class="dv">10</span>                 <span class="co"># number of replicates for cross-validation in step 2</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>alpha_level<span class="sc">:</span> <span class="fl">0.05</span>         <span class="co"># alpha level for confidence intervals</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>thresh_fdr<span class="sc">:</span> <span class="fl">0.2</span>           <span class="co"># false discovery rate thresholding p-value cutoff</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pipe1_run <span class="ot">&lt;-</span> <span class="fu">pipelineER1</span>(<span class="at">yaml_path =</span> <span class="st">&quot;~/pipeline1.yaml&quot;</span>, <span class="at">steps =</span> <span class="st">&quot;all&quot;</span>)</span></code></pre></div>
 <p><code>pipelineER1()</code> saves all intermediate steps/folds as <code>.rda</code> files for easier debugging and investigation of cross-validation. The main output of interest are boxpots comparing various values of <span class="math inline">\(\delta\)</span> and models according to an evaluation metric (Spearman correlation by default). From our run above, we get a <span class="math inline">\(\delta\)</span> boxplot comparing different magnitudes of <span class="math inline">\(\delta\)</span> (coarse search). We also get a series of boxplots comparing a variety of methods for the best values of <span class="math inline">\(\delta\)</span> chosen by Step 1. For our run, we compared IVS, LASSO, plainER with a subset of <span class="math inline">\(\beta\)</span>, plainER with all <span class="math inline">\(\beta\)</span>, and plainER with IVS.</p>
 <hr />
@@ -556,12 +551,10 @@ div.tocify {
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>y_order<span class="sc">:</span> <span class="cn">NULL</span>              <span class="co"># if y is ordinal, provide the levels (Ex: [&quot;Mild&quot;, &quot;Moderate&quot;, &quot;Severe&quot;])</span></span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>rep_cv<span class="sc">:</span> <span class="dv">50</span>                 <span class="co"># number of replicates for cross-validation for delta</span></span>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>nreps<span class="sc">:</span> <span class="dv">10</span>                  <span class="co"># number of replicates for cross-validation in step 4</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>sel_corr<span class="sc">:</span> <span class="cn">TRUE</span>             <span class="co"># evaluate with Spearman correlation?</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>alpha_level<span class="sc">:</span> <span class="fl">0.05</span>          <span class="co"># alpha level for confidence intervals</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>thresh_fdr<span class="sc">:</span> <span class="fl">0.2</span>            <span class="co"># false discovery rate thresholding p-value cutoff</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>lasso<span class="sc">:</span> <span class="cn">TRUE</span>               <span class="co"># do lasso?</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>pcr<span class="sc">:</span> <span class="cn">FALSE</span>                <span class="co"># do pcr?</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plsr<span class="sc">:</span> <span class="cn">FALSE</span>               <span class="co"># do plsr?</span></span></code></pre></div>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>eval_type<span class="sc">:</span> <span class="st">&quot;corr&quot;</span>          <span class="co"># evaluation metric for method comparison</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>permute<span class="sc">:</span> <span class="cn">TRUE</span>              <span class="co"># permute y during comparison?</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>alpha_level<span class="sc">:</span> <span class="fl">0.05</span>          <span class="co"># alpha level for confidence intervals</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>thresh_fdr<span class="sc">:</span> <span class="fl">0.2</span>            <span class="co"># false discovery rate thresholding p-value cutoff</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pipe2_run <span class="ot">&lt;-</span> <span class="fu">pipelineER2</span>(<span class="at">yaml_path =</span> <span class="st">&quot;~/pipeline2.yaml&quot;</span>, <span class="at">steps =</span> <span class="st">&quot;all&quot;</span>)</span></code></pre></div>
 <hr />
 </div>
@@ -609,7 +602,7 @@ Lambda = 1.0 &amp; 1.5 Boxplots
 </div>
 <div id="summary" class="section level3">
 <h3>Summary</h3>
-<p>After running both <code>pipelineER1()</code> and <code>pipelineER2()</code>, we have gained enough information to make an educated estimate of the optimal values to use for <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\delta\)</span>. Though this example walked through the pipeline with respect to plain Essential Regression, the pipeline is compatible with Essential Regression with Prior Information as well. Simply provide the important variables as a vector of column names or indices in the .yaml file, and the pipeline will take care of the rest!</p>
+<p>After running both <code>pipelineER1()</code> and <code>pipelineER2()</code>, we have gained enough information to make an educated estimate of the optimal values to use for <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\delta\)</span>.</p>
 </div>
 
 
