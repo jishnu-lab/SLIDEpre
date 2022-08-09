@@ -22,7 +22,7 @@
 #' @export
 
 essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
-                     rep_cv = 50, alpha_level = 0.05, permute = T,
+                     rep_cv = 50, alpha_level = 0.05, permute = T,y_levels = NULL,
                      eval_type, out_path, rep) {
 
   if (eval_type == "auc") {
@@ -37,9 +37,11 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   new_dir <- paste0(out_path, "replicate", rep, "/")
   dir.create(file.path(new_dir), showWarnings = F, recursive = T)
 
-  ## divide into folds
+  #################################################################
+  ##                  Splitting Data Into Folds                  ##
+  #################################################################
   zero_in <- TRUE
-  while (zero_in) { ## if any are 0, redo the fold divisions
+  while (zero_in) {
     ## first part is partition()
     total_num <- nrow(x)
     num_group <- k
@@ -62,22 +64,40 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       y_groups_val[[length(y_groups_val) + 1]] <- y[unlist(group_inds[[i]])]
       y_groups_train[[length(y_groups_train) + 1]] <- y[-unlist(group_inds[[i]])]
     }
-    group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+    # check if we are doing LOOCV
+    len <- lapply(y_groups_val, function(x){length(x)})
+    if (! 1 %in% len) {
+      group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+    }
+    group_vars_val <- unlist(y_groups_val) ## don't calculate sd if LOOCV
     group_vars_train <- sapply(y_groups_train, sd) ## get standard deviation of responses (training set)
-    zero_in_val <- 0 %in% group_vars_val ## see if any are 0
-    zero_in_train <- 0 %in% group_vars_train ## see if any are 0
-    if (zero_in_val || zero_in_train) {
-      zero_in <- T
-    } else {
-      zero_in <- F
+    zero_in_val <- 0 %in% group_vars_val ## see if any are 0s from the sd calculation
+    zero_in_train <- 0 %in% group_vars_train
+    if (! 1 %in% len) {
+      if (zero_in_val || zero_in_train) {
+        zero_in <- T
+      } else {
+        zero_in <- F
+      }
+    }else{
+      # wether we are doing LOOCV or not, let's check the training data.
+      if (zero_in_train){
+        zero_in <- T
+      }else{
+        zero_in <- F
+      }
     }
   }
 
-  ## methods list
+  #################################################################
+  ##                       Running Methods                       ##
+  #################################################################
+
+  ## Decide what methods to run using the nature of the Y.
   methods <- c("plainER", "lasso")
 
   if (y_factor) {
-    methods <- c(methods, "plsda", "rf")
+    methods <- c(methods, "plsda", "pclr")
   } else {
     methods <- c(methods, "plsr", "pcr")
   }
@@ -86,10 +106,11 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     methods <- c(methods, paste0(methods, "_y"))
   }
 
-  ## initialization
-  results <- NULL
 
-  ## begin CV
+  results <- NULL
+  ##---------------------------------------------------------------
+  ##                  starting cross validation                  --
+  ##---------------------------------------------------------------
   for (i in 1:k) { ## loop through folds
     cat("FOLD ", i, ". . . . \n")
     valid_ind <- group_inds[[i]] ## validation indices
@@ -127,6 +148,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       valid_y_labs <- factor(valid_y, levels = y_levels)
     }
 
+
+    ##----------------------------------------------------------------
+    ##                   loop through all methods                   --
+    ##----------------------------------------------------------------
     for (j in 1:length(methods)) { ## loop through methods
       method_j <- methods[j]
       cat("CV for ", method_j, ". . . \n")
@@ -152,6 +177,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
       }
 
+
+      ##-------------
+      ##  plainER   -
+      ##-------------
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         res <- plainER(y = use_y_train_nonstd,
                        x = train_x,
@@ -167,18 +196,30 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         pred_all_betas <- res$pred$er_predictor
         pred_vals <- valid_x_std %*% pred_all_betas
         #pred_vals <- t((t(beta_valid) - centers_y) / scales_y)
+
+        ##----------
+        ##  plsr   -
+        ##----------
       } else if (grepl(x = method_j, pattern = "plsr", fixed = TRUE)) { ## PLSR
         res <- pls::plsr(use_y_train ~ train_x_std, validation = "CV", segments = 5)
         n_comp <- pls::selectNcomp(res, method = "randomization")
         n_comp <- ifelse(n_comp == 0, 1, n_comp)
         pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
         #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+
+        ##---------
+        ##  pcr   -
+        ##---------
       } else if (grepl(x = method_j, pattern = "pcr", fixed = TRUE)) { ## PCR
         res <- pls::pcr(use_y_train ~ train_x_std, validation = "CV", segments = 5)
         n_comp <- pls::selectNcomp(res, method = "randomization")
         n_comp <- ifelse(n_comp == 0, 1, n_comp)
         pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
         #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+
+        ##-----------
+        ##  plsda   -
+        ##-----------
       } else if (grepl(x = method_j, pattern = "plsda", fixed = TRUE)) { ## PLS-DA
         ## convert to syntactically valid names
         use_y_train_syn <- make.names(use_y_train)
@@ -194,22 +235,35 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                             method = "pls")
 
         pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
-      } else if (grepl(x = method_j, pattern = "rf", fixed = TRUE)) { ## RANDOM FOREST
-        res <- randomForest::randomForest(use_y_train ~ .,
-                                          data = train_x_std)
-        pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
+
+        ##----------
+        ##  pclr   -
+        ##----------
+      } else if (grepl(x = method_j, pattern = "pclr", fixed = TRUE)) { ## pc logistic regression
+        # res <- randomForest::randomForest(use_y_train ~ .,
+        #                                   data = train_x_std)
+        # pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
         #pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
+        princ_comps <- stats::prcomp(x = train_x_std, center = FALSE, scale = FALSE)
+        # cumul_props <- summary(princ_comps)$importance[3, ]
+        # num_pcs <- min(which(cumul_props > 0.9))
+        # num_pcs <- ifelse(num_pcs >= nrow(train_x_std), nrow(train_x_std) - 1, num_pcs) ## if too many, then just use max number to avoid rank deficiency
+        num_pcs <- nrow(train_x_std) - 1 ## use maximum number of PCs
+        train_pcs <- princ_comps$x[, 1:num_pcs] ## get PCs for regression
+        valid_pcs <- scale(valid_x_std, princ_comps$center, princ_comps$scale) %*% princ_comps$rotation ## project validation set to PC space
+        res <- stats::glm(use_y_train ~ ., data = as.data.frame(train_pcs), family = "binomial") ## make model
+        pred_vals <- predict(res, newdata = as.data.frame(valid_pcs), type = "response") ## predict validation set values
       } else { ## lasso for comparison
-        if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
-          res <- glmnet::cv.glmnet(train_x_std,
+          if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
+            res <- glmnet::cv.glmnet(train_x_std,
                                    use_y_train,
                                    alpha = 1,
                                    nfolds = 5,
                                    standardize = F,
                                    grouped = F,
                                    family = lasso_fam)
-        } else {
-          res <- glmnet::cv.glmnet(train_x_std,
+          } else {
+            res <- glmnet::cv.glmnet(train_x_std,
                                    use_y_train,
                                    alpha = 1,
                                    nfolds = 10,
@@ -227,6 +281,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         ## predict and standardize - use linear model rather than glmnet object
         lasso_train <- as.data.frame(train_x_std[, sub_beta_hat])
         lasso_valid <- as.data.frame(valid_x_std[, sub_beta_hat])
+        if (dim(lasso_valid)[[2]] ==1 ){
+          lasso_valid <- as.data.frame(t(valid_x_std[, sub_beta_hat]))
+        }
         colnames(lasso_train) <- colnames(lasso_valid) <- paste0("X", sub_beta_hat)
         if (y_factor) {
           lasso_lm <- stats::glm(use_y_train ~ ., data = lasso_train, family = lasso_fam)
@@ -242,9 +299,11 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         if (ncol(pred_vals) > 1) {
           pred_vals <- pred_vals[, 1]
         }
-        fold_res <- cbind(method_j, pred_vals, valid_y_labs)
+        fold_res <- cbind(method_j, pred_vals, as.numeric(as.character(valid_y_labs)))
+        print(valid_y_labs)
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
         results <- rbind(results, fold_res)
+        print(results)
       } else { ## if using correlation to evaluate model fit
         fold_res <- cbind(method_j, pred_vals, valid_y_std)
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
@@ -258,15 +317,15 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   final_results <- NULL
   if (eval_type == "auc") {
     for (i in 1:length(methods)) {
-      method_res <- results %>%
-        dplyr::filter(method == methods[i])
-      predicted <- method_res$pred_vals
-      true <- method_res$true_vals
+
+      method_res <- results %>% dplyr::filter(method == methods[i])
+      predicted <- as.numeric(method_res$pred_vals)
+      true <- as.numeric(method_res$true_vals)
       method_roc <- ROCR::prediction(predicted, true)
-      method_auc <- ROCR::performance(method_roc)
+      method_auc <- ROCR::performance(method_roc, "tpr", "fpr")
       method_auc <- method_auc@y.values
       if (method_auc < 0.5) { ## if classifier auc is < 0.5, reverse it to be > 0.5
-        method_auc <- 1 - method_auc
+        method_auc <- 1 - unlist(method_auc)
       }
       method_res <- c("method" = methods[i],
                       "auc" = as.numeric(method_auc))

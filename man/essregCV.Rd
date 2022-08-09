@@ -13,9 +13,9 @@ essregCV(
   lambda = 0.1,
   rep_cv = 50,
   alpha_level = 0.05,
-  perm_option = NULL,
-  sel_corr = T,
-  y_factor = F,
+  permute = T,
+  y_levels = NULL,
+  eval_type,
   out_path,
   rep
 )
@@ -38,13 +38,10 @@ control the false discovery rate, default is 0.2}
 
 \item{alpha_level}{\eqn{\alpha}, a numerical constant used in confidence interval calculation}
 
-\item{perm_option}{a string indicating the type of permutation type do perform
-(can be NULL, "x", "x_y", or "y_before_split")}
+\item{permute}{a boolean flag indicating whether to permute the response (\eqn{y}) during training}
 
-\item{sel_corr}{a boolean flag indicating whether to perform cross-validation by evaluating the correlation
-between the predicted and true values of \eqn{y} (\code{T}) or by evaluating the prediction error via mse or auc (\code{F})}
-
-\item{y_factor}{a boolean flag indicating whether \eqn{y} is categorical (\code{T}) or not (\code{F})}
+\item{eval_type}{a string indicating what metric to use for evaluating model performance
+(can be "auc" - area under ROC curve, or "corr" - for spearman correlation)}
 
 \item{out_path}{path for saving output}
 

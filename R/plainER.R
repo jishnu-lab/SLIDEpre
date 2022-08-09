@@ -164,11 +164,39 @@ plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
   beta_conf_int <- res_beta$conf_int
   beta_var <- res_beta$beta_var
 
+  #### organization/renaming
+  rownames(A_hat) <- colnames(x)
+  colnames(A_hat) <- paste0("Z", 1:ncol(A_hat))
+
+  rownames(C_hat) <- colnames(C_hat) <- paste0("Z", 1:ncol(C_hat))
+
+  I_clust <- NULL
+  for (i in 1:length(I_hat_list)) {
+    clust_name <- paste0("Z", i)
+    cluster <- I_hat_list[[i]]
+    pos <- cluster$pos
+    neg <- cluster$neg
+    if (length(pos) > 0) {
+      names(pos) <- colnames(x)[pos]
+    } else {
+      pos <- NULL
+    }
+    if (length(neg) > 0) {
+      names(neg) <- colnames(x)[neg]
+    } else {
+      neg <- NULL
+    }
+    I_clust[[clust_name]] <- list("pos" = pos,
+                                  "neg" = neg)
+  }
+
+  names(I_hat) <- colnames(x)[I_hat]
+
   return(list(K = ncol(A_hat),
               A = A_hat,
               C = C_hat,
               I = I_hat,
-              I_clust = I_hat_list, ## original is I_ind
+              I_clust = I_clust, ## original is I_ind
               Gamma = Gamma_hat,
               beta = beta_hat,
               beta_conf_int = beta_conf_int, ## original is beta_CIs

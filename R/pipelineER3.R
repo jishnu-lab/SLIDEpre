@@ -36,6 +36,7 @@ pipelineER3 <- function(yaml_path) {
                        delta = er_input$delta,
                        permute = er_input$permute,
                        eval_type = er_input$eval_type,
+                       y_levels = er_input$y_levels,
                        lambda = er_input$lambda,
                        out_path = er_input$out_path,
                        rep_cv = er_input$rep_cv,

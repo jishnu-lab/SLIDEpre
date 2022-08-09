@@ -10,7 +10,7 @@ pipelineER2(yaml_path, steps = "all")
 \item{yaml_path}{the path to a .yaml file containing all necessary parameters/arguments
 for Essential Regression}
 
-\item{steps}{an integer or string indicating which steps of the pipeline to perform: 3, 4, "all"}
+\item{steps}{an integer or string indicating which steps of the pipeline to perform: "3" or "all"}
 }
 \value{
 nothing is returned, saves boxplot of cross-validation results for user to use

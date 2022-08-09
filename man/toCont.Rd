@@ -4,10 +4,12 @@
 \alias{toCont}
 \title{Categorical To Continuous Data.}
 \usage{
-toCont(y)
+toCont(y, order = NULL)
 }
 \arguments{
 \item{y}{a response vector of dimension \eqn{n} of categorical values}
+
+\item{order}{a vector indicating the level ordering of \eqn{y}}
 }
 \value{
 a list containing the old (categorical) \eqn{y} and the new (continuous) \eqn{y}

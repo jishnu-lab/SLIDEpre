@@ -79,6 +79,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                  delta = mag_delta,
                                  eval_type = er_input$eval_type,
                                  permute = er_input$permute,
+                                 y_levels = er_input$y_levels,
                                  lambda = 0.5,
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
