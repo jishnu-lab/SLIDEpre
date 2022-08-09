@@ -79,12 +79,18 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       } else {
         zero_in <- F
       }
-    }else{
-      # wether we are doing LOOCV or not, let's check the training data.
-      if (zero_in_train){
+    } else{
+      # whether we are doing LOOCV or not, let's check the training data.
+      if (zero_in_train) {
         zero_in <- T
-      }else{
+      } else{
         zero_in <- F
+      }
+    }
+
+    if (eval_type == "auc") { ## if AUC, go ahead with first split
+      if (!zero_in_train) {
+        zero_in <- FALSE
       }
     }
   }
@@ -256,19 +262,19 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       } else { ## lasso for comparison
           if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
             res <- glmnet::cv.glmnet(train_x_std,
-                                   use_y_train,
-                                   alpha = 1,
-                                   nfolds = 5,
-                                   standardize = F,
-                                   grouped = F,
-                                   family = lasso_fam)
+                                     use_y_train,
+                                     alpha = 1,
+                                     nfolds = 5,
+                                     standardize = F,
+                                     grouped = F,
+                                     family = lasso_fam)
           } else {
             res <- glmnet::cv.glmnet(train_x_std,
-                                   use_y_train,
-                                   alpha = 1,
-                                   nfolds = 10,
-                                   standardize = F,
-                                   grouped = F,
+                                     use_y_train,
+                                     alpha = 1,
+                                     nfolds = 10,
+                                     standardize = F,
+                                     grouped = F,
                                    family = lasso_fam)
         }
         beta_hat <- coef(res, s = res$lambda.min)[-1]
@@ -300,10 +306,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           pred_vals <- pred_vals[, 1]
         }
         fold_res <- cbind(method_j, pred_vals, as.numeric(as.character(valid_y_labs)))
-        print(valid_y_labs)
+        #print(valid_y_labs)
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
         results <- rbind(results, fold_res)
-        print(results)
+        #print(results)
       } else { ## if using correlation to evaluate model fit
         fold_res <- cbind(method_j, pred_vals, valid_y_std)
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
@@ -317,15 +323,14 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   final_results <- NULL
   if (eval_type == "auc") {
     for (i in 1:length(methods)) {
-
       method_res <- results %>% dplyr::filter(method == methods[i])
       predicted <- as.numeric(method_res$pred_vals)
       true <- as.numeric(method_res$true_vals)
       method_roc <- ROCR::prediction(predicted, true)
-      method_auc <- ROCR::performance(method_roc, "tpr", "fpr")
-      method_auc <- method_auc@y.values
+      method_auc <- ROCR::performance(method_roc, "auc")
+      method_auc <- method_auc@y.values[[1]]
       if (method_auc < 0.5) { ## if classifier auc is < 0.5, reverse it to be > 0.5
-        method_auc <- 1 - unlist(method_auc)
+        method_auc <- 1 - method_auc
       }
       method_res <- c("method" = methods[i],
                       "auc" = as.numeric(method_auc))
