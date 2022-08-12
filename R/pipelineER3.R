@@ -46,7 +46,7 @@ pipelineER3 <- function(yaml_path) {
     }
     temp
   } -> lambda_rep
-  saveRDS(lambda_rep, paste0(er_input$out_path, "pipeline_step5.RDS"))
+  saveRDS(lambda_rep, paste0(er_input$out_path, "pipeline_step5.rds"))
 
   ## create boxplot of replicate correlations ##################################
   bp_df <- lambda_rep %>%

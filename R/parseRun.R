@@ -33,5 +33,5 @@ parseRun <- function(yaml_path) {
                        thresh_fdr = er_input$thresh_fdr,
                        out_path = er_input$out_path)
 
-  saveRDS(er_output, paste0(er_input$out_path, 'er_output_', er_output$opt_delta, '.rds'))
+  saveRDS(er_output, paste0(er_input$out_path, 'final_er_output.rds'))
 }

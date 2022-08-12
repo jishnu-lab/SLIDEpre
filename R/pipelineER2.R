@@ -29,38 +29,46 @@ pipelineER2 <- function(yaml_path, steps = "all") {
   }
 
   ## Step 3: Fine Delta Search ###############################################
-  if (file.exists(paste0(er_input$out_path, "pipeline_step3.rds"))) {
-    fine_delta_er <- readRDS(file = paste0(er_input$out_path, "pipeline_step3.rds"))
-  } else {
-    if (length(er_input$delta) == 1) {
-      d_lbd <- er_input$delta - er_input$delta / 2
-      d_ubd <- er_input$delta + er_input$delta / 2
-      delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+  if (steps == "all"){
+    if (file.exists(paste0(er_input$out_path, "pipeline_step3.rds"))) {
+      fine_delta_er <- readRDS(file = paste0(er_input$out_path, "pipeline_step3.rds"))
     } else {
-      delta_grid <- er_input$delta
+      if (length(er_input$delta) == 1) {
+        d_lbd <- er_input$delta - er_input$delta / 2
+        d_ubd <- er_input$delta + er_input$delta / 2
+        delta_grid <- seq(d_lbd, d_ubd, er_input$delta / 100)
+      } else {
+        delta_grid <- er_input$delta
+      }
+
+      fine_delta_er <- plainER(y = y,
+                               x = x,
+                               sigma = cor(x),
+                               delta = delta_grid,
+                               lambda = 0.5,
+                               rep_cv = er_input$rep_cv,
+                               alpha_level = er_input$alpha_level,
+                               thresh_fdr = er_input$thresh_fdr,
+                               out_path = er_input$out_path)
+      if (is.null(fine_delta_er)) {
+        cat("plainER failed --- infeasible linear program \n")
+        return ()
+      }
+      saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
     }
 
-    fine_delta_er <- plainER(y = y,
-                             x = x,
-                             sigma = cor(x),
-                             delta = delta_grid,
-                             lambda = 0.5,
-                             rep_cv = er_input$rep_cv,
-                             alpha_level = er_input$alpha_level,
-                             thresh_fdr = er_input$thresh_fdr,
-                             out_path = er_input$out_path)
-    if (is.null(fine_delta_er)) {
-      cat("plainER failed --- infeasible linear program \n")
-      return ()
-    }
-    saveRDS(fine_delta_er, file = paste0(er_input$out_path, "pipeline_step3.rds"))
+    best_delta <- fine_delta_er$opt_delta
   }
-
-  best_delta <- fine_delta_er$opt_delta
   ## Step 4: Lambda Search ###################################################
-  if (steps == "all") {
+  if (steps == "4" | steps == "all") {
     corr_bp_data <- NULL
+    if (length(er_input$delta) == 1) {
+      best_delta <- er_input$delta
+    } else {
+      cat("Delta is given as multiple values...")
+    }
     for (i in 1:length(er_input$lambda)) {
+
       lambda <- er_input$lambda[[i]]
       cat("LAMBDA = ", lambda, " . . . \n")
       out_path <- paste0(er_input$out_path, "lambda_", lambda, "/")
@@ -90,6 +98,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
             result
           }
         } -> lambda_rep
+
         saveRDS(lambda_rep, file = paste0(er_input$out_path, "essregCV_lambda_", lambda, ".rds"))
       }
 
