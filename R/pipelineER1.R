@@ -93,11 +93,16 @@ pipelineER1 <- function(yaml_path, steps = "all") {
         saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
       ## make CV plot
+      if (er_input$eval_type == "auc") {
+        methods <- c("plainER", "plainER_y", "lasso", "lasso_y", "pclr", "pclr_y", "plsda", "plsda_y")
+      } else {
+        methods <- c("plainER", "plainER_y", "lasso", "lasso_y", "pcr", "pcr_y", "plsr", "plsr_y")
+      }
       final_res <- delta_rep %>%
         dplyr::mutate(perm = sub(".*_", "", method)) %>%
         dplyr::mutate(perm = ifelse(perm == method, "no_perm", paste0(perm, "_perm"))) %>%
         dplyr::mutate(method_perm = sub("*_.", "", method)) %>%
-        dplyr::mutate(method = as.factor(method),
+        dplyr::mutate(method = factor(method, levels = methods),
                       perm = as.factor(perm)) %>%
         dplyr::mutate(alpha = ifelse(perm == "no_perm", 1, 0.9))
       pdf_file <- paste0(er_input$out_path, "delta_", mag_delta, "_boxplot.pdf")
