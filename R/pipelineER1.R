@@ -84,13 +84,13 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
-                                 out_path = paste0(er_input$out_path, "delta_", mag_delta, "/"),
+                                 out_path = paste0(er_input$out_path, "step2_delta_", mag_delta, "/"),
                                  rep = j)
             }
             result
           }
         } -> delta_rep
-        saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
+        #saveRDS(delta_rep, file = paste0(er_input$out_path, "essregCV_delta_", mag_delta, ".rds"))
       }
       ## make CV plot
       if (er_input$eval_type == "auc") {
