@@ -135,6 +135,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     train_y_std <- stands$train_y
     valid_x_std <- stands$valid_x
     valid_y_std <- stands$valid_y
+    print(valid_y_std)
 
     centers_y <- attr(train_y_std, "scaled:center")
     scales_y <- attr(train_y_std, "scaled:scale")
@@ -352,6 +353,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   final_results <- as.data.frame(final_results)
   final_results[, 2] <- as.numeric(final_results[, 2])
 
-  save(final_results, results, file = paste0(new_dir, "results.rda"))
+  combined_res <- NULL
+  combined_res$each_fold <- results
+  combined_res$final_corr <- final_results
+  saveRDS(combined_res, file = paste0(new_dir, "results.rds"))
   return (final_results)
 }
