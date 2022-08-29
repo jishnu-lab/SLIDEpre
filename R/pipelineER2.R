@@ -43,6 +43,7 @@ pipelineER2 <- function(yaml_path, steps = "all") {
 
       fine_delta_er <- plainER(y = y,
                                x = x,
+                               x_std = x_std,
                                sigma = cor(x),
                                delta = delta_grid,
                                lambda = 0.5,

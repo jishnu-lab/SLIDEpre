@@ -27,7 +27,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
 
   #get raw_x and get scaled x ###########################
   raw_x <- x
-  x <- scale(raw_x, T, T)
+  x <- scale(x, T, T)
 
   if (eval_type == "auc") {
     lasso_fam <- "binomial"
@@ -196,7 +196,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
         res <- plainER(y = use_y_train,
                        x = train_x_raw,
-                       z_x = train_x_std,
+                       x_std = train_x_std,
                        sigma = NULL,
                        delta = delta,
                        lambda = lambda,
@@ -350,8 +350,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       predicted <- as.numeric(method_res$pred_vals)
       true <- as.numeric(method_res$true_vals)
       method_corr <- cor(predicted, true, method = "spearman")
+      method_mse <- sum((predicted - true)^2) / length(predicted)
       method_res <- c("method" = methods[i],
-                      "corr" = as.numeric(method_corr))
+                      "corr" = as.numeric(method_corr),
+                      "mse" = as.numeric(method_mse))
       final_results <- rbind(final_results, method_res)
     }
   }

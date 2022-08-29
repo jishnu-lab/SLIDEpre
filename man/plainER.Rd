@@ -7,7 +7,7 @@
 plainER(
   y,
   x,
-  z_x,
+  x_std,
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
@@ -22,7 +22,7 @@ plainER(
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
-\item{z_x}{a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix}
+\item{x_std}{a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix}
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}}
 

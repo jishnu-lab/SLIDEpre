@@ -90,6 +90,7 @@ pipelineER3 <- function(yaml_path) {
   ## Final plainER Run #########################################################
   er_output <- plainER(x = x,
                        y = y,
+                       x_std = x_std,
                        sigma = NULL,
                        delta = er_input$delta,
                        lambda = er_input$lambda,

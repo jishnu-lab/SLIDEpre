@@ -26,7 +26,7 @@ parseRun <- function(yaml_path) {
 
   ## final output
   er_output <- plainER(x = x,
-                       z_x = z_x,
+                       x_std = x_std,
                        y = y,
                        sigma = NULL,
                        delta = er_input$delta,

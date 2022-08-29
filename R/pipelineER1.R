@@ -18,7 +18,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
   er_input <- yaml::yaml.load_file(yaml_path)
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1)) ## not standardized
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1)) ## not standardized
-  z_x <- scale(x, T, T)
+  x_std <- scale(x, T, T)
 
   dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
 
@@ -42,7 +42,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
       cat(i)
       result <- plainER(y = y,
                         x = x, # x here is NOT z_scored x
-                        z_x = z_x,
+                        x_std = x_std,
                         sigma = NULL,
                         delta = deltas[[i]],
                         lambda = 0.5,
