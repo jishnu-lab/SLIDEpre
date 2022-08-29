@@ -5,6 +5,7 @@
 #' @importFrom foreach '%dopar%'
 #' @param y a response vector of dimension \eqn{n}, must be continous
 #' @param x a data matrix of dimensions \eqn{n \times p}
+#' @param z_x a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}
 #' @param delta \eqn{\delta}, a numerical value used for thresholding, or a vector of values
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
@@ -20,15 +21,16 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
+plainER <- function(y, x, z_x, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
                     rep_cv = 50, alpha_level = 0.05, out_path = NULL) {
   ## Data Housekeeping #########################################################
-  raw_y <- y
-  raw_x <- x
+  #raw_y <- y
+  raw_x <- x  # input raw x is now raw_x
 
-  ## standardization
-  x <- scale(x, T, T)
-  y <- scale(y, T, T)
+  ## standardization but only x
+  x <- z_x # scaled x is now x
+  #y <- scale(y, T, T)
+  #y <- y
 
   opt_lambda <- lambda ## no longer CV lambda
   ## ER Housekeeping ###########################################################

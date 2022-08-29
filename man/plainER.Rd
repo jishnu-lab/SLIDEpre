@@ -7,6 +7,7 @@
 plainER(
   y,
   x,
+  z_x,
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
@@ -20,6 +21,8 @@ plainER(
 \item{y}{a response vector of dimension \eqn{n}, must be continous}
 
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
+
+\item{z_x}{a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix}
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}}
 

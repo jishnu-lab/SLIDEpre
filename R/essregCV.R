@@ -25,6 +25,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, permute = T,y_levels = NULL,
                      eval_type, out_path, rep) {
 
+  #get raw_x and get scaled x ###########################
+  raw_x <- x
+  x <- scale(raw_x, T, T)
+
   if (eval_type == "auc") {
     lasso_fam <- "binomial"
     y_factor <- T
@@ -122,30 +126,31 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     valid_ind <- group_inds[[i]] ## validation indices
     train_y <- y[-valid_ind] ## training y's
     valid_y <- y[valid_ind] ## validation y's
-    train_x <- x[-valid_ind, ] ## training x's
-    valid_x <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
+    train_x_std <- x[-valid_ind, ] ## training x's
+    train_x_raw <- raw_x[-valid_ind, ]
+    valid_x_std <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
+    valid_x_raw <- matrix(raw_x[valid_ind, ], ncol = ncol(x))
 
-    ## standardize sets
-    stands <- standCV(train_y = train_y,
-                      train_x = train_x,
-                      valid_y = valid_y,
-                      valid_x = valid_x)
+    ## standardize sets (no longer doing )
+    # stands <- standCV(train_y = train_y,
+    #                   train_x = train_x,
+    #                   valid_y = valid_y,
+    #                   valid_x = valid_x)
 
-    train_x_std <- stands$train_x
-    train_y_std <- stands$train_y
-    valid_x_std <- stands$valid_x
-    valid_y_std <- stands$valid_y
-    print(valid_y_std)
+    # train_x_std <- stands$train_x
+    # train_y_std <- stands$train_y
+    # valid_x_std <- stands$valid_x
+    # valid_y_std <- stands$valid_y
 
-    centers_y <- attr(train_y_std, "scaled:center")
-    scales_y <- attr(train_y_std, "scaled:scale")
+    # centers_y <- attr(train_y_std, "scaled:center")
+    # scales_y <- attr(train_y_std, "scaled:scale")
 
     ## rename columns
-    colnames(train_x_std) <- colnames(valid_x_std) <- colnames(x)
+    #colnames(train_x_std) <- colnames(valid_x_std) <- colnames(x)
 
     ## permute y's
     perm_ind <- sample(1:nrow(train_x_std))
-    train_y_std_perm <- train_y_std[perm_ind]
+    #train_y_std_perm <- train_y_std[perm_ind]
     train_y_perm <- train_y[perm_ind]
 
     ## get labels if factor
@@ -170,18 +175,18 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           use_y_train <- train_y_labs_perm
         } else { ## if y is not a factor, use permuted y values
           cat("        using permuted y values \n")
-          use_y_train <- train_y_std_perm
+          use_y_train <- train_y_perm
         }
-        use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
+        #use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
       } else { ## if not doing y permutation
         if (y_factor) { ## if y is a factor, use true y labels
           cat("        using true y labels \n")
           use_y_train <- train_y_labs
         } else { ## if y is not a factor, use true y values
           cat("        using true y values \n")
-          use_y_train <- train_y_std
+          use_y_train <- train_y
         }
-        use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
+        #use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
       }
 
 
@@ -189,8 +194,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       ##  plainER   -
       ##-------------
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        res <- plainER(y = use_y_train_nonstd,
-                       x = train_x,
+        res <- plainER(y = use_y_train,
+                       x = train_x_raw,
+                       z_x = train_x_std,
                        sigma = NULL,
                        delta = delta,
                        lambda = lambda,
@@ -312,7 +318,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         results <- rbind(results, fold_res)
         #print(results)
       } else { ## if using correlation to evaluate model fit
-        fold_res <- cbind(method_j, pred_vals, valid_y_std)
+        fold_res <- cbind(method_j, pred_vals, valid_y)
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
         results <- rbind(results, fold_res)
       }

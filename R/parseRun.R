@@ -12,6 +12,8 @@ parseRun <- function(yaml_path) {
   x <- as.matrix(utils::read.csv(er_input$x_path, row.names = 1))
   y <- as.matrix(utils::read.csv(er_input$y_path, row.names = 1))
 
+  z_x <- scale(x, T, T)
+
   dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
 
   ## make continuous if categorical
@@ -24,8 +26,9 @@ parseRun <- function(yaml_path) {
 
   ## final output
   er_output <- plainER(x = x,
+                       z_x = z_x,
                        y = y,
-                       sigma = cor(x),
+                       sigma = NULL,
                        delta = er_input$delta,
                        lambda = er_input$lambda,
                        rep_cv = er_input$rep_cv,
