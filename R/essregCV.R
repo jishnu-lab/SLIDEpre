@@ -72,8 +72,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     len <- lapply(y_groups_val, function(x){length(x)})
     if (! 1 %in% len) {
       group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+    }else{
+      group_vars_val <- unlist(y_groups_val) ## don't calculate sd if LOOCV
     }
-    group_vars_val <- unlist(y_groups_val) ## don't calculate sd if LOOCV
     group_vars_train <- sapply(y_groups_train, sd) ## get standard deviation of responses (training set)
     zero_in_val <- 0 %in% group_vars_val ## see if any are 0s from the sd calculation
     zero_in_train <- 0 %in% group_vars_train
