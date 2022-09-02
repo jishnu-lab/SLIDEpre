@@ -30,6 +30,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   x <- scale(x, T, T)
 
   if (eval_type == "auc") {
+    if (length(unique(as.vector(y))) > 2) { ## check y is binary
+      stop("y must be binary - please re-factor")
+    }
     lasso_fam <- "binomial"
     y_factor <- T
   } else { ## if evaluating with correlation, treat y as continuous (regardless of truth)
@@ -71,7 +74,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     # check if we are doing LOOCV
     len <- lapply(y_groups_val, function(x){length(x)})
     if (! 1 %in% len) {
-      group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set)
+      group_vars_val <- sapply(y_groups_val, sd) ## get standard deviation of responses (validation set), this sd calc is just for splitting
     }else{
       group_vars_val <- unlist(y_groups_val) ## don't calculate sd if LOOCV
     }
@@ -124,7 +127,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   ##---------------------------------------------------------------
   for (i in 1:k) { ## loop through folds
     cat("FOLD ", i, ". . . . \n")
+
     valid_ind <- group_inds[[i]] ## validation indices
+    cat("validation set indices: ", paste0(valid_ind, " ", collapse = ""), "\n")
+
     train_y <- y[-valid_ind] ## training y's
     valid_y <- y[valid_ind] ## validation y's
     train_x_std <- x[-valid_ind, ] ## training x's
@@ -308,6 +314,9 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         # lasso_pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       }
 
+      res_model <- res
+      valid_pred <- pred_vals
+
       if (eval_type == "auc") { ## if using area under roc curve to evaluate model fit
         pred_vals <- as.data.frame(pred_vals)
         if (ncol(pred_vals) > 1) {
@@ -323,6 +332,18 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
         results <- rbind(results, fold_res)
       }
+
+      saveRDS(list(valid_ind = valid_ind,
+                   train_y = use_y_train,
+                   valid_y = valid_y,
+                   train_x_std = train_x_std,
+                   valid_x_std = valid_x_std,
+                   train_x_raw = train_x_raw,
+                   valid_x_raw = valid_x_raw,
+                   results = fold_res,
+                   model = res,
+                   valid_pred = valid_pred),
+              file = paste0(new_dir, "/fold", i, "_", method_j, ".rds"))
     }
   }
 
@@ -365,6 +386,6 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   combined_res <- NULL
   combined_res$each_fold <- results
   combined_res$final_corr <- final_results
-  saveRDS(combined_res, file = paste0(new_dir, "results.rds"))
+  saveRDS(combined_res, file = paste0(new_dir, "/model_evaluations.rds"))
   return (final_results)
 }
