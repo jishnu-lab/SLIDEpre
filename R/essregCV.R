@@ -88,7 +88,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         zero_in <- F
       }
     } else{
-      # whether we are doing LOOCV or not, let's check the training data.
+      # whether we are doing LOOCV or not, ONLY check the training data.
       if (zero_in_train) {
         zero_in <- T
       } else{
@@ -138,6 +138,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
     valid_x_std <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
     valid_x_raw <- matrix(raw_x[valid_ind, ], ncol = ncol(x))
 
+    colnames(valid_x_std) <- colnames(train_x_std) <- colnames(x)
     ## standardize sets (no longer doing )
     # stands <- standCV(train_y = train_y,
     #                   train_x = train_x,
@@ -201,7 +202,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       ##  plainER   -
       ##-------------
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        res <- plainER(y = use_y_train,
+        res <- plainER(y = train_y,
                        x = train_x_raw,
                        x_std = train_x_std,
                        sigma = NULL,
@@ -253,7 +254,6 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
                             trControl = ctrl,
                             metric = "ROC",
                             method = "pls")
-
         pred_vals <- predict(res, newdata = valid_x_std, type = "prob")
 
         ##----------
@@ -355,7 +355,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       method_res <- results %>% dplyr::filter(method == methods[i])
       predicted <- as.numeric(method_res$pred_vals)
       true <- as.numeric(method_res$true_vals)
-      method_roc <- ROCR::prediction(predicted, true)
+      method_roc <- ROCR::prediction(predicted, true, label.ordering = c(0, 1))
       method_auc <- ROCR::performance(method_roc, "auc")
       method_auc <- method_auc@y.values[[1]]
       if (method_auc < 0.5) { ## if classifier auc is < 0.5, reverse it to be > 0.5
