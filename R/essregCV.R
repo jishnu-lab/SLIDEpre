@@ -314,9 +314,6 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         # lasso_pred_vals <- t((t(pred_vals) - centers_y) / scales_y)
       }
 
-      res_model <- res
-      valid_pred <- pred_vals
-
       if (eval_type == "auc") { ## if using area under roc curve to evaluate model fit
         pred_vals <- as.data.frame(pred_vals)
         if (ncol(pred_vals) > 1) {
@@ -332,18 +329,6 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         colnames(fold_res) <- c("method", "pred_vals", "true_vals")
         results <- rbind(results, fold_res)
       }
-
-      saveRDS(list(valid_ind = valid_ind,
-                   train_y = use_y_train,
-                   valid_y = valid_y,
-                   train_x_std = train_x_std,
-                   valid_x_std = valid_x_std,
-                   train_x_raw = train_x_raw,
-                   valid_x_raw = valid_x_raw,
-                   results = fold_res,
-                   model = res,
-                   valid_pred = valid_pred),
-              file = paste0(new_dir, "/fold", i, "_", method_j, ".rds"))
     }
   }
 
