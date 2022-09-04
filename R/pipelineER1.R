@@ -39,7 +39,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
     coarse_res <- readRDS(paste0(er_input$out_path, "pipeline_step1.rds"))
   } else {
     foreach::foreach (i = 1:length(deltas)) %dopar% {
-      cat(i)
+      cat(i, "\n")
       result <- plainER(y = y,
                         x = x, # x here is NOT z_scored x
                         x_std = x_std,
