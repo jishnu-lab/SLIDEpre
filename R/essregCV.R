@@ -178,7 +178,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           cat("        using permuted y values \n")
           use_y_train <- train_y_perm
         }
-        #use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
+        use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
       } else { ## if not doing y permutation
         if (y_factor) { ## if y is a factor, use true y labels
           cat("        using true y labels \n")
@@ -187,7 +187,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           cat("        using true y values \n")
           use_y_train <- train_y
         }
-        #use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
+        use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
       }
 
 
@@ -195,7 +195,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       ##  plainER   -
       ##-------------
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        res <- plainER(y = y_train,
+        res <- plainER(y = use_y_train_nonstd,
                        x = train_x_raw,
                        x_std = train_x_std,
                        sigma = NULL,
