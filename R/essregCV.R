@@ -8,6 +8,8 @@
 #' @param y a response vector of dimension \eqn{n}
 #' @param x a data matrix of dimensions \eqn{n \times p}
 #' @param delta \eqn{\delta}, a numerical constant used for thresholding
+#' @param std_cv, a boolean flag of whether perform scaling x in CV and scaling Y
+#' @param std_y a boolean flag of wether z score Y or not in the PlainER function
 #' @param thresh_fdr a numerical constant used for thresholding the correlation matrix to
 #' control the false discovery rate, default is 0.2
 #' @param permute a boolean flag indicating whether to permute the response (\eqn{y}) during training
@@ -21,13 +23,14 @@
 #' @return An object of class \sQuote{data.frame}
 #' @export
 
-essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
+essregCV <- function(k = 5, y, x, delta, std_cv, std_y, thresh_fdr = 0.2, lambda = 0.1,
                      rep_cv = 50, alpha_level = 0.05, permute = T,y_levels = NULL,
                      eval_type, out_path, rep) {
 
   #get raw_x and get scaled x ###########################
   raw_x <- x
   x <- scale(x, T, T)
+  if (std_cv != std_y ) {stop("std_cv and std_y should be the same...\n")}
 
   if (eval_type == "auc") {
     lasso_fam <- "binomial"
@@ -125,42 +128,49 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
   for (i in 1:k) { ## loop through folds
     cat("FOLD ", i, ". . . . \n")
     valid_ind <- group_inds[[i]] ## validation indices
-    train_y <- y[-valid_ind] ## training y's
-    valid_y <- y[valid_ind] ## validation y's
-    train_x_std <- x[-valid_ind, ] ## training x's
+    cat("validation indices", valid_ind, "\n")
+    train_y_raw <- y[-valid_ind] ## training y's
+    valid_y_raw <- y[valid_ind] ## validation y's
     train_x_raw <- raw_x[-valid_ind, ]
-    valid_x_std <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
     valid_x_raw <- matrix(raw_x[valid_ind, ], ncol = ncol(x))
 
-    ## standardize sets (no longer doing )
-    # stands <- standCV(train_y = train_y,
-    #                   train_x = train_x,
-    #                   valid_y = valid_y,
-    #                   valid_x = valid_x)
+    # if we are doing z-scoring X within CV and z-scoring Y
+    if (std_cv) {
+      stands <- standCV(train_y = train_y_raw,
+                        train_x = train_x_raw,
+                        valid_y = valid_y_raw,
+                        valid_x = valid_x_raw)
 
-    # train_x_std <- stands$train_x
-    # train_y_std <- stands$train_y
-    # valid_x_std <- stands$valid_x
-    # valid_y_std <- stands$valid_y
+      train_x_std <- stands$train_x
+      train_y <- stands$train_y
+      valid_x_std <- stands$valid_x
+      valid_y <- stands$valid_y
 
-    # centers_y <- attr(train_y_std, "scaled:center")
-    # scales_y <- attr(train_y_std, "scaled:scale")
+    # if we are z-scoring X outside of CV and not z-scoring Y
+    } else {
+      train_x_std <- x[-valid_ind, ] ## training x's
+      valid_x_std <- matrix(x[valid_ind, ], ncol = ncol(x)) ## validation x's
+      train_y <- train_y_raw
+      valid_y <- valid_y_raw
+    }
+
 
     ## rename columns
     colnames(train_x_std) <- colnames(valid_x_std) <- colnames(x)
 
     ## permute y's
     perm_ind <- sample(1:nrow(train_x_std))
-    #train_y_std_perm <- train_y_std[perm_ind]
+    # note that if std_cv == FALSE, train_y_perm == train_y_perm_raw
     train_y_perm <- train_y[perm_ind]
+    train_y_perm_raw <- train_y_raw[perm_ind]
 
     ## get labels if factor
     if (y_factor) {
-      train_y_labs <- factor(train_y, levels = y_levels)
-      train_y_labs_perm <- factor(train_y_perm, levels = y_levels)
-      valid_y_labs <- factor(valid_y, levels = y_levels)
+      train_y_labs <- factor(train_y_raw, levels = y_levels)
+      train_y_labs_perm <- factor(train_y_perm_raw, levels = y_levels)
+      valid_y_labs <- factor(valid_y_raw, levels = y_levels)
     }
-
+    #cat("permuted y: ", train_y_labs_perm, "\n")
 
     ##----------------------------------------------------------------
     ##                   loop through all methods                   --
@@ -178,7 +188,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           cat("        using permuted y values \n")
           use_y_train <- train_y_perm
         }
-        use_y_train_nonstd <- train_y_perm ## need non-standardized continuous y for plainER
+        use_y_train_ER <- train_y_perm_raw ## need non-standardized continuous y for plainER
       } else { ## if not doing y permutation
         if (y_factor) { ## if y is a factor, use true y labels
           cat("        using true y labels \n")
@@ -187,7 +197,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
           cat("        using true y values \n")
           use_y_train <- train_y
         }
-        use_y_train_nonstd <- train_y ## need non-standardized continuous y for plainER
+        use_y_train_ER <- train_y_raw ## need non-standardized continuous y for plainER
       }
 
 
@@ -195,9 +205,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       ##  plainER   -
       ##-------------
       if (grepl(x = method_j, pattern = "plainER", fixed = TRUE)) { ## plain essential regression, predict with all Zs
-        res <- plainER(y = use_y_train_nonstd,
+        res <- plainER(y = use_y_train_ER,
                        x = train_x_raw,
                        x_std = train_x_std,
+                       std_y = std_y,
                        sigma = NULL,
                        delta = delta,
                        lambda = lambda,
@@ -226,6 +237,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         ##---------
       } else if (grepl(x = method_j, pattern = "pcr", fixed = TRUE)) { ## PCR
         res <- pls::pcr(use_y_train ~ train_x_std, validation = "CV", segments = 5)
+
         n_comp <- pls::selectNcomp(res, method = "randomization")
         n_comp <- ifelse(n_comp == 0, 1, n_comp)
         pred_vals <- predict(res, comps = n_comp, newdata = valid_x_std, type = "response")
@@ -265,8 +277,13 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         num_pcs <- nrow(train_x_std) - 1 ## use maximum number of PCs
         train_pcs <- princ_comps$x[, 1:num_pcs] ## get PCs for regression
         valid_pcs <- scale(valid_x_std, princ_comps$center, princ_comps$scale) %*% princ_comps$rotation ## project validation set to PC space
-        res <- stats::glm(use_y_train ~ ., data = as.data.frame(train_pcs), family = "binomial") ## make model
+        saveRDS(valid_pcs, file = paste0(new_dir, "fold_",i,"_pclr_validpcs.RDS"))
+        res <- stats::glm(as.numeric(as.character(use_y_train)) ~ ., data = as.data.frame(train_pcs), family = "binomial") ## make model
+        cat("this is the new y \n")
+        cat(as.numeric(as.character(use_y_train)), '\n')
+        saveRDS(res, file = paste0(new_dir, "fold_",i,"_pclr_res.RDS"))
         pred_vals <- predict(res, newdata = as.data.frame(valid_pcs), type = "response") ## predict validation set values
+        print("already calculate pred_vals")
       } else { ## lasso for comparison
           if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
             res <- glmnet::cv.glmnet(train_x_std,
@@ -287,6 +304,7 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
         }
         beta_hat <- coef(res, s = res$lambda.min)[-1]
         sub_beta_hat <- which(beta_hat != 0)
+
         ## if lasso selects no variable, randomly pick 5 features instead
         if (length(sub_beta_hat) == 0) {
           cat("Lasso selects no features - Randomly selecting 5 features. . . \n")
@@ -334,7 +352,10 @@ essregCV <- function(k = 5, y, x, delta, thresh_fdr = 0.2, lambda = 0.1,
       method_res <- results %>% dplyr::filter(method == methods[i])
       predicted <- as.numeric(method_res$pred_vals)
       true <- as.numeric(method_res$true_vals)
+      print("before prediction")
+      predicted[is.na(predicted)] <- median(predicted, na.rm = TRUE)
       method_roc <- ROCR::prediction(predicted, true)
+      print("after prediction")
       method_auc <- ROCR::performance(method_roc, "auc")
       method_auc <- method_auc@y.values[[1]]
       if (method_auc < 0.5) { ## if classifier auc is < 0.5, reverse it to be > 0.5

@@ -5,6 +5,7 @@
 #' @importFrom foreach '%dopar%'
 #' @param y a response vector of dimension \eqn{n}, must be continous
 #' @param x a data matrix of dimensions \eqn{n \times p}
+#' @param std_y a boolean flag of wether z score Y or not
 #' @param x_std a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix
 #' @param sigma a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}
 #' @param delta \eqn{\delta}, a numerical value used for thresholding, or a vector of values
@@ -21,16 +22,19 @@
 #' determined by cross-validation, \eqn{Q}, and the variances of \eqn{\hat{\beta}}
 #' @export
 
-plainER <- function(y, x, x_std, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
+plainER <- function(y, x, x_std, std_y, sigma = NULL, delta, thresh_fdr = 0.2, lambda = 0.1,
                     rep_cv = 50, alpha_level = 0.05, out_path = NULL) {
   ## Data Housekeeping #########################################################
-  #raw_y <- y
+  raw_y <- y
   raw_x <- x  # input raw x is now raw_x
 
   ## standardization but only x
   x <- x_std # scaled x is now x
-  #y <- scale(y, T, T)
-  #y <- y
+
+  if (std_y) {
+    y <- scale(y, T, T)
+  }
+
 
   opt_lambda <- lambda ## no longer CV lambda
   ## ER Housekeeping ###########################################################

@@ -8,6 +8,7 @@ plainER(
   y,
   x,
   x_std,
+  std_y,
   sigma = NULL,
   delta,
   thresh_fdr = 0.2,
@@ -23,6 +24,8 @@ plainER(
 \item{x}{a data matrix of dimensions \eqn{n \times p}}
 
 \item{x_std}{a data matrix of dimensions \eqn{n \times p}, a scaled and mean centered x matrix}
+
+\item{std_y}{a boolean flag of wether z score Y or not}
 
 \item{sigma}{a sample correlation matrix of dimensions \eqn{p \times p}, default is \code{NULL}}
 

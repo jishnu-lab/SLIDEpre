@@ -9,6 +9,7 @@ essregCV(
   y,
   x,
   delta,
+  std_cv,
   thresh_fdr = 0.2,
   lambda = 0.1,
   rep_cv = 50,
@@ -29,6 +30,8 @@ essregCV(
 
 \item{delta}{\eqn{\delta}, a numerical constant used for thresholding}
 
+\item{std_cv, }{a boolean flag of whether perform scaling x in CV and scaling Y}
+
 \item{thresh_fdr}{a numerical constant used for thresholding the correlation matrix to
 control the false discovery rate, default is 0.2}
 
@@ -46,6 +49,8 @@ control the false discovery rate, default is 0.2}
 \item{out_path}{path for saving output}
 
 \item{rep}{an integer indicating the replicate number}
+
+\item{std_y}{a boolean flag of wether z score Y or not in the PlainER function}
 }
 \value{
 An object of class \sQuote{data.frame}
