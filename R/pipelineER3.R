@@ -21,7 +21,7 @@ pipelineER3 <- function(yaml_path) {
   dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
 
   if (er_input$y_factor) {
-    y <- toCont(y, er_input$y_order)
+    y <- toCont(y, er_input$y_levels)
     saveRDS(y, file = paste0(er_input$out_path, "pipeline3_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
