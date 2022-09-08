@@ -277,13 +277,8 @@ essregCV <- function(k = 5, y, x, delta, std_cv, std_y, thresh_fdr = 0.2, lambda
         num_pcs <- nrow(train_x_std) - 1 ## use maximum number of PCs
         train_pcs <- princ_comps$x[, 1:num_pcs] ## get PCs for regression
         valid_pcs <- scale(valid_x_std, princ_comps$center, princ_comps$scale) %*% princ_comps$rotation ## project validation set to PC space
-        saveRDS(valid_pcs, file = paste0(new_dir, "fold_",i,"_pclr_validpcs.RDS"))
         res <- stats::glm(as.numeric(as.character(use_y_train)) ~ ., data = as.data.frame(train_pcs), family = "binomial") ## make model
-        cat("this is the new y \n")
-        cat(as.numeric(as.character(use_y_train)), '\n')
-        saveRDS(res, file = paste0(new_dir, "fold_",i,"_pclr_res.RDS"))
         pred_vals <- predict(res, newdata = as.data.frame(valid_pcs), type = "response") ## predict validation set values
-        print("already calculate pred_vals")
       } else { ## lasso for comparison
           if ((nrow(train_x_std) / 10) < 3) { ## sample size too small
             res <- glmnet::cv.glmnet(train_x_std,
