@@ -23,7 +23,7 @@ pipelineER1 <- function(yaml_path, steps = "all") {
   dir.create(file.path(er_input$out_path), showWarnings = F, recursive = T)
 
   if (er_input$y_factor) {
-    y <- toCont(y, er_input$y_orders)
+    y <- toCont(y, er_input$y_levels)
     saveRDS(y, file = paste0(er_input$out_path, "pipeline1_y_mapping.rds"))
     orig_y <- y$cat_y
     y <- y$cont_y
@@ -90,7 +90,8 @@ pipelineER1 <- function(yaml_path, steps = "all") {
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
                                  out_path = paste0(er_input$out_path, "step2_delta_", mag_delta, "/"),
-                                 rep = j)
+                                 rep = j,
+                                 benchmark = er_input$benchmark)
             }
             result
           }

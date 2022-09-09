@@ -98,7 +98,8 @@ pipelineER2 <- function(yaml_path, steps = "all") {
                                  rep_cv = er_input$rep_cv,
                                  alpha_level = er_input$alpha_level,
                                  thresh_fdr = er_input$thresh_fdr,
-                                 rep = j)
+                                 rep = j,
+                                 benchmark = er_input$benchmark)
             }
             result
           }
